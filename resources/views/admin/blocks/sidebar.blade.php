@@ -6,8 +6,18 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.products_without_variants.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý sản phẩm chưa có biến thể
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.products.index') }}" class="nav-link text-white">
-                <i class="fas fa-box"></i> Quản lý sản phẩm
+                <i class="fas fa-box"></i> Quản lý sản phẩm có biến thể
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.variants.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý biến thể
             </a>
         </li>
         <li>
