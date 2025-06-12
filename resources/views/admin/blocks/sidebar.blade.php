@@ -1,7 +1,7 @@
 <div class="d-flex flex-column p-3 text-white bg-dark" style="height: 100vh;">
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
-            <a href="" class="nav-link text-white">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link text-white">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
         </li>
