@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductWithoutVariantsController;
+use App\Http\Controllers\Admin\UserController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Các đường dẫn trong nhóm admin sẽ đặt trong đây
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    
+
 
     Route::prefix('categories')->name('categories.')->group(function () {
         Route::get('/',                     [CategoryController::class, 'index'])->name('index');
@@ -44,7 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     });
-    
+
       // Quản lý biến thể sản phẩm
    Route::prefix('variants')->name('variants.')->group(function () {
     Route::get('/', [ProductVariantController::class, 'index'])->name('index');
@@ -65,8 +66,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/destroy', [ProductWithoutVariantsController::class, 'destroy'])->name('destroy');
     });
 
-   
-
+   // Quản lý users
+Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}/show', [UserController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}/update', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}/destroy', [UserController::class, 'destroy'])->name('destroy');
+    });
 
 });
 Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductInfo'])->name('admin.products.info');

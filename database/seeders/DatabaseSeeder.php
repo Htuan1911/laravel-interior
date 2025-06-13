@@ -32,8 +32,9 @@ class DatabaseSeeder extends Seeder
     ProductVariantSeeder::class,
     VariantOptionValueSeeder::class,
     ImageSeeder::class,
+   
         ]);
-        
+
     }
 
 }

@@ -6,6 +6,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.users.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý tài khoản
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.products_without_variants.index') }}" class="nav-link text-white">
                 <i class="fas fa-box"></i> Quản lý sản phẩm chưa có biến thể
             </a>
