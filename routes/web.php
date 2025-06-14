@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductWithoutVariantsController;
 use App\Http\Controllers\Admin\UserController;
-
+use App\Http\Controllers\Admin\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,23 +40,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{id}/update', [ProductController::class, 'update'])->name('update');
         Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('destroy');
         // routes/web.php
-         // ✅ Route AJAX lấy thông tin sản phẩm
+        // ✅ Route AJAX lấy thông tin sản phẩm
         // Route::get('/{id}/info', [ProductController::class, 'getProductInfo'])->name('info');
 
 
     });
 
-      // Quản lý biến thể sản phẩm
-   Route::prefix('variants')->name('variants.')->group(function () {
-    Route::get('/', [ProductVariantController::class, 'index'])->name('index');
-    Route::get('/create', [ProductVariantController::class, 'create'])->name('create');
-    Route::post('/store', [ProductVariantController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [ProductVariantController::class, 'edit'])->name('edit');
-    Route::put('/{id}/update', [ProductVariantController::class, 'update'])->name('update');
-    Route::delete('/{id}/destroy', [ProductVariantController::class, 'destroy'])->name('destroy');
-   });
+    // Quản lý biến thể sản phẩm
+    Route::prefix('variants')->name('variants.')->group(function () {
+        Route::get('/', [ProductVariantController::class, 'index'])->name('index');
+        Route::get('/create', [ProductVariantController::class, 'create'])->name('create');
+        Route::post('/store', [ProductVariantController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [ProductVariantController::class, 'edit'])->name('edit');
+        Route::put('/{id}/update', [ProductVariantController::class, 'update'])->name('update');
+        Route::delete('/{id}/destroy', [ProductVariantController::class, 'destroy'])->name('destroy');
+    });
 
-   // Quản lý sản phẩm không có biến thể
+    // Quản lý sản phẩm không có biến thể
     Route::prefix('products_without_variants')->name('products_without_variants.')->group(function () {
         Route::get('/', [ProductWithoutVariantsController::class, 'index'])->name('index');
         Route::get('/create', [ProductWithoutVariantsController::class, 'create'])->name('create');
@@ -66,8 +66,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/destroy', [ProductWithoutVariantsController::class, 'destroy'])->name('destroy');
     });
 
-   // Quản lý users
-Route::prefix('users')->name('users.')->group(function () {
+    // Quản lý users
+    Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/store', [UserController::class, 'store'])->name('store');
@@ -77,15 +77,16 @@ Route::prefix('users')->name('users.')->group(function () {
         Route::delete('/{user}/destroy', [UserController::class, 'destroy'])->name('destroy');
     });
 
+    // Quản lý wishlists
+    Route::prefix('wishlists')->name('wishlists.')->group(function () {
+        Route::get('/', [WishlistController::class, 'index'])->name('index');
+        Route::get('/create', [WishlistController::class, 'create'])->name('create');
+        Route::post('/store', [WishlistController::class, 'store'])->name('store');
+        Route::get('/{user}/show', [WishlistController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [WishlistController::class, 'edit'])->name('edit');
+        Route::put('/{user}/update', [WishlistController::class, 'update'])->name('update');
+        Route::delete('/{user}/destroy', [WishlistController::class, 'destroy'])->name('destroy');
+    });
 });
 Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductInfo'])->name('admin.products.info');
 Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
-
-
-
-
-
-
-
-
-

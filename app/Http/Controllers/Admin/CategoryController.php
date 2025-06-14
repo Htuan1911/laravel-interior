@@ -20,9 +20,10 @@ class CategoryController extends Controller
     public function create()
     {
         $languages = Language::all();
-        $parentCategories = Category::whereNull('parent_id')->get();
+        $parentCategories = Category::with('translations')->get(); // lấy tất cả danh mục, có bản dịch
         return view('admin.categories.create', compact('languages', 'parentCategories'));
     }
+
 
     public function store(Request $request)
     {
@@ -58,9 +59,10 @@ class CategoryController extends Controller
     {
         $category = Category::with('translations')->findOrFail($id);
         $languages = Language::all();
-        $parentCategories = Category::whereNull('parent_id')->where('id', '!=', $id)->get();
+        $parentCategories = Category::with('translations')->where('id', '!=', $id)->get();
         return view('admin.categories.edit', compact('category', 'languages', 'parentCategories'));
     }
+
 
     public function update(Request $request, $id)
     {
