@@ -12,8 +12,8 @@
             <select name="parent_id" class="form-control">
                 <option value="">Không có</option>
                 @foreach ($parentCategories as $parent)
-                    <option value="{{ $parent->id }}" {{ $category->parent_id == $parent->id ? 'selected' : '' }}>
-                        {{ $parent->translations->first()->name }}
+                    <option value="{{ $parent->id }}">
+                        {{ $parent->translations->where('language_code', 'vi')->first()->name ?? 'Không rõ tên' }}
                     </option>
                 @endforeach
             </select>
@@ -29,11 +29,13 @@
             <div class="card mb-3">
                 <div class="card-header">{{ $language->name }} ({{ strtoupper($language->code) }})</div>
                 <div class="card-body">
-                    <input type="hidden" name="translations[{{ $language->code }}][language_code]" value="{{ $language->code }}">
+                    <input type="hidden" name="translations[{{ $language->code }}][language_code]"
+                        value="{{ $language->code }}">
                     <div class="mb-3">
                         <label class="form-label">Tên danh mục</label>
-                        <input type="text" name="translations[{{ $language->code }}][name]" class="form-control" 
-                               value="{{ $category->translations->where('language_code', $language->code)->first()->name ?? '' }}" required>
+                        <input type="text" name="translations[{{ $language->code }}][name]" class="form-control"
+                            value="{{ $category->translations->where('language_code', $language->code)->first()->name ?? '' }}"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mô tả</label>
