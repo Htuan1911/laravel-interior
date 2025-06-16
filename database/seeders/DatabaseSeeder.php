@@ -24,16 +24,21 @@ class DatabaseSeeder extends Seeder
         //     CategorySeeder::class,
         //     CategoryTranslationSeeder::class,
         // ]);
-        $this->call([
-    ProductSeeder::class,
-    ProductTranslationSeeder::class,
-    ProductOptionSeeder::class,
-    ProductOptionValueSeeder::class,
-    ProductVariantSeeder::class,
-    VariantOptionValueSeeder::class,
-    ImageSeeder::class,
+    //     $this->call([
+    // ProductSeeder::class,
+    // ProductTranslationSeeder::class,
+    // ProductOptionSeeder::class,
+    // ProductOptionValueSeeder::class,
+    // ProductVariantSeeder::class,
+    // VariantOptionValueSeeder::class,
+    // ImageSeeder::class,
    
-        ]);
+    //     ]);
+    $this->call([
+        RoleSeeder::class,
+        UserSeeder::class,
+    ]);
+
 
     }
 
