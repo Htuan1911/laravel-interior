@@ -25,6 +25,13 @@
                 <i class="fas fa-box"></i> Quản lý danh mục
             </a>
         </li>
+         <li>
+            <a href="{{ route('admin.coupons.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý mã giảm giá 
+            </a>
+        </li>
+
+        
 
     {{-- <div class="d-flex justify-content-center mt-3">
         <form action="{{ route('logout') }}" method="post">

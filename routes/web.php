@@ -5,8 +5,15 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductWithoutVariantsController;
-
+use App\Http\Controllers\Admin\CouponController;
 use Illuminate\Support\Facades\Route;
+
+
+
+
+
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -65,16 +72,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/destroy', [ProductWithoutVariantsController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('coupons')->name('coupons.')->group(function () {
+        Route::get('/',                     [CouponController::class, 'index'])->name('index');
+        Route::get('/create',               [CouponController::class, 'create'])->name('create');
+        Route::post('/store',               [CouponController::class, 'store'])->name('store');
+        Route::get('/{id}/edit',            [CouponController::class, 'edit'])->name('edit');
+        Route::put('/{id}/update',          [CouponController::class, 'update'])->name('update');
+        Route::delete('/{id}/destroy',      [CouponController::class, 'destroy'])->name('destroy');
+    });
+
    
 
 
 });
 Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductInfo'])->name('admin.products.info');
 Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
-
-
-
-
 
 
 
