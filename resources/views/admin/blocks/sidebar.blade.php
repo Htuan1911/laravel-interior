@@ -46,6 +46,12 @@
                 <span>Quản lý SP yêu thích</span>
             </a>
         </li>
+         <li>
+            <a href="{{ route('admin.reviews.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý Review
+            </a>
+        </li>
+
     </ul>
 
     {{-- <div class="mt-auto">

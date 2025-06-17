@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductWithoutVariantsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\admin\ReviewController;
 
 
 Route::get('/', function () {
@@ -114,6 +115,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{user}/update', [WishlistController::class, 'update'])->name('update');
         Route::delete('/{user}/destroy', [WishlistController::class, 'destroy'])->name('destroy');
     });
+
+Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', [ReviewController::class, 'index'])->name('index');
+        Route::get('/create', [ReviewController::class, 'create'])->name('create');
+        Route::post('/store', [ReviewController::class, 'store'])->name('store');
+        Route::get('/{reviews}/show', [ReviewController::class, 'show'])->name('show');
+        Route::get('/{reviews}/edit', [ReviewController::class, 'edit'])->name('edit');
+        Route::put('/{reviews}/update', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
+    });
+
 });
 Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductInfo'])->name('admin.products.info');
 Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
