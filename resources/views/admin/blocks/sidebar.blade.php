@@ -51,6 +51,13 @@
                 <i class="fas fa-box"></i> Quản lý Review
             </a>
         </li>
+         <li>
+            <a href="{{ route('admin.coupons.index') }}" class="nav-link text-white">
+                <i class="fas fa-box"></i> Quản lý mã giảm giá 
+            </a>
+        </li>
+
+        
 
     </ul>
 
