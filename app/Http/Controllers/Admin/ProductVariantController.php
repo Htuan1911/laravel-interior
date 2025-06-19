@@ -62,7 +62,7 @@ public function store(Request $request)
         'variant_name' => 'required|string|max:255',
         'price' => 'required|numeric|min:0',
         'stock_quantity' => 'required|integer|min:0',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
     ]);
 
     // Insert variant
@@ -114,7 +114,7 @@ public function update(Request $request, $id)
         'variant_name' => 'required|string|max:255',
         'price' => 'required|numeric',
         'stock_quantity' => 'required|integer',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
     ]);
 
     // Cập nhật bản ghi product_variants

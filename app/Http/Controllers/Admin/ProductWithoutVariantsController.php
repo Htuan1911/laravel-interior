@@ -66,7 +66,7 @@ class ProductWithoutVariantsController extends Controller
             'description_vi' => 'nullable|string',
             'name_en' => 'required|string|max:255',
             'description_en' => 'nullable|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'alt_text' => 'nullable|string|max:255',
         ]);
 
@@ -166,7 +166,7 @@ public function update(Request $request, $id)
         'description_vi' => 'nullable|string',
         'base_price' => 'required|numeric|min:0',
         'category_id' => 'required|exists:categories,id',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'alt_text' => 'nullable|string|max:255',
     ]);
 

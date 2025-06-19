@@ -99,6 +99,13 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
+    public function show($id)
+    {
+        $category = Category::with('translations')->findOrFail($id);
+        return view('admin.categories.show', compact('category'));
+    }
+
+
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
