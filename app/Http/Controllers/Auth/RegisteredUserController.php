@@ -11,46 +11,42 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Mail\OtpMail;
+use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
-    public function create(): View
+    public function create()
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-             'phone' => ['required', 'string', 'max:20'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+            'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        $otp = rand(100000, 999999);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-             'role_id' => 2, // role mặc định là user
+            'role_id' => 2,
+            'otp' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(10),
         ]);
 
-        event(new Registered($user));
+        Mail::to($user->email)->send(new OtpMail($otp));
 
-        Auth::login($user);
+        session(['email' => $user->email]);
 
-         // Chuyển hướng theo vai trò
-    return $user->role_id == 1
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('user.dashboard');
+        return redirect()->route('verify.otp.form')->with('status', 'Mã OTP đã được gửi tới email của bạn.');
     }
 }

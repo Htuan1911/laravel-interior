@@ -17,6 +17,9 @@ class User extends Authenticatable
         'phone',
         'role_id',
         'status',
+        'otp', // Mã OTP
+        'otp_expires_at', // Thời gian hết hạn của mã OTP
+        'is_verified',
     ];
 
     protected $hidden = [
@@ -25,8 +28,9 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'status' => 'string',
+       'email_verified_at' => 'datetime',
+        'otp_expires_at' => 'datetime',
+        'is_verified' => 'boolean',
     ];
 
     public function role()

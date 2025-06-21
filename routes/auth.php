@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\OtpVerificationController;
+use App\Http\Controllers\Auth\ForgotPasswordOtpController;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -33,6 +35,19 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('/verify-otp', [OtpVerificationController::class, 'showForm'])->name('verify.otp.form');
+    Route::post('/verify-otp', [OtpVerificationController::class, 'verify'])->name('verify.otp');
+
+       
+        Route::get('/forgot-password-otp', [ForgotPasswordOtpController::class, 'showEmailForm'])->name('password.otp.email.form');
+        Route::post('/forgot-password-otp', [ForgotPasswordOtpController::class, 'sendOtp'])->name('password.otp.send');
+
+        Route::get('/verify-otp-reset', [ForgotPasswordOtpController::class, 'showOtpForm'])->name('password.otp.verify.form');
+        Route::post('/verify-otp-reset', [ForgotPasswordOtpController::class, 'verifyOtp'])->name('password.otp.verify');
+
+        Route::get('/reset-password-otp', [ForgotPasswordOtpController::class, 'showResetForm'])->name('password.otp.reset.form');
+        Route::post('/reset-password-otp', [ForgotPasswordOtpController::class, 'resetPassword'])->name('password.otp.reset');
 });
 
 Route::middleware('auth')->group(function () {
