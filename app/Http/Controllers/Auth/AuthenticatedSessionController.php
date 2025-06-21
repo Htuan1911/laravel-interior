@@ -23,20 +23,34 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
+{
+    // Thử đăng nhập với email và password
+    if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
         $request->session()->regenerate();
 
-        // Kiểm tra role_id để điều hướng phù hợp
-    if (Auth::user()->role_id == 1) {
-        // Admin
-        return redirect()->route('admin.dashboard');
-    } else {
-        // Người dùng bình thường
-        return redirect()->route('user.dashboard'); 
+        $user = Auth::user();
+
+        // Nếu vẫn còn mã OTP chưa xác minh
+        if (!is_null($user->otp)) {
+            Auth::logout(); // Đăng xuất nếu chưa xác minh
+
+            // Lưu email vào session để xác minh OTP
+            session(['email' => $user->email]);
+
+            return redirect()->route('verify.otp.form')
+                ->withErrors(['otp' => 'Tài khoản chưa được xác minh. Vui lòng nhập mã OTP được gửi tới email.']);
+        }
+
+        // Chuyển hướng sau đăng nhập thành công theo vai trò
+        return $user->role_id == 1
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('user.dashboard');
     }
-    }
+
+    return back()->withErrors([
+        'email' => 'Thông tin đăng nhập không chính xác.',
+    ]);
+}
 
     /**
      * Destroy an authenticated session.
