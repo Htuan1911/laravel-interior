@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Client\HomeController;
 
 // Trang chính
 Route::get('/', function () {
@@ -122,4 +123,11 @@ Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductIn
 Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
 
 // Xác thực
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+
+
+// Route cho phần client
+Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+});
