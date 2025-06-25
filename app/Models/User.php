@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class User extends Authenticatable
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'role_id',
+        'status',
+        'otp', // Mã OTP
+        'otp_expires_at', // Thời gian hết hạn của mã OTP
+        'is_verified',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+       'email_verified_at' => 'datetime',
+        'otp_expires_at' => 'datetime',
+        'is_verified' => 'boolean',
+    ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+           public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+}
