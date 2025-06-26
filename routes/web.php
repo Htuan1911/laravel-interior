@@ -11,7 +11,8 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ReviewController;
-use App\Http\Controllers\Client\HomeController;
+
+use App\Http\Controllers\Admin\OrderController;
 
 // Trang chính
 Route::get('/', function () {
@@ -116,6 +117,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{reviews}/update', [ReviewController::class, 'update'])->name('update');
         Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
     });
+
+    // Quản lý đơn hàng
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('orders/{id}/edit-status', [OrderController::class, 'editStatus'])->name('orders.editStatus');
+    Route::put('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
 // Các route AJAX (nằm ngoài group)
@@ -128,6 +138,6 @@ require __DIR__ . '/auth.php';
 
 
 // Route cho phần client
-Route::prefix('client')->name('client.')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-});
+// Route::prefix('client')->name('client.')->group(function () {
+//     Route::get('/', [HomeController::class, 'index'])->name('home');
+// });
