@@ -11,8 +11,8 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ReviewController;
-
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PaymentController;
 
 // Trang chính
 Route::get('/', function () {
@@ -116,6 +116,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{reviews}/edit', [ReviewController::class, 'edit'])->name('edit');
         Route::put('/{reviews}/update', [ReviewController::class, 'update'])->name('update');
         Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
+    });
+
+    // Quản lý thanh toán
+    Route::prefix('payments')->name('payments.')->group(function () {
+        Route::get('/', [PaymentController::class, 'index'])->name('index');
+        Route::get('/{reviews}/show', [PaymentController::class, 'show'])->name('show');
+        Route::get('/{reviews}/edit', [PaymentController::class, 'edit'])->name('edit');
+        Route::put('/{reviews}/update', [PaymentController::class, 'update'])->name('update');
+        Route::delete('/{reviews}/destroy', [PaymentController::class, 'destroy'])->name('destroy');
     });
 
     // Quản lý đơn hàng
