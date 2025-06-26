@@ -28,7 +28,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-       'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime',
         'otp_expires_at' => 'datetime',
         'is_verified' => 'boolean',
     ];
@@ -38,8 +38,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-           public function reviews()
+    public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }

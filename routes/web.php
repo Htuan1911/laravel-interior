@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PaymentController;
 
 // Trang chính
 Route::get('/', function () {
@@ -117,6 +118,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
     });
 
+    // Quản lý thanh toán
+    Route::prefix('payments')->name('payments.')->group(function () {
+        Route::get('/', [PaymentController::class, 'index'])->name('index');
+        Route::get('/{reviews}/show', [PaymentController::class, 'show'])->name('show');
+        Route::get('/{reviews}/edit', [PaymentController::class, 'edit'])->name('edit');
+        Route::put('/{reviews}/update', [PaymentController::class, 'update'])->name('update');
+        Route::delete('/{reviews}/destroy', [PaymentController::class, 'destroy'])->name('destroy');
+    });
+
     // Quản lý đơn hàng
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
@@ -132,4 +142,11 @@ Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductIn
 Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
 
 // Xác thực
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+
+
+// Route cho phần client
+// Route::prefix('client')->name('client.')->group(function () {
+//     Route::get('/', [HomeController::class, 'index'])->name('home');
+// });
