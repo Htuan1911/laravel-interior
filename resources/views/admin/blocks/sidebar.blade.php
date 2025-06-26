@@ -26,6 +26,14 @@
         </li>
 
         <li class="nav-item mb-2">
+            <a href="{{ route('admin.orders.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.orders.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng
+            </a>
+        </li>
+
+
+        <li class="nav-item mb-2">
             <a href="{{ route('admin.payments.index') }}"
                 class="nav-link text-white {{ request()->routeIs('admin.payments.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-credit-card me-2"></i> Quản lý thanh toán
