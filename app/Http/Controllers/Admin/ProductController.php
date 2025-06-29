@@ -98,67 +98,6 @@ public function create()
     return view('admin.products.create', compact('categories', 'colors', 'materials', 'sizes'));
 }
 
-
-
-// public function store(Request $request)
-// {
-//     $request->validate([
-//         'name' => 'required|string',
-//         'category_id' => 'required|integer',
-//         'warranty_months' => 'nullable|integer',
-//         'description' => 'nullable|string',
-//         'material' => 'nullable|string',
-//         'dimensions' => 'nullable|string',
-//         'style' => 'nullable|string',
-//         'variants' => 'nullable|array',
-//         'variants.*.name' => 'required|string',
-//         'variants.*.sku' => 'nullable|string',
-//         'variants.*.price' => 'nullable|numeric',
-//         'variants.*.stock_quantity' => 'nullable|integer',
-//         'variants.*.weight' => 'nullable|numeric',
-//         'variants.*.color' => 'nullable|string',
-//     ]);
-
-//     $productId = DB::table('products')->insertGetId([
-//         'category_id' => $request->category_id,
-//         'base_price' => 0,
-//         'status' => 'active',
-//         'dimensions' => $request->dimensions,
-//         'warranty_months' => $request->warranty_months,
-//         'created_at' => now(),
-//         'updated_at' => now(),
-//     ]);
-
-//     DB::table('product_translations')->insert([
-//         'product_id' => $productId,
-//         'language_code' => 'vi',
-//         'name' => $request->name,
-//         'description' => $request->description,
-//         'material' => $request->material,
-//         'style' => $request->style,
-//         'created_at' => now(),
-//         'updated_at' => now(),
-//     ]);
-
-//     if ($request->has('variants')) {
-//         foreach ($request->variants as $variant) {
-//             DB::table('product_variants')->insert([
-//                 'product_id' => $productId,
-//                 'name' => $variant['name'],
-//                 'variant_name' => $variant['name'],
-//                 'sku' => $variant['sku'] ?? null,
-//                 'price' => $variant['price'] ?? 0,
-//                 'stock_quantity' => $variant['stock_quantity'] ?? 0,
-//                 'weight' => $variant['weight'] ?? null,
-//                 'color' => $variant['color'] ?? null,
-//                 'created_at' => now(),
-//                 'updated_at' => now(),
-//             ]);
-//         }
-//     }
-
-//     return redirect()->route('admin.products.index')->with('success', 'Tạo sản phẩm thành công.');
-// }
 public function store(Request $request)
 {
     $request->validate([

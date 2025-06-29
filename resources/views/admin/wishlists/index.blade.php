@@ -3,56 +3,73 @@
 @section('title', 'Danh sách sản phẩm yêu thích')
 
 @section('content')
-    <div class="container">
-        <h1 class="my-4">Danh sách sản phẩm yêu thích</h1>
-
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <a href="{{ route('admin.wishlists.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Thêm mới
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Danh sách sản phẩm yêu thích</h1>
+        <a href="{{ route('admin.wishlists.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Thêm mới
         </a>
-
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Người dùng</th>
-                    <th>Sản phẩm</th>
-                    <th>Ngày tạo</th>
-                    <th>Ngày cập nhật</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($wishlists as $wishlist)
-                    <tr>
-                        <td>{{ $wishlist->id }}</td>
-                        <td>{{ $wishlist->user->name ?? 'N/A' }} (ID: {{ $wishlist->user_id }})</td>
-                        <td>{{ $wishlist->product->name ?? 'N/A' }} (ID: {{ $wishlist->product_id }})</td>
-                        <td>{{ $wishlist->created_at }}</td>
-                        <td>{{ $wishlist->updated_at }}</td>
-                        <td>
-                            <a href="{{ route('admin.wishlists.edit', $wishlist->id) }}" class="btn btn-sm btn-warning">
-                                <i class="fas fa-edit"></i> Sửa
-                            </a>
-                            <form action="{{ route('admin.wishlists.destroy', $wishlist->id) }}" method="POST"
-                                style="display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">Không có dữ liệu.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
     </div>
+
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if ($wishlists->count())
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th style="width: 200px;">Người dùng</th>
+                                <th style="width: 200px;">Sản phẩm</th>
+                                <th style="width: 150px;">Ngày tạo</th>
+                                <th style="width: 150px;">Ngày cập nhật</th>
+                                <th style="width: 150px;" class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($wishlists as $wishlist)
+                                <tr>
+                                    <td>{{ $wishlist->id }}</td>
+                                    <td>
+                                        <strong>{{ $wishlist->user->name ?? 'Không rõ' }}</strong><br>
+                                        <small class="text-muted">ID: {{ $wishlist->user_id }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ $wishlist->product->name ?? 'Không rõ' }}</strong><br>
+                                        <small class="text-muted">ID: {{ $wishlist->product_id }}</small>
+                                    </td>
+                                    <td>{{ $wishlist->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $wishlist->updated_at->format('d/m/Y H:i') }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.wishlists.edit', $wishlist->id) }}"
+                                               class="btn btn-sm btn-warning" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.wishlists.destroy', $wishlist->id) }}"
+                                                  method="POST" class="d-inline-block"
+                                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-danger" title="Xoá">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="alert alert-info text-center mb-0">Chưa có sản phẩm yêu thích nào.</div>
+            @endif
+        </div>
+    </div>
+</div>
 @endsection
