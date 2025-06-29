@@ -15,7 +15,7 @@
                 <i class="fas fa-users me-2"></i> Quản lý tài khoản
             </a>
         </li>
-        <li class="nav-item mb-2">
+        {{-- <li class="nav-item mb-2">
             <a href="{{ route('admin.products_without_variants.index') }}"
                 class="nav-link text-white {{ request()->routeIs('admin.products_without_variants.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-box-open me-2"></i> Sản phẩm chưa có biến thể
@@ -31,6 +31,18 @@
             <a href="{{ route('admin.variants.index') }}"
                 class="nav-link text-white {{ request()->routeIs('admin.variants.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-random me-2"></i> Quản lý biến thể
+            </a>
+        </li> --}}
+         <li class="nav-item mb-2">
+            <a href="{{ route('admin.product_options.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.product_options.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-random me-2"></i> Quản lý thuộc tính sản phẩm
+            </a>
+        </li>
+         <li class="nav-item mb-2">
+            <a href="{{ route('admin.products.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.products.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-random me-2"></i> Quản sản phẩm
             </a>
         </li>
         <li class="nav-item mb-2">

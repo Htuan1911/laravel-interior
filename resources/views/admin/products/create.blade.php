@@ -1,128 +1,122 @@
 @extends('layouts.admin')
 
-@section('title', 'Thêm biến thể sản phẩm')
-
 @section('content')
-<h1>Thêm biến thể sản phẩm</h1>
+<div class="container mt-4 mb-5">
+    <h3>Thêm Sản Phẩm Nội Thất</h3>
 
-{{-- Hiển thị thông báo lỗi --}}
-@if ($errors->any())
-<div class="alert alert-danger">
-    <strong>Đã xảy ra lỗi:</strong>
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="product-form">
+        @csrf
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Tên sản phẩm *</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label>Danh mục</label>
+                <select name="category_id" class="form-select">
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Bảo hành (tháng)</label>
+                <input type="number" name="warranty_months" class="form-control" value="12">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Mô tả chi tiết</label>
+            <textarea name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Ảnh sản phẩm chính *</label>
+            <input type="file" name="image" class="form-control" required>
+        </div>
+
+        <h5>Thông số kỹ thuật</h5>
+        <div class="row mb-3">
+            <div class="col-md-4"><input type="text" name="material" class="form-control" placeholder="Chất liệu..."></div>
+            <div class="col-md-4"><input type="text" name="dimensions" class="form-control" placeholder="Kích thước..."></div>
+            <div class="col-md-4"><input type="text" name="style" class="form-control" placeholder="Phong cách..."></div>
+        </div>
+
+        <h5>Thuộc tính biến thể</h5>
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <select id="color" class="form-select">
+                    <option value="">-- Màu sắc --</option>
+                    @foreach($colors as $color)
+                        <option value="{{ $color->value }}">{{ $color->value }} ({{ $color->color_code }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="material" class="form-select">
+                    <option value="">-- Chất liệu --</option>
+                    @foreach($materials as $material)
+                        <option value="{{ $material->value }}">{{ $material->value }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="size" class="form-select">
+                    <option value="">-- Kích thước --</option>
+                    @foreach($sizes as $size)
+                        <option value="{{ $size->value }}">{{ $size->value }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary w-100" onclick="addVariant()">Tạo biến thể</button>
+            </div>
+        </div>
+
+        <div id="variants-container"></div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-success">Tạo sản phẩm</button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Huỷ</a>
+        </div>
+    </form>
 </div>
-@endif
 
-{{-- Hiển thị thông báo thành công --}}
-@if (session('success'))
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-@endif
-
-<form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-
-    <div class="mb-3">
-        <label for="product_id">Chọn sản phẩm</label>
-        <select id="product_id" name="product_id" class="form-select">
-            <option value="">-- Chọn sản phẩm --</option>
-            @foreach ($products as $product)
-            <option value="{{ $product->id }}">{{ $product->name }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div id="product-info" class="mb-4" style="display: none;">
-        <div class="mb-2">
-            <label>Tên sản phẩm (Tiếng Việt)</label>
-            <input type="text" id="product_name" name="product_name" class="form-control" readonly>
-        </div>
-        <div class="mb-2">
-            <label>Danh mục</label>
-            <input type="text" id="product_category" name="product_category" class="form-control" readonly>
-        </div>
-        <div class="mb-2">
-            <label>Giá sản phẩm</label>
-            <input type="text" id="product_base_price" name="product_base_price" class="form-control" readonly>
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label for="sku">Chọn SKU</label>
-        <select id="sku" name="sku" class="form-select">
-            <option value="">-- Chọn SKU --</option>
-            @foreach ($skus as $variant)
-            <option value="{{ $variant->sku }}" data-name="{{ $variant->variant_name }}"
-                data-price="{{ $variant->price }}" data-stock="{{ $variant->stock_quantity }}">
-                {{ $variant->sku }}
-            </option>
-            @endforeach
-        </select>
-    </div>
-
-    <div id="variant-info" class="mb-4" style="display: none;">
-        <div class="mb-2">
-            <label>Tên biến thể</label>
-            <input type="text" id="variant_name" name="variant_name" class="form-control" readonly>
-        </div>
-        <div class="mb-2">
-            <label>Giá biến thể</label>
-            <input type="text" id="variant_price" name="variant_price" class="form-control" readonly>
-        </div>
-        <div class="mb-2">
-            <label>Tồn kho</label>
-            <input type="text" id="variant_stock" name="variant_stock" class="form-control" readonly>
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label for="variant_image">Ảnh biến thể</label>
-        <input type="file" name="variant_image" id="variant_image" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-success">Lưu</button>
-</form>
-@endsection
-
-@section('scripts')
 <script>
-    // Tự động hiển thị thông tin sản phẩm khi chọn
-    document.getElementById('product_id').addEventListener('change', function () {
-        let productId = this.value;
-        if (productId) {
-            fetch(`/admin/products/${productId}/info`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('product-info').style.display = 'block';
-                    document.getElementById('product_name').value = data.product_name;
-                    document.getElementById('product_category').value = data.category_name;
-                    document.getElementById('product_base_price').value = data.base_price;
-                });
-        } else {
-            document.getElementById('product-info').style.display = 'none';
-        }
-    });
+    let variantCount = 0;
 
-    // Tự động hiển thị thông tin biến thể khi chọn SKU
-    document.getElementById('sku').addEventListener('change', function () {
-        let sku = this.value;
-        if (sku) {
-            fetch(`/admin/variants/${sku}/info`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('variant-info').style.display = 'block';
-                    document.getElementById('variant_name').value = data.variant_name;
-                    document.getElementById('variant_price').value = data.price;
-                    document.getElementById('variant_stock').value = data.stock_quantity;
-                });
-        } else {
-            document.getElementById('variant-info').style.display = 'none';
+    function addVariant() {
+        const color = document.getElementById('color');
+        const material = document.getElementById('material');
+        const size = document.getElementById('size');
+
+        if (!color.value || !material.value || !size.value) {
+            alert("Vui lòng chọn đầy đủ màu, chất liệu và kích thước");
+            return;
         }
-    });
+
+        const variantName = `${color.value} - ${material.value} - ${size.value}`;
+
+        const html = `
+        <div class="card p-3 mb-3">
+            <h6>Biến thể ${variantCount + 1}: ${variantName}</h6>
+            <input type="hidden" name="variants[${variantCount}][name]" value="${variantName}">
+            <input type="hidden" name="variants[${variantCount}][color]" value="${color.value}">
+            <div class="row">
+                <div class="col-md-3"><input name="variants[${variantCount}][sku]" class="form-control" placeholder="SKU"></div>
+                <div class="col-md-3"><input name="variants[${variantCount}][price]" class="form-control" placeholder="Giá bán" type="number"></div>
+                <div class="col-md-3"><input name="variants[${variantCount}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number"></div>
+                <div class="col-md-3"><input name="variants[${variantCount}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
+            </div>
+            <div class="mt-2">
+                <label>Ảnh biến thể:</label>
+                <input type="file" name="variants[${variantCount}][image]" class="form-control">
+            </div>
+        </div>`;
+        
+        document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
+        variantCount++;
+    }
 </script>
 @endsection
