@@ -12,6 +12,26 @@
         </li>
 
         <li class="nav-item mb-2">
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.users.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-users me-2"></i> Quản lý tài khoản
+            </a>
+        </li>
+      
+         <li class="nav-item mb-2">
+            <a href="{{ route('admin.product_options.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.product_options.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-random me-2"></i> Quản lý thuộc tính sản phẩm
+            </a>
+        </li>
+         <li class="nav-item mb-2">
+            <a href="{{ route('admin.products.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.products.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-random me-2"></i> Quản sản phẩm
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
             <a href="{{ route('admin.categories.index') }}"
                 class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-list-alt me-2"></i> Quản lý danh mục

@@ -4,15 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductVariantController;
-use App\Http\Controllers\Admin\ProductWithoutVariantsController;
-use App\Http\Controllers\Admin\CouponController;
+
+use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductOptionValueController;
+
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
+
 
 // Trang chính
 Route::get('/', function () {
@@ -45,35 +48,41 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/destroy', [CategoryController::class, 'destroy'])->name('destroy');
     });
 
+
+// Quản lý thuộc tính sản phẩm
+  Route::prefix('product-options')->name('product_options.')->group(function () {
+    Route::get('/', [ProductOptionController::class, 'index'])->name('index');
+    Route::get('/create', [ProductOptionController::class, 'create'])->name('create');
+    Route::post('/', [ProductOptionController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [ProductOptionController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [ProductOptionController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ProductOptionController::class, 'destroy'])->name('destroy');
+    Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
+    Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
+  
+
+});
+  
+
     // Sản phẩm có biến thể
     Route::prefix('products')->name('products.')->group(function () {
+
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/store', [ProductController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('edit');
         Route::put('/{id}/update', [ProductController::class, 'update'])->name('update');
-        Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('destroy');
+
+        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('destroy');
+        Route::delete('/{id}/force', [ProductController::class, 'forceDelete'])->name('force-delete');
+        Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
+        Route::get('/trashed', [ProductController::class, 'trashed'])->name('trashed');
+
     });
 
-    // Biến thể sản phẩm
-    Route::prefix('variants')->name('variants.')->group(function () {
-        Route::get('/', [ProductVariantController::class, 'index'])->name('index');
-        Route::get('/create', [ProductVariantController::class, 'create'])->name('create');
-        Route::post('/store', [ProductVariantController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [ProductVariantController::class, 'edit'])->name('edit');
-        Route::put('/{id}/update', [ProductVariantController::class, 'update'])->name('update');
-        Route::delete('/{id}/destroy', [ProductVariantController::class, 'destroy'])->name('destroy');
-    });
 
-    // Sản phẩm không có biến thể
-    Route::prefix('products_without_variants')->name('products_without_variants.')->group(function () {
-        Route::get('/', [ProductWithoutVariantsController::class, 'index'])->name('index');
-        Route::get('/create', [ProductWithoutVariantsController::class, 'create'])->name('create');
-        Route::post('/store', [ProductWithoutVariantsController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [ProductWithoutVariantsController::class, 'edit'])->name('edit');
-        Route::put('/{id}/update', [ProductWithoutVariantsController::class, 'update'])->name('update');
-        Route::delete('/{id}/destroy', [ProductWithoutVariantsController::class, 'destroy'])->name('destroy');
-    });
+ 
+
 
     // Mã giảm giá
     Route::prefix('coupons')->name('coupons.')->group(function () {
@@ -137,16 +146,3 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
-// Các route AJAX (nằm ngoài group)
-Route::get('/admin/products/{id}/info', [ProductController::class, 'getProductInfo'])->name('admin.products.info');
-Route::get('/admin/variants/{sku}/info', [ProductController::class, 'getVariantInfo'])->name('admin.variants.info');
-
-// Xác thực
-require __DIR__ . '/auth.php';
-
-
-
-// Route cho phần client
-// Route::prefix('client')->name('client.')->group(function () {
-//     Route::get('/', [HomeController::class, 'index'])->name('home');
-// });
