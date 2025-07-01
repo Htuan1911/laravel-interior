@@ -141,8 +141,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-    Route::get('orders/{id}/edit-status', [OrderController::class, 'editStatus'])->name('orders.editStatus');
-    Route::put('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::get('orders/{order}/edit-status', [OrderController::class, 'editStatus'])->name('orders.editStatus');
+    Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
