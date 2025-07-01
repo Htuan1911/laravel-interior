@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('languages', function (Blueprint $table) {
-            $table->string('code', 5)->primary();
-            $table->string('name', 50);
-            $table->timestamp('created_at')->useCurrent();
-        });
+        Schema::table('product_variants', function (Blueprint $table) {
+    $table->string('color')->nullable();
+});
+
     }
 
     /**
@@ -23,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('languages');
+        Schema::table('product_variants', function (Blueprint $table) {
+            //
+        });
     }
 };
