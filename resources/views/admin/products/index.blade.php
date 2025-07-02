@@ -6,7 +6,6 @@
     <a href="{{ route('admin.products.create') }}" class="btn btn-success me-2">+ Thêm sản phẩm</a>
     <a href="{{ route('admin.products.trashed') }}" class="btn btn-outline-dark me-2">🗑 Xem thùng rác</a>
 
-
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -62,8 +61,28 @@
                 <td>{{ $product->name }}</td>
                 <td>{{ Str::limit($product->description, 80) }}</td>
                 <td>{{ $product->category_name }}</td>
-                <td>{{ $product->material ?? '-' }}</td>
-                <td>{{ $product->dimensions ?? '-' }}</td>
+
+                <td>
+                    @if(!empty($product->materials))
+                    @foreach(explode(',', $product->materials) as $mat)
+                    <span class="badge bg-light text-dark border">{{ trim($mat) }}</span>
+                    @endforeach
+                    @else
+                    -
+                    @endif
+                </td>
+                <td>
+                    @if(!empty($product->sizes))
+                    @foreach(explode(',', $product->sizes) as $sz)
+                    <span class="badge bg-light text-dark border">{{ trim($sz) }}</span>
+                    @endforeach
+                    @else
+                    -
+                    @endif
+                </td>
+
+
+                <!-- Màu sắc -->
                 <td>
                     @if(!empty($product->colors))
                     @foreach(explode(',', $product->colors) as $color)
@@ -73,6 +92,7 @@
                     -
                     @endif
                 </td>
+
                 <td>{{ $product->style ?? '-' }}</td>
                 <td>{{ $product->total_quantity ?? 0 }}</td>
                 <td>{{ $product->prices ?? '-' }}</td>
