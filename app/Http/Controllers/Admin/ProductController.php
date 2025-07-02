@@ -18,15 +18,15 @@ public function index()
     $products = DB::table('products')
         ->join('product_translations', function ($join) use ($languageCode) {
             $join->on('products.id', '=', 'product_translations.product_id')
-                 ->where('product_translations.language_code', '=', $languageCode);
+                ->where('product_translations.language_code', '=', $languageCode);
         })
         ->join('categories', 'products.category_id', '=', 'categories.id')
         ->join('category_translations', function ($join) use ($languageCode) {
             $join->on('categories.id', '=', 'category_translations.category_id')
-                 ->where('category_translations.language_code', '=', $languageCode);
+                ->where('category_translations.language_code', '=', $languageCode);
         })
         ->leftJoin('product_variants', 'products.id', '=', 'product_variants.product_id')
-        ->whereNull('products.deleted_at') // ✅ Thêm điều kiện để không hiển thị sản phẩm đã xoá mềm
+        ->whereNull('products.deleted_at')
         ->select(
             'products.id',
             'products.image as main_image',
@@ -39,10 +39,12 @@ public function index()
             'products.status',
             'category_translations.name as category_name',
             'products.created_at',
-            'products.deleted_at', // ✅ Giữ lại để có thể dùng ở view nếu cần
+            'products.deleted_at',
             DB::raw('SUM(product_variants.stock_quantity) as total_quantity'),
             DB::raw('GROUP_CONCAT(DISTINCT product_variants.price ORDER BY product_variants.price SEPARATOR ", ") as prices'),
             DB::raw('GROUP_CONCAT(DISTINCT product_variants.color ORDER BY product_variants.color SEPARATOR ", ") as colors'),
+            DB::raw('GROUP_CONCAT(DISTINCT product_variants.material ORDER BY product_variants.material SEPARATOR ", ") as materials'),
+            DB::raw('GROUP_CONCAT(DISTINCT product_variants.size ORDER BY product_variants.size SEPARATOR ", ") as sizes'),
             DB::raw('GROUP_CONCAT(DISTINCT product_variants.image ORDER BY product_variants.image SEPARATOR ", ") as variant_images')
         )
         ->groupBy(
@@ -57,7 +59,7 @@ public function index()
             'category_translations.name',
             'products.created_at',
             'products.image',
-            'products.deleted_at' // ✅ Bổ sung vào groupBy
+            'products.deleted_at'
         )
         ->orderByDesc('products.id')
         ->get();
@@ -67,8 +69,11 @@ public function index()
 
 
 
+
+
 public function create()
 {
+    // Lấy danh sách danh mục sản phẩm
     $categories = DB::table('categories')
         ->join('category_translations', function ($join) {
             $join->on('categories.id', '=', 'category_translations.category_id')
@@ -77,25 +82,9 @@ public function create()
         ->select('categories.id', 'category_translations.name')
         ->get();
 
-    $colors = DB::table('product_option_values')
-        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
-        ->where('product_options.type', 'color')
-        ->select('product_option_values.id', 'product_option_values.value', 'product_option_values.color_code')
-        ->get();
+    // Chưa load thuộc tính ở đây, sẽ dùng AJAX khi chọn danh mục
 
-    $materials = DB::table('product_option_values')
-        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
-        ->where('product_options.type', 'material')
-        ->select('product_option_values.id', 'product_option_values.value')
-        ->get();
-
-    $sizes = DB::table('product_option_values')
-        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
-        ->where('product_options.type', 'size')
-        ->select('product_option_values.id', 'product_option_values.value')
-        ->get();
-
-    return view('admin.products.create', compact('categories', 'colors', 'materials', 'sizes'));
+    return view('admin.products.create', compact('categories'));
 }
 
 public function store(Request $request)
@@ -116,16 +105,60 @@ public function store(Request $request)
         'variants.*.stock_quantity' => 'nullable|integer',
         'variants.*.weight' => 'nullable|numeric',
         'variants.*.color' => 'nullable|string',
+        'variants.*.material' => 'nullable|string', // ✅ thêm
+        'variants.*.size' => 'nullable|string',     // ✅ thêm
         'variants.*.image' => 'nullable|image|max:2048',
     ]);
 
-    // Upload ảnh chính
+    $newVariants = [];
+    $hasNewVariant = false;
+     // ✅ Kiểm tra các biến thể
+    foreach ($request->variants ?? [] as $index => $variant) {
+        $sku = $variant['sku'];
+        $color = $variant['color'] ?? null;
+        $material = $request->material;
+        $dimensions = $request->dimensions;
+
+        $exactMatch = DB::table('product_variants')
+            ->join('products', 'product_variants.product_id', '=', 'products.id')
+            ->join('product_translations', 'products.id', '=', 'product_translations.product_id')
+            ->where('product_variants.sku', $sku)
+            ->where('product_variants.color', $color)
+            ->where('products.dimensions', $dimensions)
+            ->where('product_translations.material', $material)
+            ->select('product_variants.id')
+            ->first();
+
+        if ($exactMatch) {
+                // ✅ Nếu trùng hoàn toàn → cộng số lượng
+            DB::table('product_variants')
+                ->where('id', $exactMatch->id)
+                ->increment('stock_quantity', $variant['stock_quantity'] ?? 0);
+        } else {
+               // ❌ Nếu chỉ trùng SKU → lỗi
+            $skuConflict = DB::table('product_variants')
+                ->where('sku', $sku)
+                ->first();
+
+            if ($skuConflict) {
+                // ✅ Nếu không trùng → lưu lại để insert
+                return back()->withErrors(['sku' => "Mã SKU '{$sku}' đã tồn tại với thuộc tính khác."])->withInput();
+            }
+
+            $hasNewVariant = true;
+            $newVariants[] = ['data' => $variant, 'index' => $index];
+        }
+    }
+
+    if (!$hasNewVariant) {
+        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật số lượng.');
+    }
+    // ✅ Upload ảnh chính nếu có
     $mainImagePath = null;
     if ($request->hasFile('image')) {
         $mainImagePath = $request->file('image')->store('products', 'public');
     }
-
-    // Thêm sản phẩm
+    // ✅ Tạo sản phẩm mới
     $productId = DB::table('products')->insertGetId([
         'category_id' => $request->category_id,
         'base_price' => 0,
@@ -136,8 +169,7 @@ public function store(Request $request)
         'created_at' => now(),
         'updated_at' => now(),
     ]);
-
-    // Thêm bản dịch
+    // ✅ Thêm bản dịch sản phẩm
     DB::table('product_translations')->insert([
         'product_id' => $productId,
         'language_code' => 'vi',
@@ -148,33 +180,70 @@ public function store(Request $request)
         'created_at' => now(),
         'updated_at' => now(),
     ]);
+    // ✅ Thêm các biến thể mới
+    foreach ($newVariants as $variantItem) {
+        $variant = $variantItem['data'];
+        $index = $variantItem['index'];
 
-    // Thêm biến thể
-    if ($request->has('variants')) {
-        foreach ($request->variants as $index => $variant) {
-            $variantImagePath = null;
-            if ($request->hasFile("variants.$index.image")) {
-                $variantImagePath = $request->file("variants.$index.image")->store('variant_images', 'public');
-            }
-
-            DB::table('product_variants')->insert([
-                'product_id' => $productId,
-                'name' => $variant['name'],
-                'variant_name' => $variant['name'],
-                'sku' => $variant['sku'] ?? null,
-                'price' => $variant['price'] ?? 0,
-                'stock_quantity' => $variant['stock_quantity'] ?? 0,
-                'weight' => $variant['weight'] ?? null,
-                'color' => $variant['color'] ?? null,
-                'image' => $variantImagePath,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        $variantImagePath = null;
+        if ($request->hasFile("variants.$index.image")) {
+            $variantImagePath = $request->file("variants.$index.image")->store('variant_images', 'public');
         }
+        // ✅ Thêm biến thể vào bảng product_variants
+        DB::table('product_variants')->insert([
+            'product_id' => $productId,
+            'name' => $variant['name'],
+            'variant_name' => $variant['name'],
+            'sku' => $variant['sku'] ?? null,
+            'price' => $variant['price'] ?? 0,
+            'stock_quantity' => $variant['stock_quantity'] ?? 0,
+            'weight' => $variant['weight'] ?? null,
+            'color' => $variant['color'] ?? null,
+            'material' => $variant['material'] ?? null, // ✅ thêm
+            'size' => $variant['size'] ?? null,         // ✅ thêm
+            'image' => $variantImagePath,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     return redirect()->route('admin.products.index')->with('success', 'Tạo sản phẩm thành công.');
 }
+
+
+
+
+
+public function getOptionsByCategory($id)
+{
+    $colors = DB::table('product_option_values')
+        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
+        ->where('product_options.type', 'color')
+        ->where('product_options.category_id', $id)
+        ->select('product_option_values.id', 'product_option_values.value', 'product_option_values.color_code')
+        ->get();
+
+    $materials = DB::table('product_option_values')
+        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
+        ->where('product_options.type', 'material')
+        ->where('product_options.category_id', $id)
+        ->select('product_option_values.id', 'product_option_values.value')
+        ->get();
+
+    $sizes = DB::table('product_option_values')
+        ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
+        ->where('product_options.type', 'size')
+        ->where('product_options.category_id', $id)
+        ->select('product_option_values.id', 'product_option_values.value')
+        ->get();
+
+    return response()->json([
+        'colors' => $colors,
+        'materials' => $materials,
+        'sizes' => $sizes,
+    ]);
+}
+
 
 public function edit($id)
 {
