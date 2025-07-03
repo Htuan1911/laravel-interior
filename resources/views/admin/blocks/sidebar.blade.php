@@ -4,75 +4,86 @@
     </h4>
 
     <ul class="nav nav-pills flex-column mb-auto">
+
+        {{-- Dashboard --}}
         <li class="nav-item mb-2">
             <a href="{{ route('admin.dashboard') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+               class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-chart-line me-2"></i> Dashboard
             </a>
         </li>
 
+        {{-- Quản lý tài khoản --}}
         <li class="nav-item mb-2">
             <a href="{{ route('admin.users.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.users.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-users me-2"></i> Quản lý tài khoản
-            </a>
-        </li>
-      
-         <li class="nav-item mb-2">
-            <a href="{{ route('admin.product_options.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.product_options.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-random me-2"></i> Quản lý thuộc tính sản phẩm
+               class="nav-link text-white {{ request()->routeIs('admin.users.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-user-cog me-2"></i> Tài khoản
             </a>
         </li>
 
-         <li class="nav-item mb-2">
-            <a href="{{ route('admin.products.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.products.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-random me-2"></i> Quản sản phẩm
-            </a>
-        </li>
-
+        {{-- Quản lý danh mục --}}
         <li class="nav-item mb-2">
             <a href="{{ route('admin.categories.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-list-alt me-2"></i> Quản lý danh mục
+               class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-sitemap me-2"></i> Danh mục
             </a>
         </li>
 
+        {{-- Quản lý thuộc tính --}}
         <li class="nav-item mb-2">
-            <a href="{{ route('admin.coupons.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.coupons.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-ticket-alt me-2"></i> Quản lý mã giảm giá
+            <a href="{{ route('admin.product_options.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.product_options.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-tags me-2"></i> Thuộc tính
             </a>
         </li>
 
+        {{-- Quản lý sản phẩm --}}
         <li class="nav-item mb-2">
-            <a href="{{ route('admin.orders.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.orders.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-shopping-cart me-2"></i> Quản lý đơn hàng
+            <a href="{{ route('admin.products.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.products.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-boxes me-2"></i> Sản phẩm
             </a>
         </li>
 
-
-        <li class="nav-item mb-2">
-            <a href="{{ route('admin.payments.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.payments.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-credit-card me-2"></i> Quản lý thanh toán
-            </a>
-        </li>
-
-        <li class="nav-item mb-2">
-            <a href="{{ route('admin.reviews.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.reviews.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-star me-2"></i> Quản lý đánh giá
-            </a>
-        </li>
-
+        {{-- Quản lý SP yêu thích --}}
         <li class="nav-item mb-2">
             <a href="{{ route('admin.wishlists.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.wishlists.*') ? 'active bg-primary' : '' }}">
-                <i class="fas fa-heart me-2"></i> Quản lý SP yêu thích
+               class="nav-link text-white {{ request()->routeIs('admin.wishlists.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-heart me-2"></i> Sản phẩm yêu thích
             </a>
         </li>
+
+        {{-- Quản lý mã giảm giá --}}
+        <li class="nav-item mb-2">
+            <a href="{{ route('admin.coupons.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.coupons.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-percentage me-2"></i> Mã giảm giá
+            </a>
+        </li>
+
+        {{-- Quản lý đơn hàng --}}
+        <li class="nav-item mb-2">
+            <a href="{{ route('admin.orders.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.orders.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-receipt me-2"></i> Đơn hàng
+            </a>
+        </li>
+
+        {{-- Quản lý thanh toán --}}
+        <li class="nav-item mb-2">
+            <a href="{{ route('admin.payments.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.payments.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-wallet me-2"></i> Thanh toán
+            </a>
+        </li>
+
+        {{-- Quản lý đánh giá --}}
+        <li class="nav-item mb-2">
+            <a href="{{ route('admin.reviews.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.reviews.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-star me-2"></i> Đánh giá
+            </a>
+        </li>
+
     </ul>
 </div>
