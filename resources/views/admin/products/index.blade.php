@@ -47,25 +47,28 @@
 
                         <!-- Ảnh chính -->
                         <td>
-                            @if ($product->main_image)
-                                <img src="{{ asset('storage/products/' . $product->main_image) }}" width="70"
-                                    height="70" style="object-fit: cover;">
-                            @else
-                                -
+                            @if ($product->main_image && file_exists(public_path('storage/' . $product->main_image)))
+                                <img src="{{ asset('storage/' . $product->main_image) }}" width="60" height="60"
+                                    class="rounded">
                             @endif
                         </td>
 
                         <!-- Ảnh biến thể -->
                         <td>
-                            @if ($product->variant_images)
-                                @foreach (explode(',', $product->variant_images) as $img)
-                                    <img src="{{ asset('storage/products/' . trim($img)) }}" width="40" height="40"
+                            @php
+                                $variantImgs = explode(',', $product->variant_images ?? '');
+                            @endphp
+
+                            @if (!empty($variantImgs[0]))
+                                @foreach ($variantImgs as $img)
+                                    <img src="{{ asset('storage/' . trim($img)) }}" width="40" height="40"
                                         style="object-fit: cover; margin: 2px;">
                                 @endforeach
                             @else
                                 -
                             @endif
                         </td>
+
 
                         <td>{{ $product->name }}</td>
                         <td>{{ Str::limit($product->description, 80) }}</td>
