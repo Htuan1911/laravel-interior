@@ -40,7 +40,7 @@
                                                 $status = $order->status;
                                                 $badgeClass = match ($status) {
                                                     'pending' => 'secondary',
-                                                    'processing' => 'warning',
+                                                    'paid' => 'info',
                                                     'completed' => 'success',
                                                     'cancelled' => 'danger',
                                                     default => 'dark',

@@ -70,6 +70,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/store', [ProductController::class, 'store'])->name('store');
+        Route::get('/category/{id}/options', [ProductController::class, 'getOptionsByCategory'])->name('category.options');
+
+
         Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('edit');
         Route::put('/{id}/update', [ProductController::class, 'update'])->name('update');
 
@@ -141,8 +144,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-    Route::get('orders/{id}/edit-status', [OrderController::class, 'editStatus'])->name('orders.editStatus');
-    Route::put('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::get('orders/{order}/edit-status', [OrderController::class, 'editStatus'])->name('orders.editStatus');
+    Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 

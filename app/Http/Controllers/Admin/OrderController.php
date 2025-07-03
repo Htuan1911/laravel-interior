@@ -58,16 +58,19 @@ class OrderController extends Controller
         return view('admin.orders.edit_status', compact('order'));
     }
 
-    public function updateStatus(Request $request, Order $order)
-    {
-        $request->validate([
-            'status' => 'required|string|max:50',
-        ]);
+ public function updateStatus(Request $request, Order $order)
+{
+    $request->validate([
+        'status' => 'required|in:pending,paid,shipped,completed,cancelled',
+    ]);
 
-        $order->update(['status' => $request->status]);
+    $order->status = $request->status;
+    $order->save();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
-    }
+    return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
+}
+
+
 
     public function destroy(Order $order)
     {
