@@ -7,6 +7,18 @@
             <h4 class="mb-0">Tạo đơn hàng mới</h4>
         </div>
         <div class="card-body">
+
+            {{-- Hiển thị lỗi --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('admin.orders.store') }}" method="POST">
                 @csrf
 
@@ -61,7 +73,7 @@
                     <label for="status" class="form-label">Trạng thái</label>
                     <select name="status" id="status" class="form-select" required>
                         <option value="pending">Chờ xử lý</option>
-                        <option value="processing">Đang xử lý</option>
+                        <option value="paid">Đã thanh toán</option>
                         <option value="shipped">Đã giao</option>
                         <option value="cancelled">Đã hủy</option>
                     </select>
