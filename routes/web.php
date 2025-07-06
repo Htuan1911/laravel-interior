@@ -149,12 +149,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 // Cart
-
-
-Route::prefix('admin')->group(function () {
-    Route::get('carts', [AdminCartController::class, 'index'])->name('admin.carts.index');
-    Route::get('carts/{id}', [AdminCartController::class, 'show'])->name('admin.carts.show');
-    Route::delete('carts/{id}', [AdminCartController::class, 'destroy'])->name('admin.carts.destroy');
+Route::prefix('admin/carts')->group(function () {
+    Route::get('/', [AdminCartController::class, 'index'])->name('admin.carts.index');
+    Route::get('/trashed', [AdminCartController::class, 'trashed'])->name('admin.carts.trashed');
+    Route::get('/{id}', [AdminCartController::class, 'show'])->name('admin.carts.show');
+    Route::put('/{id}/status', [AdminCartController::class, 'updateStatus'])->name('admin.carts.updateStatus');
+    Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('admin.carts.destroy');
+    Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('admin.carts.restore');
+    Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('admin.carts.forceDelete');
 });
+
 
 
