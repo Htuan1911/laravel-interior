@@ -11,11 +11,12 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index()
-    {
-        $orders = Order::with('user')->get();
-        return view('admin.orders.index', compact('orders'));
-    }
+   public function index()
+{
+    $orders = Order::withTrashed()->with('user')->get();
+    return view('admin.orders.index', compact('orders'));
+}
+
 
     public function create()
     {
@@ -24,29 +25,30 @@ class OrderController extends Controller
         return view('admin.orders.create', compact('users', 'coupons'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'shipping_name' => 'required|string|max:255',
-            'shipping_phone' => 'required|string|max:20',
-            'shipping_address' => 'required|string|max:255',
-            'total_amount' => 'required|numeric|min:0',
-            'status' => 'required|string|max:50',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'shipping_name' => 'required|string|max:255',
+        'shipping_phone' => 'required|string|max:20',
+        'shipping_address' => 'required|string|max:255',
+        'total_amount' => 'required|numeric|min:0',
+        'status' => 'required|string|max:50',
+    ]);
 
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'coupon_id' => $request->coupon_id,
-            'shipping_name' => $request->shipping_name,
-            'shipping_phone' => $request->shipping_phone,
-            'shipping_address' => $request->shipping_address,
-            'total_amount' => $request->total_amount,
-            'status' => $request->status,
-        ]);
+    Order::create([
+        'user_id' => $request->user_id,
+        'coupon_id' => $request->coupon_id,
+        'shipping_name' => $request->shipping_name,
+        'shipping_phone' => $request->shipping_phone,
+        'shipping_address' => $request->shipping_address,
+        'total_amount' => $request->total_amount,
+        'status' => $request->status,
+    ]);
 
-        return redirect()->route('admin.orders.index')->with('success', 'Tạo đơn hàng thành công.');
-    }
+    return redirect()->route('admin.orders.index')->with('success', 'Tạo đơn hàng thành công.');
+}
+
 
     public function show(Order $order)
     {
@@ -77,4 +79,12 @@ class OrderController extends Controller
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Xóa đơn hàng thành công.');
     }
+    public function restore($id)
+{
+    $order = \App\Models\Order::withTrashed()->findOrFail($id);
+    $order->restore();
+
+    return redirect()->route('admin.orders.index')->with('success', 'Khôi phục đơn hàng thành công.');
+}
+
 }
