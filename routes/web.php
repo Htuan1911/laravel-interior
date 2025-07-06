@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
-
+use App\Http\Controllers\Admin\AdminCartController;
 
 // Trang chính
 Route::get('/', function () {
@@ -59,10 +59,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/{id}', [ProductOptionController::class, 'destroy'])->name('destroy');
     Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
     Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
-  
+
 
 });
-  
+
 
     // Sản phẩm có biến thể
     Route::prefix('products')->name('products.')->group(function () {
@@ -84,7 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
 
- 
+
 
 
     // Mã giảm giá
@@ -148,4 +148,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
+// Cart
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('carts', [AdminCartController::class, 'index'])->name('admin.carts.index');
+    Route::get('carts/{id}', [AdminCartController::class, 'show'])->name('admin.carts.show');
+    Route::delete('carts/{id}', [AdminCartController::class, 'destroy'])->name('admin.carts.destroy');
+});
+
 

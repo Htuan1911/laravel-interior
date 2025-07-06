@@ -84,6 +84,12 @@
                 <i class="fas fa-star me-2"></i> Đánh giá
             </a>
         </li>
+     <li class="nav-item mb-2">
+    <a href="{{ route('admin.carts.index') }}"
+        class="nav-link text-white {{ request()->routeIs('admin.carts.*') ? 'active bg-primary' : '' }}">
+        <i class="fas fa-shopping-cart me-2"></i> Quản lý giỏ hàng
+    </a>
+</li>
 
     </ul>
 </div>
