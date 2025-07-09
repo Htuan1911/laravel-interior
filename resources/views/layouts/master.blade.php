@@ -81,7 +81,7 @@
             <a class="navbar-brand" href="">NoiThatStyleHouse</a>
             <div class="collapse navbar-collapse justify-content-end">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="">Sản phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('client.products.index') }}">Sản phẩm</a></li>
                     <li class="nav-item"><a class="nav-link" href="">Bài viết</a></li>
                     <li class="nav-item"><a class="nav-link" href="">Liên hệ</a></li>
                     @auth

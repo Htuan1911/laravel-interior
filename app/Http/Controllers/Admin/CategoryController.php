@@ -83,10 +83,25 @@ class CategoryController extends Controller
             'status' => $request->status,
         ]);
 
-        // Xóa các bản dịch cũ
-        CategoryTranslation::where('category_id', $id)->delete();
+        // Xử lý status sản phẩm liên quan
+        if ($request->status === 'inactive') {
+            // Ẩn các sản phẩm và đánh dấu là bị ẩn bởi danh mục
+            $category->products()->update([
+                'status' => 'inactive',
+                'auto_hidden_by_category' => true,
+            ]);
+        } else {
+            // Bật lại các sản phẩm *chỉ nếu* bị ẩn bởi danh mục (không bật sản phẩm bị ẩn thủ công)
+            $category->products()
+                ->where('auto_hidden_by_category', true)
+                ->update([
+                    'status' => 'active',
+                    'auto_hidden_by_category' => false,
+                ]);
+        }
 
-        // Thêm bản dịch mới
+        // Cập nhật bản dịch
+        CategoryTranslation::where('category_id', $id)->delete();
         foreach ($request->translations as $translation) {
             CategoryTranslation::create([
                 'category_id' => $category->id,

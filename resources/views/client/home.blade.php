@@ -11,7 +11,7 @@
                     <img src="{{ $product->image_url }}" class="img-fluid mb-2" alt="{{ $product->name }}">
                     <h5>{{ $product->name }}</h5>
                     <p>{{ number_format($product->price) }} đ</p>
-                    <a href="#" class="btn btn-cta btn-sm">Xem chi tiết</a>
+                    <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-cta btn-sm">Xem chi tiết</a>
                 </div>
             </div>
         @endforeach

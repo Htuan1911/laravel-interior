@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\AdminCartController;
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 
 // Trang chính
 Route::get('/', function () {
@@ -49,19 +51,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
 
-// Quản lý thuộc tính sản phẩm
-  Route::prefix('product-options')->name('product_options.')->group(function () {
-    Route::get('/', [ProductOptionController::class, 'index'])->name('index');
-    Route::get('/create', [ProductOptionController::class, 'create'])->name('create');
-    Route::post('/', [ProductOptionController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [ProductOptionController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [ProductOptionController::class, 'update'])->name('update');
-    Route::delete('/{id}', [ProductOptionController::class, 'destroy'])->name('destroy');
-    Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
-    Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
-
-
-});
+    // Quản lý thuộc tính sản phẩm
+    Route::prefix('product-options')->name('product_options.')->group(function () {
+        Route::get('/', [ProductOptionController::class, 'index'])->name('index');
+        Route::get('/create', [ProductOptionController::class, 'create'])->name('create');
+        Route::post('/', [ProductOptionController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [ProductOptionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [ProductOptionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ProductOptionController::class, 'destroy'])->name('destroy');
+        Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
+        Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
+    });
 
 
     // Sản phẩm có biến thể
@@ -80,11 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/force', [ProductController::class, 'forceDelete'])->name('force-delete');
         Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
         Route::get('/trashed', [ProductController::class, 'trashed'])->name('trashed');
-
     });
-
-
-
 
 
     // Mã giảm giá
@@ -97,6 +93,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/destroy', [CouponController::class, 'destroy'])->name('destroy');
     });
 
+
     // Quản lý người dùng
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
@@ -107,6 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{user}/update', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}/destroy', [UserController::class, 'destroy'])->name('destroy');
     });
+
 
     // Quản lý wishlist
     Route::prefix('wishlists')->name('wishlists.')->group(function () {
@@ -119,6 +117,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{user}/destroy', [WishlistController::class, 'destroy'])->name('destroy');
     });
 
+
     // Quản lý đánh giá (review)
     Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/', [ReviewController::class, 'index'])->name('index');
@@ -130,6 +129,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
     });
 
+
     // Quản lý thanh toán
     Route::prefix('payments')->name('payments.')->group(function () {
         Route::get('/', [PaymentController::class, 'index'])->name('index');
@@ -138,6 +138,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{reviews}/update', [PaymentController::class, 'update'])->name('update');
         Route::delete('/{reviews}/destroy', [PaymentController::class, 'destroy'])->name('destroy');
     });
+
 
     // Quản lý đơn hàng
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
@@ -149,6 +150,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
 });
+
 // Cart
 Route::prefix('admin/carts')->group(function () {
     Route::get('/', [AdminCartController::class, 'index'])->name('admin.carts.index');
@@ -162,3 +164,13 @@ Route::prefix('admin/carts')->group(function () {
 
 
 
+Route::prefix('client')->name('client.')->group(function () {
+
+    // Trang chủ
+    Route::get('/', [HomeController::class, 'index'])->name('client.home');
+
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
+        Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show'); // => client.products.show
+    });
+});
