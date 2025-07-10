@@ -76,23 +76,59 @@
 <body>
 
     <!-- Header -->
-    <header>
-        <nav class="navbar navbar-expand-lg container">
-            <a class="navbar-brand" href="">NoiThatStyleHouse</a>
-            <div class="collapse navbar-collapse justify-content-end">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('client.products.index') }}">Sản phẩm</a></li>
-                    <li class="nav-item"><a class="nav-link" href="">Bài viết</a></li>
-                    <li class="nav-item"><a class="nav-link" href="">Liên hệ</a></li>
-                    @auth
-                        <li class="nav-item"><a class="nav-link" href="">Đăng xuất</a></li>
-                    @else
-                        <li class="nav-item"><a class="nav-link" href="">Đăng nhập</a></li>
-                    @endauth
-                </ul>
-            </div>
+<header class="bg-light shadow-sm py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand fw-bold text-primary fs-4" href="{{ url('/') }}">
+            NoiThatStyleHouse
+        </a>
+
+        <nav>
+            <ul class="nav align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('client.products.index') }}">Sản phẩm</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Bài viết</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Liên hệ</a>
+                </li>
+
+                @auth
+                    {{-- Avatar & Dropdown --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle" width="32" height="32">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
+                            {{-- <li><a class="dropdown-item" href="{{ route('dashboard') }}">Tài khoản</a></li> --}}
+                            <li><a class="dropdown-item" href="#">Tài khoản</a></li> 
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
+                    </li>
+                    @if (Route::has('register'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">Đăng ký</a>
+                        </li>
+                    @endif
+                @endauth
+            </ul>
         </nav>
-    </header>
+    </div>
+</header>
+
+
 
     <!-- Nội dung chính -->
     <main class="container py-4">

@@ -49,4 +49,9 @@ class RegisteredUserController extends Controller
 
         return redirect()->route('verify.otp.form')->with('status', 'Mã OTP đã được gửi tới email của bạn.');
     }
+    protected function registered(Request $request, $user)
+{
+    return redirect()->route('client.home');
+}
+
 }

@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
         // Chuyển hướng sau đăng nhập thành công theo vai trò
         return $user->role_id == 1
             ? redirect()->route('admin.dashboard')
-            : redirect()->route('user.dashboard');
+            : redirect()->route('client.home');
     }
 
     return back()->withErrors([
@@ -62,7 +62,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+         return redirect()->route('client.home');
 
-        return redirect('/');
+        // return redirect('/');
     }
 }
