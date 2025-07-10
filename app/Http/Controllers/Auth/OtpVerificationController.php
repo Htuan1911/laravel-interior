@@ -46,6 +46,6 @@ class OtpVerificationController extends Controller
 
         return $user->role_id == 1
             ? redirect()->route('admin.dashboard')
-            : redirect()->route('user.dashboard');
+            : redirect()->route('client.home');
     }
 }

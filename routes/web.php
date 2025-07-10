@@ -25,15 +25,16 @@ Route::get('/', function () {
 });
 
 // Giao diện người dùng (cần đăng nhập)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
+        return view('client.dashboard'); // Đường dẫn view nên là resources/views/client/dashboard.blade.php
+    })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 // Khu vực quản trị
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -164,13 +165,21 @@ Route::prefix('admin/carts')->group(function () {
 
 
 
+
 Route::prefix('client')->name('client.')->group(function () {
 
     // Trang chủ
-    Route::get('/', [HomeController::class, 'index'])->name('client.home');
+    Route::get('/', [HomeController::class, 'index'])->name('home'); // ✅ Đúng: sẽ ra client.home
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
         Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show'); // => client.products.show
     });
 });
+
+
+
+
+// routes/web.php
+
+require __DIR__.'/auth.php';
