@@ -5,23 +5,50 @@
         <div class="row">
             {{-- Hình ảnh --}}
             <div class="col-md-5">
-                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid rounded"
-                    alt="{{ $product->translations[0]->name }}">
+                @php
+                    $variant = $product->variants->first();
+                @endphp
+
+                {{-- Ảnh chính --}}
+                <div class="mb-3">
+                    <img id="main-image" src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
+                        class="img-fluid rounded w-100" style="object-fit: contain; max-height: 400px;"
+                        alt="{{ $product->translations[0]->name }}">
+                </div>
+
+                {{-- Ảnh biến thể --}}
+                @if ($product->variants->count() > 1)
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach ($product->variants as $v)
+                            @if ($v->image)
+                                <img src="{{ asset('storage/' . $v->image) }}" class="img-thumbnail"
+                                    style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                    alt="{{ $v->variant_name }}"
+                                    onclick="document.getElementById('main-image').src = this.src">
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             {{-- Thông tin sản phẩm --}}
             <div class="col-md-7">
                 <h2>{{ $product->translations[0]->name }}</h2>
 
+                {{-- Nút yêu thích (tùy chọn) --}}
+                <button class="btn btn-link p-0 float-end favorite-btn" title="Yêu thích">
+                    <i class="fa-regular fa-heart text-danger fs-4"></i>
+                </button>
+
                 <p>
                     <strong>Giá:</strong>
-                    @php
-                        $variant = $product->variants->first();
-                    @endphp
                     <span class="text-danger fw-bold">
                         {{ number_format($variant->price ?? $product->base_price, 0, ',', '.') }} đ
                     </span>
                 </p>
+
+                <p><strong>Vật liệu:</strong> {{ $variant->material ?? 'Đang cập nhật' }}</p>
+                <p><strong>Kích thước:</strong> {{ $variant->size ?? 'Đang cập nhật' }}</p>
 
                 <p>
                     <strong>Danh mục:</strong>
@@ -44,8 +71,32 @@
 
                 <button id="toggle-description" class="btn btn-link px-0 text-decoration-none">Xem thêm</button>
 
-                {{-- Nút thêm vào giỏ --}}
-                <a href="#" class="btn btn-warning mt-3">Thêm vào giỏ</a>
+                <div class="mt-4 d-flex align-items-center gap-3">
+                    {{-- Tăng giảm số lượng --}}
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQty()">−</button>
+                        <span id="display-qty" class="px-3 fw-bold fs-5">1</span>
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQty()">+</button>
+                    </div>
+
+                    {{-- Mua ngay --}}
+                    <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="variant_id" value="{{ $variant->id }}">
+                        <input type="hidden" name="quantity" id="buy-now-qty" value="1">
+                        <button type="submit" class="btn btn-danger">Mua ngay</button>
+                    </form>
+
+                    {{-- Thêm vào giỏ --}}
+                    <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="variant_id" value="{{ $variant->id }}">
+                        <input type="hidden" name="quantity" id="add-cart-qty" value="1">
+                        <button type="submit" class="btn btn-outline-dark">Thêm vào giỏ</button>
+                    </form>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -83,7 +134,6 @@
         </div>
     @endif
 
-
     {{-- Script Xem thêm / Thu gọn --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -104,6 +154,29 @@
                     btn.textContent = 'Xem thêm';
                 }
             });
+        });
+
+        let quantity = 1;
+
+        function increaseQty() {
+            quantity++;
+            updateQtyDisplay();
+        }
+
+        function decreaseQty() {
+            quantity = Math.max(1, quantity - 1);
+            updateQtyDisplay();
+        }
+
+        function updateQtyDisplay() {
+            document.getElementById('display-qty').textContent = quantity;
+            document.getElementById('buy-now-qty').value = quantity;
+            document.getElementById('add-cart-qty').value = quantity;
+        }
+
+        // Khởi tạo khi DOM sẵn sàng
+        document.addEventListener('DOMContentLoaded', () => {
+            updateQtyDisplay();
         });
     </script>
 @endsection

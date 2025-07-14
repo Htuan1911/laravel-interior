@@ -20,4 +20,14 @@ class OrderItem extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(\App\Models\ProductVariant::class);
+    }
 }
