@@ -8,13 +8,11 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap hoặc Tailwind tùy bạn -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <style>
+<style>
         :root {
             --bg-color: #F9F6F1;
             --primary-color: #8B5E3C;
@@ -25,14 +23,15 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* đổi từ var(--bg-color) sang trắng */
             color: var(--text-body);
+            font-family: 'Inter', sans-serif;
         }
 
         header {
             background-color: white;
             border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* thêm bóng cho header */
         }
 
         .navbar-brand {
@@ -42,8 +41,8 @@
         }
 
         footer {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: #000;
+            color: #fff;
             padding: 30px 0;
         }
 
@@ -62,7 +61,8 @@
             border-radius: 8px;
             padding: 15px;
             background-color: white;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transition: 0.3s;
         }
 
         .product-card h5 {
@@ -72,6 +72,7 @@
         a {
             text-decoration: none;
         }
+<<<<<<< HEAD
 
         /* Dropdown xổ khi hover */
         .nav-item.dropdown:hover .dropdown-menu {
@@ -113,7 +114,8 @@
         .dropdown-menu.custom-room-menu .dropdown-item:last-child {
             border-bottom: none;
         }
-    </style>
+
+</style>
 
     @yield('styles')
 </head>
@@ -126,7 +128,9 @@
 @stack('scripts')
 
 <body>
+    
 
+<<<<<<< HEAD
     <!-- Header -->
     <header class="bg-light shadow-sm py-3">
         <div class="container d-flex justify-content-between align-items-center">
@@ -233,6 +237,34 @@
         @yield('content')
         @yield('account_content')
     </main>
+    @section('content')
+<div class="container py-5">
+    <h1 class="mb-4 text-center">Sản phẩm mới nhất</h1>
+    <div class="row">
+        @foreach ($products as $product)
+            <div class="col-md-3 mb-4">
+                <div class="product-card">
+                @if($product->image && file_exists(public_path('storage/' . $product->image)))
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translation->name }}" class="product-image">
+                @else
+                    <img src="{{ asset('images/default-product.jpg') }}" alt="No image" class="product-image">
+                @endif                  
+                <div class="product-name">{{ $product->translation->name }}</div>
+                    <div class="product-price">{{ number_format($product->base_price, 0, ',', '.') }} đ</div>
+
+                    <div class="mt-3">
+                        <a href="{{ route('product.show', $product->id) }}" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-warning btn-sm">Thêm vào giỏ</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endsection
 
     <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3 mt-5">
@@ -277,7 +309,23 @@
 
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     @yield('scripts')
+    <script>
+    document.getElementById('toggleSearch').addEventListener('click', function (e) {
+        e.stopPropagation();
+        const searchBox = document.getElementById('searchBox');
+        searchBox.classList.toggle('d-none');
+    });
+
+    document.addEventListener('click', function (e) {
+        const searchBox = document.getElementById('searchBox');
+        const toggleButton = document.getElementById('toggleSearch');
+        if (!searchBox.contains(e.target) && !toggleButton.contains(e.target)) {
+            searchBox.classList.add('d-none');
+        }
+    });
+    </script>
 </body>
 
 </html>
