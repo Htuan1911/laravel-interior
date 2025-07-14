@@ -4,20 +4,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
-
 use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductOptionValueController;
-
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\AdminCartController;
+
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
+
 
 // Trang chính
 Route::get('/', function () {
@@ -175,6 +176,28 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
         Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show'); // => client.products.show
     });
+
+    // Trang giỏ hàng
+    Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
+
+    // Thêm vào giỏ hàng
+    Route::post('/carts/add', [CartController::class, 'add'])->name('carts.add');
+
+    Route::post('/increase/{item}', [CartController::class, 'increaseQuantity'])->name('carts.increase');
+    Route::post('/decrease/{item}', [CartController::class, 'decreaseQuantity'])->name('carts.decrease');
+    Route::delete('/remove/{item}', [CartController::class, 'removeItem'])->name('carts.remove');
+
+    // Đặt hàng nhanh (mua ngay)
+    // Route::post('/checkout/place', [CheckoutController::class, 'placeOrder'])->name('checkout.place');
+
+    Route::post('/orders/checkout', [ClientOrderController::class, 'checkout'])->name('orders.checkout');
+    // Cổng thanh toán
+    Route::post('/client/momo_payment', [ClientOrderController::class, 'momo_payment'])->name('order.momo_payment');
+    Route::get('/orders/momo-return', [ClientOrderController::class, 'momoReturn'])->name('orders.momo_return');
+    Route::post('/orders/momo-ipn', [ClientOrderController::class, 'momoIpn'])->name('orders.momo_ipn');
+
+    Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
+    Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
 });
 
 
@@ -182,4 +205,4 @@ Route::prefix('client')->name('client.')->group(function () {
 
 // routes/web.php
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
