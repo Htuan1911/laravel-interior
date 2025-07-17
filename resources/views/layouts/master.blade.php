@@ -118,6 +118,12 @@
     @yield('styles')
 </head>
 
+
+<!-- Các file JS khác ở đây -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Scripts riêng của từng trang (nếu có) -->
+@stack('scripts')
 <body>
 
     <!-- Header -->
