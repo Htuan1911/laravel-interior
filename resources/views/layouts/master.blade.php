@@ -149,11 +149,12 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Bài viết</a>
+                        <a href="{{ route('client.blog.index') }}">Tin tức</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Liên hệ</a>
+                        <a class="nav-link" href="{{ route('client.contact.form') }}">Liên hệ</a>
                     </li>
+
 
                     {{-- ❤️ Yêu thích --}}
                     <li class="nav-item">
@@ -171,46 +172,47 @@
 
                             {{-- Badge số lượng (nếu cần) --}}
                             @if (session('cart_count') && session('cart_count') > 0)
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ session('cart_count') }}
-                                </span>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ session('cart_count') }}
+                            </span>
                             @endif
                         </a>
                     </li>
 
                     @auth
-                        {{-- Avatar & Dropdown --}}
-                       <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle"
-                                  width="32" height="32">
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-                                <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
-                                <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
-                                <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
-                                <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a></li>
-                                <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                     @csrf
-                                         <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
-                                        </form>
-                                </li>
-                            </ul>
-                        </li>
+                    {{-- Avatar & Dropdown --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle" width="32"
+                                height="32">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                            <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
+                            <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
 
                     @else
-                        {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
-                        </li>
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">Đăng ký</a>
-                            </li>
-                        @endif
+                    {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
+                    </li>
+                    @if (Route::has('register'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('register') }}">Đăng ký</a>
+                    </li>
+                    @endif
                     @endauth
                 </ul>
             </nav>
@@ -222,7 +224,7 @@
     <!-- Nội dung chính -->
     <main class="container py-4">
         @yield('content')
-         @yield('account_content')
+        @yield('account_content')
     </main>
 
     <!-- Footer -->
@@ -243,6 +245,7 @@
                         <li><a href="{{ url('/san-pham') }}" class="text-white text-decoration-none">Sản phẩm</a></li>
                         <li><a href="{{ url('/bai-viet') }}" class="text-white text-decoration-none">Bài viết</a></li>
                         <li><a href="{{ url('/lien-he') }}" class="text-white text-decoration-none">Liên hệ</a></li>
+
                     </ul>
                 </div>
 
