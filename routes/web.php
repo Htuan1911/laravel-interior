@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Http\Controllers\Client\WishlistControllers;
 
 
 // Trang chính
@@ -201,6 +202,28 @@ Route::prefix('client')->name('client.')->group(function () {
 });
 
 
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
+
+});
+use App\Http\Controllers\Admin\CartItemController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Xoá mềm sản phẩm trong giỏ
+    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
+
+    // Hiển thị sản phẩm đã xoá (thùng rác)
+    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
+
+    // Khôi phục sản phẩm
+    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
+
+    // Xoá vĩnh viễn
+    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
+});
 
 
 // routes/web.php

@@ -47,4 +47,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
+
+
+public function wishlists()
+{
+    return $this->hasMany(Wishlist::class);
+}
+
+
+
 }

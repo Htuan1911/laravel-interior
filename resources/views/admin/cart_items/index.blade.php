@@ -3,10 +3,6 @@
 @section('content')
 <div class="container mt-4">
     <h4 class="mb-3">🗑️ Thùng rác sản phẩm trong giỏ</h4>
-<a href="{{ route('admin.carts.items.trashed', $cart->id) }}" class="btn btn-outline-danger btn-sm">
-    🗑️ Xem sản phẩm đã xoá
-</a>
-
 
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-light">
@@ -43,12 +39,10 @@
                     <td>{{ $item->quantity }}</td>
                     <td>{{ number_format($subtotal, 0, ',', '.') }} đ</td>
                     <td>
-                       <form method="POST" action="{{ route('admin.carts.items.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc chắn muốn xoá?')">
-    @csrf
-    @method('DELETE')
-    <button class="btn btn-danger btn-sm">🗑️ Xoá mềm</button>
-</form>
-
+                        <form method="POST" action="{{ route('admin.carts.items.restore', $item->id) }}">
+                            @csrf
+                            <button class="btn btn-sm btn-success">Khôi phục</button>
+                        </form>
                     </td>
                 </tr>
             @empty

@@ -156,12 +156,13 @@
                     </li>
 
                     {{-- ❤️ Yêu thích --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="">
-                            <i class="fa-regular fa-heart"></i>
-                            <span class="d-none d-md-inline"></span>
-                        </a>
-                    </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('wishlist.index') }}">
+                    <i class="fa-regular fa-heart"></i>
+                   <span class="d-none d-md-inline">Yêu thích</span>
+                 </a>
+                </li>
+
 
                     {{-- 🛒 Giỏ hàng --}}
                     <li class="nav-item">

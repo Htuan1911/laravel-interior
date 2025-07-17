@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel; // Đảm bảo bạn cài package excel
 use App\Exports\CartsExport;
-
+use App\Models\CartItem;
 class AdminCartController extends Controller
 {
     public function index(Request $request)
@@ -30,11 +30,16 @@ class AdminCartController extends Controller
         return view('admin.carts.index', compact('carts'));
     }
 
-    public function show($id)
-    {
-        $cart = Cart::with(['user', 'items.variant.product'])->findOrFail($id);
-        return view('admin.carts.show', compact('cart'));
-    }
+   public function show($id)
+{
+    $cart = Cart::with('user')->findOrFail($id);
+    $items = CartItem::with(['variant.product.translations'])
+        ->where('cart_id', $id)
+        ->whereNull('deleted_at') // Không lấy item đã xoá mềm
+      ->paginate(10);
+
+    return view('admin.carts.show', compact('cart', 'items'));
+}
 
     public function updateStatus(Request $request, $id)
     {
