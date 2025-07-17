@@ -204,13 +204,15 @@ Route::prefix('client')->name('client.')->group(function () {
 
 
     // Tài khoản người dùng
-    Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+        Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
+        Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
+   
 });
 
 require __DIR__ . '/auth.php';

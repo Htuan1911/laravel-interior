@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Wishlist;
+use App\Models\Product;
 
 class AccountController extends Controller
 {
@@ -49,17 +50,17 @@ class AccountController extends Controller
         return view('client.account.orders', compact('orders')); // ✅ trả về view
     }
 
-
-
     /**
      * Danh sách sản phẩm yêu thích.
      */
-    public function wishlist()
-    {
-        $wishlist = Auth::user()->wishlist()->with('product')->get();
+   public function wishlist()
+{
+    $wishlist = Wishlist::where('user_id', auth()->id())
+        ->with(['product.variants']) // Load cả sản phẩm và biến thể
+        ->get();
 
-        return view('client.account.wishlist', compact('wishlist'));
-    }
+    return view('client.account.wishlist', compact('wishlist'));
+}
 
     /**
      * Xoá sản phẩm khỏi danh sách yêu thích.
@@ -74,4 +75,20 @@ class AccountController extends Controller
 
         return back()->with('success', 'Đã xoá khỏi danh sách yêu thích.');
     }
+
+    /**
+     * Thêm hoặc xóa sản phẩm khỏi danh sách yêu thích (AJAX).
+     */
+    public function addToWishlist(Request $request)
+{
+    $request->validate(['product_id' => 'required|exists:products,id']);
+
+    Wishlist::firstOrCreate([
+        'user_id' => auth()->id(),
+        'product_id' => $request->product_id,
+    ]);
+
+    return response()->json(['message' => 'Đã thêm vào danh sách yêu thích']);
+}
+
 }
