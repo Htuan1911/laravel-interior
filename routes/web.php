@@ -20,6 +20,9 @@ use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 
 
+
+use App\Http\Controllers\Client\AccountController;
+
 // Trang chính
 Route::get('/', function () {
     return view('welcome');
@@ -198,11 +201,16 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
+
+
+    // Tài khoản người dùng
+    Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+        Route::get('/info', [AccountController::class, 'info'])->name('info');
+        Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
+        Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
+        Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
+    });
 });
-
-
-
-
-// routes/web.php
 
 require __DIR__ . '/auth.php';

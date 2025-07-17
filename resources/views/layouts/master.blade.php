@@ -181,24 +181,26 @@
 
                     @auth
                         {{-- Avatar & Dropdown --}}
-                        <li class="nav-item dropdown">
+                       <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle"
-                                    width="32" height="32">
+                                  width="32" height="32">
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                                 <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
-                                {{-- <li><a class="dropdown-item" href="{{ route('dashboard') }}">Tài khoản</a></li> --}}
-                                <li><a class="dropdown-item" href="#">Tài khoản</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
-                                    </form>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                     @csrf
+                                         <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                                        </form>
                                 </li>
                             </ul>
                         </li>
+
                     @else
                         {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
                         <li class="nav-item">
@@ -220,6 +222,7 @@
     <!-- Nội dung chính -->
     <main class="container py-4">
         @yield('content')
+         @yield('account_content')
     </main>
 
     <!-- Footer -->
