@@ -1,10 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
-
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Danh sách giỏ hàng</h4>
+        <h4 class="mb-0">🛒 Danh sách giỏ hàng</h4>
         <a href="{{ route('admin.carts.trashed') }}" class="btn btn-sm btn-warning">🗑️ Thùng rác</a>
     </div>
 
@@ -19,23 +18,22 @@
     </form>
 
     @forelse($carts as $cart)
-        <div class="mb-4 p-3 border rounded shadow-sm bg-light">
-            <div class="d-flex justify-content-between">
+        <form class="mb-4 p-3 border rounded shadow-sm bg-white" method="POST" action="{{ route('admin.carts.destroy', $cart->id) }}" onsubmit="return confirm('Bạn có chắc chắn muốn xoá?')">
+            @csrf
+            @method('DELETE')
+
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="mb-1">🛒 Giỏ hàng #{{ $cart->id }} - {{ ucfirst($cart->status) }}</h6>
-                    <small>Người dùng: <strong>{{ $cart->user->name ?? 'N/A' }}</strong> ({{ $cart->user->email ?? '---' }})</small><br>
-                    <small>Ngày tạo: {{ $cart->created_at->format('d/m/Y H:i') }}</small>
+                    <h6 class="mb-1">🧾 Giỏ hàng #{{ $cart->id }} - <span class="badge bg-info text-dark">{{ ucfirst($cart->status) }}</span></h6>
+                    <p class="mb-1">👤 <strong>{{ $cart->user->name ?? 'N/A' }}</strong> ({{ $cart->user->email ?? '---' }})</p>
+                    <small class="text-muted">📅 {{ $cart->created_at->format('d/m/Y H:i') }}</small>
                 </div>
-                <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex gap-2">
                     <a href="{{ route('admin.carts.show', $cart->id) }}" class="btn btn-outline-primary btn-sm">Xem</a>
-                    <form action="{{ route('admin.carts.destroy', $cart->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xoá?')">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-outline-danger btn-sm">Xoá</button>
-                    </form>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Xoá</button>
                 </div>
             </div>
-
-           
+        </form>
     @empty
         <div class="alert alert-warning">Không có giỏ hàng nào.</div>
     @endforelse

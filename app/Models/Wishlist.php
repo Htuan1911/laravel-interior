@@ -9,7 +9,10 @@ use App\Models\Product;
 class Wishlist extends Model
 {
     use HasFactory;
-
+   protected $fillable = [
+        'user_id',
+        'product_id', // thêm các field khác nếu có
+    ];
     // ✅ Đặt bên trong class
     public function user()
     {
