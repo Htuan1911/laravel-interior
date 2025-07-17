@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use App\Models\Coupon;
 use App\Models\Wishlist;
 
 class AccountController extends Controller
@@ -47,6 +48,22 @@ class AccountController extends Controller
         $orders = Auth::user()->orders()->latest()->get(); // lấy đơn hàng của user đang đăng nhập
 
         return view('client.account.orders', compact('orders')); // ✅ trả về view
+    }
+
+    /**
+     * Danh sách mã giảm giá (voucher).
+     */
+    public function vouchers()
+    {
+        $coupons = Coupon::where('is_active', 1)
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+            })
+            ->orderBy('expires_at', 'asc')
+            ->get();
+
+        return view('client.account.vouchers', compact('coupons'));
     }
 
 

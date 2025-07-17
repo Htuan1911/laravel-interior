@@ -191,6 +191,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                             <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
                             <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.account.vouchers') }}">Kho voucher</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a>
                             </li>

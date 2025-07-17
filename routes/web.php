@@ -242,6 +242,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/vouchers', [AccountController::class, 'vouchers'])->name('vouchers');
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });

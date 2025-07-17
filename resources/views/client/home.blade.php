@@ -26,6 +26,7 @@
     </a>
     <ul class="dropdown-menu" aria-labelledby="accountDropdown">
         <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Thông tin cá nhân</a></li>
+        <li><a class="dropdown-item" href="{{ route('client.account.vouchers') }}">Kho voucher</a></li>
         <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Lịch sử đơn hàng</a></li>
         <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a></li>
     </ul>
