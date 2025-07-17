@@ -47,4 +47,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class);
+    }
+
+    public function wishlist()
+    {
+        return $this->hasMany(\App\Models\Wishlist::class);
+    }
 }
