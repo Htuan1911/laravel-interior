@@ -6,7 +6,7 @@
 <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="{{ asset('images/banner 1.jpg') }}" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Banner 1">
+            <img src="{{ asset('images/banner 1.jpg') }}" class="d-block w-100" alt="Banner 1">
             <div class="carousel-caption d-none d-md-block text-center bg-dark bg-opacity-75 p-4 rounded shadow-lg">
                 <h1 class="display-4 fw-bold mb-3 text-white">SỰ KẾT HỢP MỚI MẺ</h1>
                 <p class="mb-3 text-white-50">Chúng tôi luôn kết hợp các sản phẩm đẹp mắt, phù hợp và ấn tượng.</p>
@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('images/banner 2.jpg') }}" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Banner 2">
+            <img src="{{ asset('images/banner 2.jpg') }}" class="d-block w-100" alt="Banner 2">
             <div class="carousel-caption d-none d-md-block text-center bg-dark bg-opacity-75 p-4 rounded shadow-lg">
                 <h1 class="display-4 fw-bold mb-3 text-white">THIẾT KẾ ĐỘC ĐÁO</h1>
                 <p class="mb-3 text-white-50">Khám phá phong cách nội thất hiện đại và sáng tạo.</p>
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('images/banner 3.jpg') }}" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="Banner 3">
+            <img src="{{ asset('images/banner 3.jpg') }}" class="d-block w-100" alt="Banner 3">
             <div class="carousel-caption d-none d-md-block text-center bg-dark bg-opacity-75 p-4 rounded shadow-lg">
                 <h1 class="display-4 fw-bold mb-3 text-white">ƯU ĐÃI ĐẶC BIỆT</h1>
                 <p class="mb-3 text-white-50">Nhận ngay ưu đãi khi mua sắm hôm nay!</p>
@@ -39,26 +39,6 @@
         <span class="visually-hidden">Next</span>
     </button>
 </div>
-
-<style>
-    .carousel-item img {
-        height: 400px;
-        object-fit: cover;
-        width: 100%;
-    }
-    .card-img-top {
-        height: 200px;
-        object-fit: cover;
-    }
-    @media (max-width: 768px) {
-        .carousel-item img {
-            height: 250px;
-        }
-        .card-img-top {
-            height: 150px;
-        }
-    }
-</style>
 
 <!-- Chính sách -->
 <div class="container mb-5">
@@ -104,12 +84,14 @@
     <div class="row row-cols-1 row-cols-md-4 g-4">
         @forelse($products as $product)
             <div class="col">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm d-flex flex-column product-card">
                     <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/placeholder.jpg') }}" class="card-img-top" alt="{{ $product->name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text text-danger fw-bold">{{ number_format($product->base_price, 0, ',', '.') }}đ</p>
-                        <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                    <div class="card-body text-center d-flex flex-column flex-grow-1">
+                        <h5 class="card-title mb-2">{{ $product->name }}</h5>
+                        <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->base_price, 0, ',', '.') }}đ</p>
+                        <div class="mt-auto">
+                            <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-primary btn-sm w-100">Xem chi tiết</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,18 +101,20 @@
     </div>
 </div>
 
-<!-- Khuyến mãi -->
+<!-- Sản phẩm khuyến mãi -->
 <div class="container mb-5">
     <h2 class="mb-4 text-primary">Sản phẩm khuyến mãi</h2>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         @forelse($promotions as $product)
             <div class="col">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm d-flex flex-column product-card">
                     <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/placeholder.jpg') }}" class="card-img-top" alt="{{ $product->name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text text-danger fw-bold">{{ number_format($product->base_price, 0, ',', '.') }}đ</p>
-                        <span class="badge bg-warning text-dark">Khuyến mãi</span>
+                    <div class="card-body text-center d-flex flex-column flex-grow-1">
+                        <h5 class="card-title mb-2">{{ $product->name }}</h5>
+                        <p class="card-text text-danger fw-bold mb-3">{{ number_format($product->base_price, 0, ',', '.') }}đ</p>
+                        <div class="mt-auto">
+                            <span class="badge bg-warning text-dark w-100 py-2">Khuyến mãi</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -160,14 +144,54 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            card.addEventListener('mouseover', () => card.style.transform = 'scale(1.05)');
-            card.addEventListener('mouseout', () => card.style.transform = 'scale(1)');
-        });
-    });
-</script>
+<!-- Style -->
+<style>
+    .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .product-card {
+        transition: all 0.3s ease-in-out;
+        background-color: #ffffff;
+        border-radius: 10px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border: 1px solid #0d6efd20;
+        background-color: #f8f9fa;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-item img {
+            height: 250px;
+        }
+
+        .card-img-top {
+            height: 150px;
+        }
+
+        .product-card:hover {
+            transform: none;
+            box-shadow: none;
+            border: none;
+            background-color: #f01313ff;
+        }
+    }
+</style>
+
 
 @endsection
