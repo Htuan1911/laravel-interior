@@ -39,7 +39,7 @@
                                         <small class="text-muted">ID: {{ $wishlist->user_id }}</small>
                                     </td>
                                     <td>
-                                        <strong>{{ $wishlist->product->name ?? 'Không rõ' }}</strong><br>
+                                        <strong>{{ $wishlist->product->variant ?? 'Không rõ' }}</strong><br>
                                         <small class="text-muted">ID: {{ $wishlist->product_id }}</small>
                                     </td>
                                     <td>{{ $wishlist->created_at->format('d/m/Y H:i') }}</td>

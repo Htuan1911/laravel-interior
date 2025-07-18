@@ -36,9 +36,19 @@
                 <h2>{{ $product->translations[0]->name }}</h2>
 
                 {{-- Nút yêu thích (tùy chọn) --}}
-                <button class="btn btn-link p-0 float-end favorite-btn" title="Yêu thích">
-                    <i class="fa-regular fa-heart text-danger fs-4"></i>
-                </button>
+                @auth
+    <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="btn btn-link p-0 float-end favorite-btn" title="Yêu thích">
+            <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '-regular' }} fa-heart text-danger fs-4"></i>
+        </button>
+    </form>
+@else
+    <a href="{{ route('login') }}" class="btn btn-link p-0 float-end favorite-btn" title="Đăng nhập để yêu thích">
+        <i class="fa-regular fa-heart text-danger fs-4"></i>
+    </a>
+@endauth
+
 
                 <p>
                     <strong>Giá:</strong>
