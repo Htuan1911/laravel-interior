@@ -13,13 +13,22 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\AdminCartController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\PostCategoryController;
+
 
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistControllers;
+use App\Http\Controllers\Client\PostControllerUser;
+use App\Http\Controllers\Client\ContactController;
 
+
+
+
+use App\Http\Controllers\Client\AccountController;
 
 // Trang chính
 Route::get('/', function () {
@@ -152,6 +161,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
+    // post 
+    Route::prefix('posts')->middleware('auth')->group(function () {
+        Route::get('/', [PostController::class, 'index'])->name('posts.index');
+        Route::get('/create', [PostController::class, 'create'])->name('posts.create');
+        Route::post('/store', [PostController::class, 'store'])->name('posts.store');
+        Route::get('/edit/{id}', [PostController::class, 'edit'])->name('posts.edit');
+        Route::put('/update/{id}', [PostController::class, 'update'])->name('posts.update');
+        Route::delete('/delete/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+        Route::get('/{id}/show', [PostController::class, 'show'])->name('posts.show');
+    });
+
+    // danh muc bài viết
+    Route::prefix('post_categories')->name('post_categories.')->group(function () {
+        Route::get('/', [PostCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [PostCategoryController::class, 'create'])->name('create');
+        Route::post('/store', [PostCategoryController::class, 'store'])->name('store');
+
+        Route::get('/{id}/edit', [PostCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{id}/update', [PostCategoryController::class, 'update'])->name('update');
+        Route::delete('/{id}/destroy', [PostCategoryController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Cart
@@ -199,10 +229,23 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
-});
 
 
+    // Tài khoản người dùng
+    Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+        Route::get('/info', [AccountController::class, 'info'])->name('info');
+        Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
+        Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
+        Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
+        Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
+    });
 
+    // bài viết 
+    Route::prefix('blog')->group(function () {
+        Route::get('/', [PostControllerUser::class, 'index'])->name('blog.index');
+        Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
@@ -227,5 +270,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 // routes/web.php
+
+    // Liên hệ
+    Route::prefix('contact')->group(function () {
+        Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
+        Route::post('/', [ContactController::class, 'send'])->name('contact.send');
+    });
+});
+
 
 require __DIR__ . '/auth.php';
