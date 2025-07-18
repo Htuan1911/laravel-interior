@@ -164,7 +164,7 @@
 
                     {{-- ❤️ Yêu thích --}}
                  <li class="nav-item">
-                    <a class="nav-link" href="{{ route('wishlist.index') }}">
+                    <a class="nav-link" href="{{ route('client.wishlist.index') }}">
                     <i class="fa-regular fa-heart"></i>
                    <span class="d-none d-md-inline">Yêu thích</span>
                  </a>
