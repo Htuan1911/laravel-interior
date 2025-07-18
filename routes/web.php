@@ -17,6 +17,10 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
 
 
+
+
+
+
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
@@ -25,6 +29,8 @@ use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
+
+use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 
@@ -201,7 +207,13 @@ Route::prefix('admin/carts')->group(function () {
 Route::prefix('client')->name('client.')->group(function () {
 
     // Trang chủ
+    Route::get('/', [HomeController::class, 'index'])->name('client.home');
+
     Route::get('/', [HomeController::class, 'index'])->name('home'); // ✅ Đúng: sẽ ra client.home
+
+    Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])
+        ->name('categories.show');
+ 
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
