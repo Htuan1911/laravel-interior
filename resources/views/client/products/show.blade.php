@@ -37,7 +37,7 @@
 
                 {{-- Nút yêu thích (tùy chọn) --}}
                 @auth
-    <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
+    <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
         @csrf
         <button type="submit" class="btn btn-link p-0 float-end favorite-btn" title="Yêu thích">
             <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '-regular' }} fa-heart text-danger fs-4"></i>

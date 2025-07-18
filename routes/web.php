@@ -24,7 +24,7 @@ use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
-
+use App\Http\Controllers\Admin\CartItemController;
 
 
 
@@ -161,7 +161,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
-    // post 
+    // post
     Route::prefix('posts')->middleware('auth')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.index');
         Route::get('/create', [PostController::class, 'create'])->name('posts.create');
@@ -241,7 +241,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
 
-    // bài viết 
+    // bài viết
     Route::prefix('blog')->group(function () {
         Route::get('/', [PostControllerUser::class, 'index'])->name('blog.index');
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
@@ -252,7 +252,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
 
 });
-use App\Http\Controllers\Admin\CartItemController;
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá mềm sản phẩm trong giỏ

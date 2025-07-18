@@ -27,7 +27,7 @@
                         <p class="card-text fw-bold text-danger">{{ number_format($price, 0, ',', '.') }} ₫</p>
 
                         <div class="d-flex justify-content-between">
-                            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
+                            <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
                                     ❌ Bỏ yêu thích
