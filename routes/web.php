@@ -37,10 +37,7 @@ use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 use App\Http\Controllers\Client\AccountController;
 
 // Trang chính
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', [HomeController::class, 'index'])->name('home');
 // Giao diện người dùng (cần đăng nhập)
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', function () {
@@ -217,7 +214,10 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
-        Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show'); // => client.products.show
+        Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show');
+        // routes/web.php
+        Route::get('/category/{id}', [ClientProductController::class, 'category'])->name('category');
+        // => client.products.show
     });
 
     // Trang giỏ hàng

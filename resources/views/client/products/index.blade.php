@@ -158,18 +158,22 @@
                                     class="product-title flex-grow-1">
                                     {{ $translation->name }}
                                 </a>
-                                             @auth
-    <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
-        @csrf
-        <button type="submit" class="btn btn-link p-0 float-end favorite-btn" title="Yêu thích">
-            <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '-regular' }} fa-heart text-danger fs-4"></i>
-        </button>
-    </form>
-@else
-    <a href="{{ route('login') }}" class="btn btn-link p-0 float-end favorite-btn" title="Đăng nhập để yêu thích">
-        <i class="fa-regular fa-heart text-danger fs-4"></i>
-    </a>
-@endauth
+                                @auth
+                                    <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-link p-0 float-end favorite-btn"
+                                            title="Yêu thích">
+                                            <i
+                                                class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '-regular' }} fa-heart text-danger fs-4"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-link p-0 float-end favorite-btn"
+                                        title="Đăng nhập để yêu thích">
+                                        <i class="fa-regular fa-heart text-danger fs-4"></i>
+                                    </a>
+                                @endauth
                             </div>
 
                             @if ($discountPercent)
@@ -184,11 +188,16 @@
                         </div>
 
                         <div class="product-actions">
-                            <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
-                                @csrf
-                                <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
-                            </form>
+                            @auth
+                                <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
+                                    <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm"
+                                    onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">Thêm vào giỏ</a>
+                            @endauth
 
                             <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-dark btn-sm">Xem
                                 thêm</a>

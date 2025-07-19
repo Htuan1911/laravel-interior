@@ -10,7 +10,7 @@
             @foreach ($orders as $order)
                 <div class="card mb-4">
                     <div class="card-header">
-                        <strong>Mã đơn:</strong> {{ $order->booking_code }} |
+                        <strong>Mã đơn:</strong> {{ $order->id }} |
                         <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
                         <strong>Trạng thái:</strong> {{ $order->status }} |
                         <strong>Phương thức:</strong>
