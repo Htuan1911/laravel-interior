@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -21,25 +22,34 @@ class OrderController extends Controller
             return redirect()->route('client.carts.index')->with('error', 'Giỏ hàng trống.');
         }
 
-        // Tính tổng tiền
-        $total = 0;
+        // Tính tổng tiền sản phẩm
+        $productTotal = 0;
         foreach ($cart->items as $item) {
-            $total += $item->variant->price * $item->quantity;
+            $productTotal += $item->variant->price * $item->quantity;
         }
+
+        // Tính phí ship
+        $shippingArea = $request->input('shipping_area'); // 'inner' hoặc 'outer'
+        $shippingFee = $shippingArea === 'outer' ? 30000 : 0;
+
+        // Tổng tiền = sản phẩm + ship
+        $total = $productTotal + $shippingFee;
 
         // Tạo đơn hàng
         $order = Order::create([
             'user_id' => $user->id,
             'total_amount' => $total,
-            'payment_method' => $request->payment_method, // "cod" hoặc "online"
+            'payment_method' => $request->payment_method,
             'status' => $request->payment_method === 'cod' ? 'pending' : 'pending',
             'shipping_name' => $request->shipping_name,
             'shipping_phone' => $request->shipping_phone,
             'shipping_address' => $request->shipping_address,
-            'booking_code' => Str::upper(Str::random(10)),
+            'shipping_area' => $shippingArea,
+            'shipping_fee' => $shippingFee,
+            'booking_code' => 'ORD-' . now()->format('Ymd') . '-' . str_pad(Order::max('id') + 1, 5, '0', STR_PAD_LEFT),
         ]);
 
-        // Lưu từng sản phẩm vào order_items
+        // Lưu order_items
         foreach ($cart->items as $item) {
             $variant = $item->variant;
             OrderItem::create([
@@ -53,7 +63,7 @@ class OrderController extends Controller
             ]);
         }
 
-        // Tạo bản ghi payment
+        // Lưu payment
         Payment::create([
             'order_id' => $order->id,
             'user_id' => $user->id,
@@ -64,33 +74,49 @@ class OrderController extends Controller
             'paid_at' => null,
         ]);
 
-        // Xóa giỏ hàng
+        // Xoá giỏ
         $cart->items()->delete();
-        session()->forget('cart_count'); // xoá số đếm giỏ hàng nếu cần
+        session()->forget('cart_count');
 
-        // Xử lý theo phương thức thanh toán
+        // Xử lý redirect
         if ($request->payment_method === 'cod') {
             return redirect()->route('client.orders.history')->with('success', 'Đặt hàng thành công!');
         } elseif ($request->payment_method === 'online') {
-            // Điều hướng đến cổng thanh toán Momo hoặc VNPAY
             return $this->momo_payment($order);
         }
 
         return redirect()->route('client.carts.index')->with('error', 'Phương thức thanh toán không hợp lệ.');
     }
 
+
     public function shippingForm(Request $request)
     {
+        $selectedItemIds = $request->input('selected_items', []);
+
+        if (empty($selectedItemIds)) {
+            return redirect()->route('client.carts.index')->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
+        }
+
         $paymentMethod = $request->payment_method;
 
         if (!in_array($paymentMethod, ['cod', 'online', 'momo', 'vnpay'])) {
             return redirect()->route('client.carts.index')->with('error', 'Phương thức thanh toán không hợp lệ.');
         }
 
-        $cart = \App\Models\Cart::with('items.variant')->where('user_id', auth()->id())->first();
+        $cart = Cart::where('user_id', auth()->id())->first();
 
-        return view('client.orders.shipping', compact('paymentMethod', 'cart'));
+        $items = CartItem::with('variant.product')
+            ->where('cart_id', $cart->id)
+            ->whereIn('id', $selectedItemIds)
+            ->get();
+
+        if ($items->isEmpty()) {
+            return redirect()->route('client.carts.index')->with('error', 'Không tìm thấy sản phẩm đã chọn.');
+        }
+
+        return view('client.orders.shipping', compact('items', 'paymentMethod', 'cart'));
     }
+
 
 
     public function execPostRequest($url, $data)

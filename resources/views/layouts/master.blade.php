@@ -124,6 +124,7 @@
 
 <!-- Scripts riêng của từng trang (nếu có) -->
 @stack('scripts')
+
 <body>
 
     <!-- Header -->
@@ -144,13 +145,13 @@
                             data-bs-toggle="dropdown" aria-expanded="false">
                             Phòng
                         </a>
-                        <ul class="dropdown-menu custom-room-menu" aria-labelledby="roomDropdown">
-                            <li><a class="dropdown-item" href="#">Phòng khách</a></li>
-                            <li><a class="dropdown-item" href="#">Phòng ăn</a></li>
-                            <li><a class="dropdown-item" href="#">Phòng ngủ</a></li>
-                            <li><a class="dropdown-item" href="#">Phòng làm việc</a></li>
-                            <li><a class="dropdown-item" href="#">Tủ bếp</a></li>
-                            <li><a class="dropdown-item" href="#">Ngoại thất</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="roomDropdown">
+                            <li><a class="dropdown-item" href="">Phòng khách</a></li>
+                            <li><a class="dropdown-item" href="">Phòng ăn</a></li>
+                            <li><a class="dropdown-item" href="">Phòng ngủ</a></li>
+                            <li><a class="dropdown-item" href="">Phòng làm việc</a></li>
+                            <li><a class="dropdown-item" href="">Tủ bếp</a></li>
+                            <li><a class="dropdown-item" href="">Ngoại thất</a></li>
                         </ul>
                     </li>
 
@@ -178,47 +179,46 @@
 
                             {{-- Badge số lượng (nếu cần) --}}
                             @if (session('cart_count') && session('cart_count') > 0)
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ session('cart_count') }}
-                            </span>
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ session('cart_count') }}
+                                </span>
                             @endif
                         </a>
                     </li>
 
                     @auth
-                    {{-- Avatar & Dropdown --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle" width="32"
-                                height="32">
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-                            <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
-                            <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a>
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-
+                        {{-- Avatar & Dropdown --}}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ asset('images/avatar.png') }}" alt="avatar" class="rounded-circle"
+                                    width="32" height="32">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                                <li class="dropdown-item text-muted">Xin chào, {{ auth()->user()->name }}</li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.info') }}">Tài khoản</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.orders') }}">Đơn mua</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.account.wishlist') }}">Yêu thích</a>
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     @else
-                    {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
-                    </li>
-                    @if (Route::has('register'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('register') }}">Đăng ký</a>
-                    </li>
-                    @endif
+                        {{-- Chưa đăng nhập: hiển thị Đăng nhập và Đăng ký --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
+                        </li>
+                        @if (Route::has('register'))
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('register') }}">Đăng ký</a>
+                            </li>
+                        @endif
                     @endauth
                 </ul>
             </nav>

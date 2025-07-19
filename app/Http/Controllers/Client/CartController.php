@@ -21,6 +21,10 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
+
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm vào giỏ hàng.');
+        }
         $user = auth()->user();
         $variantId = $request->variant_id;
         $quantity = max(1, (int) $request->quantity); // đảm bảo >= 1

@@ -37,6 +37,7 @@
             <table class="table cart-table align-middle">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="checkAll"></th>
                         <th>Hình ảnh</th>
                         <th>Tên</th>
                         <th>Giá</th>
@@ -46,16 +47,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $total = 0; @endphp
                     @foreach ($cart->items as $item)
                         @php
                             $variant = $item->variant;
                             $product = $variant->product;
                             $productName = $product->translations->first()->name ?? '---';
                             $subtotal = $variant->price * $item->quantity;
-                            $total += $subtotal;
                         @endphp
                         <tr>
+                            <td>
+                                <input type="checkbox" name="selected_items[]" value="{{ $item->id }}"
+                                    data-price="{{ $subtotal }}" form="checkout-form">
+                            </td>
                             <td>
                                 <img src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}" width="60"
                                     height="60" style="object-fit: cover;" />
@@ -101,9 +104,12 @@
                 </div>
 
                 <div class="total-box">
-                    <form action="{{ route('client.orders.shipping') }}" method="GET">
+                    <form action="{{ route('client.orders.shipping') }}" method="GET" id="checkout-form">
                         <div class="total-box">
-                            <p class="mb-2"><strong>Tổng tiền:</strong> {{ number_format($total, 0, ',', '.') }} đ</p>
+                            <p class="mb-2">
+                                <strong>Tổng tiền:</strong>
+                                <span id="total-price">0</span> đ
+                            </p>
 
                             <div class="mb-2">
                                 <label><input type="radio" name="payment_method" value="cod" checked> Thanh toán khi
@@ -114,9 +120,49 @@
                             <button class="btn btn-warning text-white" type="submit">Tiếp tục thanh toán</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         @endif
     </div>
+
+@section('scripts')
+    <script>
+        function formatNumber(num) {
+            return num.toLocaleString('vi-VN');
+        }
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="selected_items[]"]:checked').forEach(cb => {
+                total += parseInt(cb.dataset.price);
+            });
+            document.getElementById('total-price').textContent = formatNumber(total);
+        }
+
+        // Cập nhật khi từng checkbox thay đổi
+        document.querySelectorAll('input[name="selected_items[]"]').forEach(cb => {
+            cb.addEventListener('change', updateTotal);
+        });
+
+        // Chọn tất cả
+        document.getElementById('checkAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('input[name="selected_items[]"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateTotal();
+        });
+
+        // Kiểm tra khi submit form thanh toán
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            const selected = document.querySelectorAll('input[name="selected_items[]"]:checked');
+            if (selected.length === 0) {
+                e.preventDefault(); // Ngăn form submit
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+            }
+        });
+        // Tính tổng ngay từ đầu
+        updateTotal();
+    </script>
+@endsection
+
+
 @endsection
