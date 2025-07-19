@@ -17,14 +17,20 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
 
 
+
+
+
+
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
+use App\Http\Controllers\Admin\CartItemController;
 
-
+use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 
@@ -158,7 +164,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
-    // post 
+    // post
     Route::prefix('posts')->middleware('auth')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.index');
         Route::get('/create', [PostController::class, 'create'])->name('posts.create');
@@ -198,7 +204,13 @@ Route::prefix('admin/carts')->group(function () {
 Route::prefix('client')->name('client.')->group(function () {
 
     // Trang chủ
+    Route::get('/', [HomeController::class, 'index'])->name('client.home');
+
     Route::get('/', [HomeController::class, 'index'])->name('home'); // ✅ Đúng: sẽ ra client.home
+
+    Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])
+        ->name('categories.show');
+ 
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
@@ -241,11 +253,35 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
 
-    // bài viết 
+    // bài viết
     Route::prefix('blog')->group(function () {
         Route::get('/', [PostControllerUser::class, 'index'])->name('blog.index');
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
     });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
+
+});
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Xoá mềm sản phẩm trong giỏ
+    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
+
+    // Hiển thị sản phẩm đã xoá (thùng rác)
+    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
+
+    // Khôi phục sản phẩm
+    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
+
+    // Xoá vĩnh viễn
+    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
+});
+
+
+// routes/web.php
 
     // Liên hệ
     Route::prefix('contact')->group(function () {
@@ -253,5 +289,6 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/', [ContactController::class, 'send'])->name('contact.send');
     });
 });
+
 
 require __DIR__ . '/auth.php';

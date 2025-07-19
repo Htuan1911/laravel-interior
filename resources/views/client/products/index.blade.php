@@ -158,11 +158,22 @@
                                     class="product-title flex-grow-1">
                                     {{ $translation->name }}
                                 </a>
-                                <button class="btn btn-light p-1 border-0 favorite-btn" title="Yêu thích"
-                                    data-product-id="{{ $product->id }}">
-                                    <i class="fa-regular fa-heart text-danger"></i>
-                                </button>
-
+                                @auth
+                                    <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-link p-0 float-end favorite-btn"
+                                            title="Yêu thích">
+                                            <i
+                                                class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '-regular' }} fa-heart text-danger fs-4"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-link p-0 float-end favorite-btn"
+                                        title="Đăng nhập để yêu thích">
+                                        <i class="fa-regular fa-heart text-danger fs-4"></i>
+                                    </a>
+                                @endauth
                             </div>
 
                             @if ($discountPercent)
@@ -177,16 +188,11 @@
                         </div>
 
                         <div class="product-actions">
-                            @auth
-                                <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
-                                    <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
-                                </form>
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm"
-                                    onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">Thêm vào giỏ</a>
-                            @endauth
+                            <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
+                                <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
+                            </form>
 
                             <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-dark btn-sm">Xem
                                 thêm</a>
@@ -198,45 +204,13 @@
     </div>
 @endsection
 @push('scripts')
-    {{-- <script>
+    <script>
         document.querySelectorAll('.favorite-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const icon = this.querySelector('i');
                 icon.classList.toggle('fa-regular');
                 icon.classList.toggle('fa-solid');
             });
-        });
-    </script> --}}
-    <script>
-        $(function() {
-            $('.favorite-btn').click(function(e) {
-                e.preventDefault();
-                const btn = $(this);
-                const id = btn.data('product-id');
-
-                $.post('{{ route('client.account.wishlist.add') }}', {
-                        _token: '{{ csrf_token() }}',
-                        product_id: id
-                    })
-                    .done(res => {
-                        const icon = btn.find('i');
-                        const msg = res.status === 'added' ?
-                            'Đã thêm vào danh sách yêu thích!' :
-                            'Đã xóa khỏi danh sách yêu thích!';
-                        icon.toggleClass('fa-solid fa-regular');
-                        showToast(msg);
-                    })
-                    .fail(() => showToast('Có lỗi xảy ra, vui lòng thử lại!', true));
-            });
-
-            function showToast(msg, isError = false) {
-                $('#wishlist-toast-body').text(msg);
-                const toast = $('#wishlist-toast');
-                const header = toast.find('.toast-header');
-
-                header.removeClass('bg-success bg-danger').addClass(isError ? 'bg-danger' : 'bg-success');
-                toast.stop(true, true).fadeIn(200).delay(2000).fadeOut(300);
-            }
         });
     </script>
 @endpush
