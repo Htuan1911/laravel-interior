@@ -76,7 +76,6 @@
 @endsection
 
 @section('content')
-
     <div class="banner-slider" id="bannerSlider">
         <div class="banner-slide banner-left" id="leftSlide">
             <img src="{{ asset('images/banner4.jpg') }}" alt="Banner Left">
@@ -104,11 +103,15 @@
                         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translation->name ?? 'No name' }}" class="img-fluid mb-3">
                         <h5>{{ $product->translation->name ?? 'Chưa có tên' }}</h5>
                         <p class="text-danger fw-bold">Giá: {{ number_format($product->base_price) }} đ</p>
+
                         <a href="{{ route('product.show', $product->id) }}" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                        
+                        @if(false)
                         <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-success btn-sm">Thêm vào giỏ</button>
                         </form>
+                        @endif
                     </div>
                 </div>
             @endforeach

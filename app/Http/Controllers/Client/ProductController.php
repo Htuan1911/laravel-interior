@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\Comment;
 
 class ProductController extends Controller
 {
@@ -30,7 +31,7 @@ class ProductController extends Controller
         return view('client.products.index', compact('products'));
     }
 
-    public function show($id)
+ public function show($id)
     {
         $product = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
@@ -38,7 +39,6 @@ class ProductController extends Controller
             'category.translations' => fn($q) => $q->where('language_code', 'vi'),
         ])->findOrFail($id);
 
-        // Lấy các sản phẩm cùng danh mục
         $relatedProducts = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
             'variants',
@@ -52,6 +52,27 @@ class ProductController extends Controller
         return view('client.products.show', compact('product', 'relatedProducts'));
     }
 
+
+
+
+    public function storeComment(Request $request, $id): \Illuminate\Http\RedirectResponse
+    {
+    if (!Auth::check()) {
+        return redirect('/')->with('error', 'Bạn cần đăng nhập để bình luận');
+    }
+
+    $request->validate([
+        'content' => 'required|string|max:1000',
+    ]);
+
+    Comment::create([
+        'product_id' => $id,
+        'name' => Auth::user()->name,
+        'content' => $request->input('content'),
+    ]);
+
+    return redirect()->back()->with('success', 'Đã gửi bình luận thành công!');
+    }   
     // ClientProductController.php
     public function category($id)
     {
@@ -60,4 +81,5 @@ class ProductController extends Controller
 
         return view('client.products.index', compact('products', 'category'));
     }
+
 }

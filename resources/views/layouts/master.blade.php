@@ -237,35 +237,7 @@
         @yield('content')
         @yield('account_content')
     </main>
-    @section('content')
-<div class="container py-5">
-    <h1 class="mb-4 text-center">Sản phẩm mới nhất</h1>
-    <div class="row">
-        @foreach ($products as $product)
-            <div class="col-md-3 mb-4">
-                <div class="product-card">
-                @if($product->image && file_exists(public_path('storage/' . $product->image)))
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translation->name }}" class="product-image">
-                @else
-                    <img src="{{ asset('images/default-product.jpg') }}" alt="No image" class="product-image">
-                @endif                  
-                <div class="product-name">{{ $product->translation->name }}</div>
-                    <div class="product-price">{{ number_format($product->base_price, 0, ',', '.') }} đ</div>
-
-                    <div class="mt-3">
-                        <a href="{{ route('product.show', $product->id) }}" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
-                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-warning btn-sm">Thêm vào giỏ</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-</div>
-@endsection
-
+  
     <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3 mt-5">
         <div class="container">

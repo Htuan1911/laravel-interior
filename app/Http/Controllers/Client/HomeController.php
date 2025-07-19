@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
-
-
 {
     public function index()
     {
@@ -71,6 +69,5 @@ class HomeController extends Controller
             });
 
         return view('client.home', compact('products', 'categories', 'promotions', 'bestSellers'));
-
     }
 }

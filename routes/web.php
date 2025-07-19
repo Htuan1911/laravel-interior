@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductOptionValueController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\OrderController;
@@ -16,28 +17,26 @@ use App\Http\Controllers\Admin\AdminCartController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
 
-
-
-
-
-
 use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\HomeController as ClientHomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
-
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
-
-
-
 use App\Http\Controllers\Client\AccountController;
+use App\Http\Controllers\HomeController ;
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/san-pham/{id}', [ClientProductController::class, 'show'])->name('product.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/san-pham/{id}/comment', [ClientProductController::class, 'storeComment'])->name('product.comment');
+});
+
 // Giao diện người dùng (cần đăng nhập)
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', function () {

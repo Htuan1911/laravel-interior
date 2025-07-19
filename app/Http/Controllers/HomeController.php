@@ -10,9 +10,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
-        $products = Product::with('translation')->latest()->take(8)->get();
-
-        return view('home', compact('categories', 'products'));
+        $products = Product::with('translation')->latest()->take(8)->get(); // Lấy 8 sản phẩm mới
+        return view('home', compact('products'));
     }
 }
