@@ -188,11 +188,16 @@
                         </div>
 
                         <div class="product-actions">
-                            <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
-                                @csrf
-                                <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
-                                <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
-                            </form>
+                            @auth
+                                <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
+                                    <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm"
+                                    onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">Thêm vào giỏ</a>
+                            @endauth
 
                             <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-dark btn-sm">Xem
                                 thêm</a>

@@ -177,11 +177,7 @@ class OrderController extends Controller
         $response = $this->execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($response, true);
 
-        if (!empty($jsonResult['payUrl'])) {
-            return redirect()->to($jsonResult['payUrl']);
-        } else {
-            return redirect()->route('client.orders.history')->with('error', 'Không thể kết nối MoMo!');
-        }
+        return redirect()->to($jsonResult['payUrl']);
     }
 
 
