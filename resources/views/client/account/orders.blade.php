@@ -1,57 +1,56 @@
 @extends('layouts.master')
 
-@section('account_content')
-<h4>Lịch sử đơn hàng</h4>
+@section('content')
+    <div class="container py-5">
+        <h3>Lịch sử đơn hàng</h3>
 
-@if($orders->isEmpty())
-    <div class="alert alert-info">Không có đơn hàng nào.</div>
-@else
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Mã đơn</th>
-                <th>Ngày đặt</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Chi tiết</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach($orders as $order)
-            <tr>
-                <td>#{{ $order->id }}</td>
-                <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                <td>{{ number_format($order->total_amount) }} đ</td>
-                <td>{{ $order->status }}</td>
-                <td>
-                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#orderModal{{ $order->id }}">Xem</button>
-                    
-                    <!-- Modal -->
-                    <div class="modal fade" id="orderModal{{ $order->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5>Chi tiết đơn hàng #{{ $order->id }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Người nhận:</strong> {{ $order->shipping_name }}</p>
-                                    <p><strong>SĐT:</strong> {{ $order->shipping_phone }}</p>
-                                    <p><strong>Địa chỉ:</strong> {{ $order->shipping_address }}</p>
-                                    <p><strong>Trạng thái:</strong> {{ $order->status }}</p>
-                                    <p><strong>Tổng tiền:</strong> {{ number_format($order->total_amount) }} đ</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                </div>
-                            </div>
-                        </div>
+        @if ($orders->isEmpty())
+            <p>Bạn chưa có đơn hàng nào.</p>
+        @else
+            @foreach ($orders as $order)
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <strong>Mã đơn:</strong> {{ $order->id }} |
+                        <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
+                        <strong>Trạng thái:</strong> {{ $order->status }} |
+                        <strong>Phương thức:</strong>
+                        @switch(optional($order->payment)->method)
+                            @case('cod')
+                                Thanh toán khi nhận hàng
+                            @break
+
+                            @case('online')
+                                Ví MoMo
+                            @break
+
+                            @default
+                                <span class="text-danger">Không xác định</span>
+                        @endswitch
                     </div>
 
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
-@endif
+                    <div class="card-body">
+                        <p><strong>Người nhận:</strong> {{ $order->shipping_name }} - {{ $order->shipping_phone }}</p>
+                        <p><strong>Địa chỉ:</strong> {{ $order->shipping_address }}</p>
+
+                        <ul class="list-unstyled">
+                            @foreach ($order->items as $item)
+                                <li class="mb-3 d-flex align-items-center">
+                                    <img src="{{ asset('storage/' . ($item->variant->image ?? 'default.jpg')) }}"
+                                        alt="Sản phẩm" width="60" height="60" class="me-3"
+                                        style="object-fit: cover;">
+
+                                    <div>
+                                        <strong>{{ $item->variant_name }}</strong><br>
+                                        SL: {{ $item->quantity }} |
+                                        Đơn giá: {{ number_format($item->unit_price, 0, ',', '.') }} đ |
+                                        Tổng: {{ number_format($item->total_price, 0, ',', '.') }} đ
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endforeach
+        @endif
+    </div>
 @endsection

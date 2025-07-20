@@ -3,15 +3,66 @@
 @section('title', 'Trang chủ')
 
 @section('content')
-<h1 class="mb-4">Sản phẩm mới nhất</h1>
-<div class="row">
-    @foreach ($products as $product)
-    <div class="col-md-3 mb-4">
-        <div class="product-card">
-            <img src="{{ $product->image_url }}" class="img-fluid mb-2" alt="{{ $product->name }}">
-            <h5>{{ $product->name }}</h5>
-            <p>{{ number_format($product->price) }} đ</p>
-            <a href="{{ route('client.products.show', $product->id) }}" class="btn btn-cta btn-sm">Xem chi tiết</a>
+
+<div class="category-product-index owl-carousel owl-theme">
+    @foreach($products as $product)
+    <div class="item text-center">
+        <div class="product-miniature js-product-miniature item-one">
+            <div class="thumbnail-container">
+                <a href="{{ route('client.products.show', $product->id) }}">
+                    <img class="img-fluid image-cover" src="{{ asset('img/product/' . $product->main_image) }}"
+                        alt="{{ $product->name }}">
+
+                    <img class="img-fluid image-secondary"
+                        src="{{ isset($product->variant_image) ? asset('img/product/' . $product->variant_image) : asset('img/product/' . $product->main_image) }}"
+                        alt="{{ $product->name }}">
+
+                </a>
+                @if($product->old_price)
+                <div class="product-flags discount">
+                    {{ floor((($product->old_price - $product->price) / $product->old_price) * 100) }}%
+                </div>
+                @endif
+            </div>
+            <div class="product-description">
+                <div class="product-groups">
+                    <div class="product-title">
+                        <a href="{{ route('client.products.show', $product->id) }}">
+                            {{ $product->name }}
+                        </a>
+                    </div>
+                    <div class="rating">
+                        <div class="star-content">
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                        </div>
+                    </div>
+                    <div class="product-group-price">
+                        <div class="product-price-and-shipping">
+                            <span class="price">{{ number_format($product->price) }} đ</span>
+                            @if($product->old_price)
+                            <del class="regular-price">{{ number_format($product->old_price) }} đ</del>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="product-buttons d-flex justify-content-center">
+                    <form action="#" method="post" class="formAddToCart">
+                        <a class="add-to-cart" href="#" data-button-action="add-to-cart">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                        </a>
+                    </form>
+                    <a class="addToWishlist" href="#" data-rel="1" onclick="">
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                    </a>
+                    <a href="#" class="quick-view hidden-sm-down" data-link-action="quickview">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     @endforeach
@@ -36,5 +87,6 @@
 
 
 @endauth
+
 
 @endsection
