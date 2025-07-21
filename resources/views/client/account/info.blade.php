@@ -1,6 +1,6 @@
-@extends('layouts.master')
+@extends('layouts.cart')
 
-@section('content')
+@section('cart-content')
 <div class="container py-5">
     <h2>Thông tin cá nhân</h2>
 

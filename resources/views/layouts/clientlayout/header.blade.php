@@ -158,8 +158,8 @@
                 <!-- search-->
                 <div id="search_widget" class="col-sm-6 col-md-5 align-items-center justify-content-end d-flex">
                     <form method="get" action="#">
-                        <input type="text" name="s" value="" placeholder="Search ..." class="ui-autocomplete-input"
-                            autocomplete="off">
+                        <input type="text" name="s" value="" placeholder="Search ..."
+                            class="ui-autocomplete-input" autocomplete="off">
                         <button type="submit">
                             <i class="fa fa-search"></i>
                         </button>
@@ -168,20 +168,20 @@
                     <!-- acount  -->
                     <div id="block_myaccount_infos" class="hidden-sm-down dropdown">
                         @auth
-                        <div class="myaccount-title">
-                            <a href="#acount" data-toggle="collapse" class="acount">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span>{{ auth()->user()->name }}</span>
-                                <i class="fa fa-angle-down" aria-hidden="true"></i>
-                            </a>
-                        </div>
+                            <div class="myaccount-title">
+                                <a href="#acount" data-toggle="collapse" class="acount">
+                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                    <span>{{ auth()->user()->name }}</span>
+                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                </a>
+                            </div>
                         @else
-                        <div class="myaccount-title">
-                            <a href="{{ route('login') }}" class="acount">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span>Đăng nhập</span>
-                            </a>
-                        </div>
+                            <div class="myaccount-title">
+                                <a href="{{ route('login') }}" class="acount">
+                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                    <span>Đăng nhập</span>
+                                </a>
+                            </div>
                         @endauth
 
                         <div id="acount" class="collapse">
@@ -194,23 +194,24 @@
                                     </a>
                                 </div>
                                 @guest
-                                <div>
-                                    <a class="login" href="{{ route('login') }}" rel="nofollow"
-                                        title="Log in to your customer account">
-                                        <i class="fa fa-sign-in"></i>
-                                        <span>Sign in</span>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a class="register" href="{{ route('register') }}" rel="nofollow"
-                                        title="Register Account">
-                                        <i class="fa fa-user"></i>
-                                        <span>Register Account</span>
-                                    </a>
-                                </div>
+                                    <div>
+                                        <a class="login" href="{{ route('login') }}" rel="nofollow"
+                                            title="Log in to your customer account">
+                                            <i class="fa fa-sign-in"></i>
+                                            <span>Sign in</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a class="register" href="{{ route('register') }}" rel="nofollow"
+                                            title="Register Account">
+                                            <i class="fa fa-user"></i>
+                                            <span>Register Account</span>
+                                        </a>
+                                    </div>
                                 @endguest
                                 <div>
-                                    <a class="check-out" href="product-checkout.html" rel="nofollow" title="Checkout">
+                                    <a class="check-out" href="product-checkout.html" rel="nofollow"
+                                        title="Checkout">
                                         <i class="fa fa-check" aria-hidden="true"></i>
                                         <span>Checkout</span>
                                     </a>
@@ -222,9 +223,9 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <a href="{{ route('client.account.orders') }}" title="My Wishlists">
+                                    <a href="{{ route('client.account.orders') }}" title="History">
                                         <i class="fa fa-file-alt"></i>
-                                        <span>Đơn Mua</span>
+                                        <span>History</span>
                                     </a>
                                 </div>
                                 <div>
@@ -233,7 +234,8 @@
                                         @csrf
                                     </form>
 
-                                    <a class="logout" href="#" rel="nofollow" title="Log out from your account"
+                                    <a class="logout" href="#" rel="nofollow"
+                                        title="Log out from your account"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="fa fa-sign-out"></i>
                                         <span>Sign out</span>
@@ -293,44 +295,88 @@
                                 <div class="cart-content">
                                     <table>
                                         <tbody>
-                                            <tr>
-                                                <td class="product-image">
-                                                    <a href="product-detail.html">
-                                                        <img src="img/product/5.jpg" alt="Product">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <div class="product-name">
-                                                        <a href="product-detail.html">Organic Strawberry Fruits</a>
-                                                    </div>
-                                                    <div>
-                                                        2 x
-                                                        <span class="product-price">£28.98</span>
-                                                    </div>
-                                                </td>
-                                                <td class="action">
-                                                    <a class="remove" href="#">
-                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <tr class="total">
-                                                <td colspan="2">Total:</td>
-                                                <td>£92.96</td>
-                                            </tr>
+                                            @php $total = 0; @endphp
 
-                                            <tr>
-                                                <td colspan="3" class="d-flex justify-content-center">
-                                                    <div class="cart-button">
-                                                        <a href="{{ route('client.carts.index') }}"
-                                                            title="View Cart">View Cart</a>
-                                                        <a href="#" title="Checkout">Checkout</a>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            @if (isset($cart) && $cart->items && $cart->items->count())
+                                                @foreach ($cart->items as $item)
+                                                    @php
+                                                        $variant = $item->variant;
+                                                        $product = $variant ? $variant->product : null;
+                                                        $productName =
+                                                            $product &&
+                                                            $product->translations &&
+                                                            $product->translations->first()
+                                                                ? $product->translations->first()->name
+                                                                : '--- Sản phẩm không tồn tại ---';
+                                                        $image = $variant->image ?? ($product->image ?? 'default.jpg');
+                                                        $price = $variant->price ?? 0;
+                                                        $subtotal = $price * $item->quantity;
+                                                        $total += $subtotal;
+                                                    @endphp
+                                                    <tr>
+                                                        <td class="product-image">
+                                                            <a
+                                                                href="{{ route('client.products.show', $product->id ?? 0) }}">
+                                                                <img src="{{ asset('storage/' . $image) }}"
+                                                                    alt="{{ $productName }}"
+                                                                    style="width: 60px; height: 60px; object-fit: cover;">
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <div class="product-name">
+                                                                <a
+                                                                    href="{{ route('client.products.show', $product->id ?? 0) }}">
+                                                                    {{ $productName }}
+                                                                </a>
+                                                            </div>
+                                                            <div>
+                                                                {{ $item->quantity }} x
+                                                                <span class="product-price">
+                                                                    {{ number_format($price, 0, ',', '.') }} đ
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="action">
+                                                            <form
+                                                                action="{{ route('client.carts.remove', $item->id) }}"
+                                                                method="POST"
+                                                                onsubmit="return confirm('Bạn có chắc muốn xoá sản phẩm này không?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="remove btn btn-link p-0"
+                                                                    style="color: #dc3545;">
+                                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                                <tr class="total">
+                                                    <td colspan="2">Tổng cộng:</td>
+                                                    <td>{{ number_format($total, 0, ',', '.') }} đ</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="3" class="d-flex justify-content-center">
+                                                        <div class="cart-button">
+                                                            <a href="{{ route('client.carts.index') }}"
+                                                                title="View Cart">View Cart</a>
+                                                            <a href="{{ route('client.orders.checkout') }}"
+                                                                title="Checkout">Checkout</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                <tr>
+                                                    <td colspan="3" class="text-center">Giỏ hàng trống.</td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
+
+
                             </div>
 
                         </div>

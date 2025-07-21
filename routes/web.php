@@ -214,7 +214,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
-        Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show');
+        Route::get('/{id}', [ClientProductController::class, 'show'])->name('show');
         // routes/web.php
         Route::get('/category/{id}', [ClientProductController::class, 'category'])->name('category');
         // => client.products.show
