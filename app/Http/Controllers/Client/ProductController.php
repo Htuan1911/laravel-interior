@@ -46,10 +46,20 @@ class ProductController extends Controller
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 'active')
-            ->take(4)
+            ->take(3)
             ->get();
 
-        return view('client.products.show', compact('product', 'relatedProducts'));
+        // Lấy sản phẩm mới nhất
+        $newestProducts = Product::with([
+            'translations' => fn($q) => $q->where('language_code', 'vi'),
+            'variants',
+        ])
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->take(2)
+            ->get();
+
+        return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts'));
     }
 
     // ClientProductController.php

@@ -70,7 +70,7 @@ class HomeController extends Controller
                 return $product;
             });
 
-        return view('client.home', compact('products', 'categories', 'promotions', 'bestSellers'));
 
+        return view('client.home', compact('products', 'categories', 'promotions', 'bestSellers'));
     }
 }

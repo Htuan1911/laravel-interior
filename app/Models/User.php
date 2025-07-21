@@ -48,18 +48,24 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 
-
-
-public function wishlists()
-{
-    return $this->hasMany(Wishlist::class);
-}
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 
 
     public function orders()
     {
-        return $this->hasMany(\App\Models\Order::class);
+        return $this->hasMany(Order::class);
     }
 
+    public function cart()
+    {
+        return $this->hasOne(Cart::class); // giả sử mỗi user có 1 giỏ hàng
+    }
 
+    public function cartItems()
+    {
+        return $this->hasMany(Cart::class);
+    }
 }

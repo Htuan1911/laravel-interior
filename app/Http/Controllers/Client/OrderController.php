@@ -218,11 +218,13 @@ class OrderController extends Controller
 
     public function history()
     {
-        $orders = Order::with(['items.variant.product', 'payment']) // ✅ thêm payment ở đây
+        $orders = Order::with(['items.variant.product', 'payment'])
             ->where('user_id', auth()->id())
             ->orderByDesc('created_at')
             ->get();
 
-        return view('client.orders.history', compact('orders'));
+        $cart = auth()->user()->cart()->with('items.variant.product.translations')->first();
+
+        return view('client.orders.history', compact('orders', 'cart'));
     }
 }

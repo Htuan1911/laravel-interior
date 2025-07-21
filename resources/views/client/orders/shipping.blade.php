@@ -1,6 +1,6 @@
-@extends('layouts.master')
+@extends('layouts.cart')
 
-@section('content')
+@section('cart-content')
     <div class="container py-5">
         <h4 class="mb-4">Thông tin giao hàng</h4>
 
@@ -110,8 +110,9 @@
             </div>
         </form>
     </div>
+@endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         const shippingRadios = document.querySelectorAll('input[name="shipping_area"]');
         const feeDisplay = document.getElementById('shipping-fee');
@@ -135,5 +136,4 @@
         // Gọi lần đầu để hiển thị đúng
         updateShippingFee();
     </script>
-@endsection
-@endsection
+@endpush

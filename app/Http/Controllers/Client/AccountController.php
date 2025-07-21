@@ -53,14 +53,14 @@ class AccountController extends Controller
     /**
      * Danh sách sản phẩm yêu thích.
      */
-   public function wishlist()
-{
-    $wishlist = Wishlist::where('user_id', auth()->id())
-        ->with(['product.variants']) // Load cả sản phẩm và biến thể
-        ->get();
+    public function wishlist()
+    {
+        $wishlists = Wishlist::where('user_id', auth()->id())
+            ->with(['product.variants']) // Load cả sản phẩm và biến thể
+            ->get();
 
-    return view('client.account.wishlist', compact('wishlist'));
-}
+        return view('client.account.wishlist', compact('wishlists'));
+    }
 
     /**
      * Xoá sản phẩm khỏi danh sách yêu thích.
@@ -80,15 +80,14 @@ class AccountController extends Controller
      * Thêm hoặc xóa sản phẩm khỏi danh sách yêu thích (AJAX).
      */
     public function addToWishlist(Request $request)
-{
-    $request->validate(['product_id' => 'required|exists:products,id']);
+    {
+        $request->validate(['product_id' => 'required|exists:products,id']);
 
-    Wishlist::firstOrCreate([
-        'user_id' => auth()->id(),
-        'product_id' => $request->product_id,
-    ]);
+        Wishlist::firstOrCreate([
+            'user_id' => auth()->id(),
+            'product_id' => $request->product_id,
+        ]);
 
-    return response()->json(['message' => 'Đã thêm vào danh sách yêu thích']);
-}
-
+        return response()->json(['message' => 'Đã thêm vào danh sách yêu thích']);
+    }
 }
