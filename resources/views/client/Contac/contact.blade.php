@@ -100,77 +100,14 @@
 
                                     <p class="icon text-center">
                                         <a href="#">
-                                            <img src="img/other/contact_mess.png" alt="img">
+                                            <img src="/img/other/contact_mess.png" alt="img">
                                         </a>
                                     </p>
 
                                     <div class="d-flex justify-content-center">
                                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                             <div class="contact-form">
-                                                {{-- <form action="#" method="post" enctype="multipart/form-data">
-                                                    <div class="form-fields">
-                                                        <div class="form-group row">
-                                                            <div class="col-md-6">
-                                                                <input class="form-control" name="name"
-                                                                    placeholder="Your name">
-                                                            </div>
-                                                            <div class="col-md-6 margin-bottom-mobie">
-                                                                <input class="form-control" name="from" type="email"
-                                                                    value="" placeholder="Your email">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-md-12 margin-bottom-mobie">
-                                                                <input class="form-control" name="from" type="email"
-                                                                    value="" placeholder="Subject">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-md-12">
-                                                                <textarea class="form-control" name="message"
-                                                                    placeholder="Message" rows="8"></textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <button class="btn" type="submit" name="submitMessage">
-                                                            <img class="img-fl" src="img/other/contact_email.png"
-                                                                alt="img">Send message
-                                                        </button>
-                                                    </div>
-                                                </form> --}}
-                                                 {{-- <form action="#" method="post" enctype="multipart/form-data">
-                                                <div class="form-fields">
-                                                    <div class="form-group row">
-                                                        <div class="col-md-6">
-                                                            <input class="form-control" name="name"
-                                                                placeholder="Your name">
-                                                        </div>
-                                                        <div class="col-md-6 margin-bottom-mobie">
-                                                            <input class="form-control" name="from" type="email"
-                                                                value="" placeholder="Your email">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-md-12 margin-bottom-mobie">
-                                                            <input class="form-control" name="from" type="email"
-                                                                value="" placeholder="Subject">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-md-12">
-                                                            <textarea class="form-control" name="message"
-                                                                placeholder="Message" rows="8"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <button class="btn" type="submit" name="submitMessage">
-                                                        <img class="img-fl" src="img/other/contact_email.png"
-                                                            alt="img">Send message
-                                                    </button>
-                                                </div>
-                                            </form> --}}
+                                                
                                             <!-- Hiển thị thông báo thành công -->
                                             @if (session('success'))
                                             <div class="alert alert-success">{{ session('success') }}</div>
@@ -226,7 +163,7 @@
                                                 </div>
                                                 <div>
                                                     <button class="btn" type="submit" name="submitMessage">
-                                                        <img class="img-fl" src="img/other/contact_email.png" alt="img">
+                                                        <img class="img-fl" src="/img/other/contact_email.png" alt="img">
                                                         Send message
                                                     </button>
                                                 </div>
