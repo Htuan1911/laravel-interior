@@ -10,21 +10,37 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
     public function checkout(Request $request)
     {
         $user = auth()->user();
-        $cart = Cart::with('items.variant.product')->where('user_id', $user->id)->first();
+        $selectedItemIds = $request->input('selected_items', []);
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()->route('client.carts.index')->with('error', 'Giỏ hàng trống.');
+        if (empty($selectedItemIds)) {
+            return redirect()->route('client.carts.index')->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
+        }
+
+        $cart = Cart::where('user_id', $user->id)->first();
+
+        if (!$cart) {
+            return redirect()->route('client.carts.index')->with('error', 'Không tìm thấy giỏ hàng.');
+        }
+
+        $items = CartItem::with('variant.product')
+            ->where('cart_id', $cart->id)
+            ->whereIn('id', $selectedItemIds)
+            ->get();
+
+        if ($items->isEmpty()) {
+            return redirect()->route('client.carts.index')->with('error', 'Không tìm thấy sản phẩm đã chọn.');
         }
 
         // Tính tổng tiền sản phẩm
         $productTotal = 0;
-        foreach ($cart->items as $item) {
+        foreach ($items as $item) {
             $productTotal += $item->variant->price * $item->quantity;
         }
 
@@ -35,12 +51,19 @@ class OrderController extends Controller
         // Tổng tiền = sản phẩm + ship
         $total = $productTotal + $shippingFee;
 
+        // ✅ Validate: nếu thanh toán online và > 100 triệu → quay lại giỏ
+        if ($request->payment_method === 'online' && $total > 50000000) {
+            return redirect()
+                ->route('client.carts.index')
+                ->with('error', 'Không thể thanh toán online cho đơn hàng trên 50 triệu. Vui lòng chọn thanh toán khi nhận hàng (COD) hoặc giảm bớt sản phẩm.');
+        }
+
         // Tạo đơn hàng
         $order = Order::create([
             'user_id' => $user->id,
             'total_amount' => $total,
             'payment_method' => $request->payment_method,
-            'status' => $request->payment_method === 'cod' ? 'pending' : 'pending',
+            'status' => 'pending',
             'shipping_name' => $request->shipping_name,
             'shipping_phone' => $request->shipping_phone,
             'shipping_address' => $request->shipping_address,
@@ -49,8 +72,8 @@ class OrderController extends Controller
             'booking_code' => 'ORD-' . now()->format('Ymd') . '-' . str_pad(Order::max('id') + 1, 5, '0', STR_PAD_LEFT),
         ]);
 
-        // Lưu order_items
-        foreach ($cart->items as $item) {
+        // Lưu các sản phẩm vào order_items
+        foreach ($items as $item) {
             $variant = $item->variant;
             OrderItem::create([
                 'order_id' => $order->id,
@@ -74,19 +97,23 @@ class OrderController extends Controller
             'paid_at' => null,
         ]);
 
-        // Xoá giỏ
-        $cart->items()->delete();
+        // Xoá các item đã mua khỏi giỏ hàng
+        CartItem::where('cart_id', $cart->id)
+            ->whereIn('id', $selectedItemIds)
+            ->delete();
+
         session()->forget('cart_count');
 
         // Xử lý redirect
         if ($request->payment_method === 'cod') {
             return redirect()->route('client.orders.history')->with('success', 'Đặt hàng thành công!');
         } elseif ($request->payment_method === 'online') {
-            return $this->momo_payment($order);
+            return $this->momo_payment($request, $order); // hoặc gọi hàm thanh toán khác tùy bạn dùng momo/vnpay
         }
 
         return redirect()->route('client.carts.index')->with('error', 'Phương thức thanh toán không hợp lệ.');
     }
+
 
 
     public function shippingForm(Request $request)
@@ -134,8 +161,11 @@ class OrderController extends Controller
         return $result;
     }
 
-    public function momo_payment(Order $order)
+    public function momo_payment(Request $request, Order $order)
     {
+        // Ghi log toàn bộ dữ liệu MoMo trả về
+        Log::info('MoMo RETURN DATA:', $request->all());
+
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
 
         $partnerCode = 'MOMOBKUN20180529';
@@ -143,17 +173,16 @@ class OrderController extends Controller
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
         $orderInfo = "Thanh toán đơn hàng #" . $order->id;
-        $amount = (int) $order->total_amount; // chuyển sang int, tránh lỗi định dạng
-        $orderId = $order->id . '-' . time(); // mã đơn hàng duy nhất
+        $amount = (int) $order->total_amount;
+        $orderId = $order->id . '-' . time();
         $requestId = $order->id . '-' . time();
 
-        $redirectUrl = route('client.orders.momo_return'); // cần định nghĩa route này
-        $ipnUrl = route('client.orders.momo_ipn'); // webhook nhận thông báo MoMo
-        $extraData = ""; // có thể dùng để đính kèm mã user
+        $redirectUrl = route('client.orders.momo_return');
+        $ipnUrl = route('client.orders.momo_ipn');
+        $extraData = "";
 
         $requestType = "payWithATM";
 
-        // Chuỗi raw dữ liệu để ký
         $rawHash = "accessKey={$accessKey}&amount={$amount}&extraData={$extraData}&ipnUrl={$ipnUrl}&orderId={$orderId}&orderInfo={$orderInfo}&partnerCode={$partnerCode}&redirectUrl={$redirectUrl}&requestId={$requestId}&requestType={$requestType}";
 
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
@@ -179,6 +208,7 @@ class OrderController extends Controller
 
         return redirect()->to($jsonResult['payUrl']);
     }
+
 
 
     public function momoReturn(Request $request)
@@ -209,11 +239,48 @@ class OrderController extends Controller
             return redirect()->route('client.orders.history')->with('success', 'Thanh toán MoMo thành công!');
         } else {
             // Thất bại
-            $order->update(['status' => 'cancelled']);
+            $order->update(['status' => 'pending']);
 
             return redirect()->route('client.orders.history')->with('error', 'Thanh toán bị hủy hoặc thất bại!');
         }
     }
+
+
+    public function momoIpn(Request $request)
+    {
+        $data = $request->all();
+
+        Log::info('MoMo IPN Received:', $data); // Log ra để debug
+
+        $orderIdOnly = explode('-', $data['orderId'])[0] ?? null;
+
+        $order = Order::find($orderIdOnly);
+
+        if (!$order) {
+            return response('Order not found', 404);
+        }
+
+        if ($data['resultCode'] == 0) {
+            // Thành công
+            $order->update(['status' => 'paid']);
+
+            $order->payment()->update([
+                'status' => 'paid',
+                'transaction_code' => $data['transId'] ?? null,
+                'paid_at' => now(),
+            ]);
+        } else {
+            // Thất bại
+            $order->update(['status' => 'cancelled']);
+
+            $order->payment()->update([
+                'status' => 'cancelled',
+            ]);
+        }
+
+        return response('OK', 200); // MoMo cần phản hồi 'OK'
+    }
+
 
 
     public function history()

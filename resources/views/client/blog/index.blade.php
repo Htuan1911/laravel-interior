@@ -44,9 +44,9 @@
                                         @endforelse
 
                                         <!-- Pagination -->
-                                        <div class="d-flex justify-content-center">
+                                        {{-- <div class="d-flex justify-content-center">
                                             {{ $posts->links() }}
-                                        </div>
+                                        </div> --}}
 
                                     </div>
                                 </div>
