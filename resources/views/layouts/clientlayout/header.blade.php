@@ -179,7 +179,8 @@
                             <div class="myaccount-title">
                                 <a href="{{ route('login') }}" class="acount">
                                     <i class="fa fa-user" aria-hidden="true"></i>
-                                    <span>Đăng nhập</span>
+                                   
+                                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                                 </a>
                             </div>
                         @endauth
