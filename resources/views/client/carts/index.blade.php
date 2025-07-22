@@ -2,6 +2,12 @@
 
 @section('cart-content')
     <div class="main-content" id="cart">
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- main -->
         <div id="wrapper-site">
             <!-- breadcrumb -->

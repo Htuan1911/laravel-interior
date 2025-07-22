@@ -1,6 +1,52 @@
 @extends('layouts.show')
 
 @section('content-dead')
+
+    <style>
+        .colors span {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 4px;
+            cursor: pointer;
+            border: 2px solid #ccc;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .yellow {
+            background-color: yellow;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        .brown {
+            background-color: brown;
+        }
+
+        .pink {
+            background-color: pink;
+        }
+
+        /* màu đặc biệt có dấu cách */
+        .xanh-navy {
+            background-color: #001f3f;
+        }
+
+        .xám {
+            background-color: gray;
+        }
+    </style>
+
     <div class="main-content">
         <div id="wrapper-site">
             <div id="content-wrapper">
@@ -350,6 +396,31 @@
                                                                 {{ number_format($variant->price ?? $product->base_price, 0, ',', '.') }}
                                                                 đ
                                                             </span>
+
+                                                            <div class="option has-border d-lg-flex size-color">
+                                                                <div class="colors">
+                                                                    <a class="title">Color:</a>
+
+                                                                    @foreach ($product->variants as $v)
+                                                                        @if ($v->color)
+                                                                            @php
+                                                                                $colorClass = strtolower(
+                                                                                    preg_replace(
+                                                                                        '/\s+/',
+                                                                                        '-',
+                                                                                        $v->color,
+                                                                                    ),
+                                                                                ); // ví dụ: 'Xanh Navy' → 'xanh-navy'
+                                                                            @endphp
+                                                                            <span class="{{ $colorClass }}"
+                                                                                onclick="selectColor('{{ asset('storage/' . $v->image) }}', '{{ $v->id }}', this)"
+                                                                                title="{{ $v->color }}"></span>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+
+
                                                             <span class="float-right">
                                                                 <span class="availb">Availability: </span>
                                                                 <span class="check">
@@ -790,5 +861,18 @@
                 });
             }
         });
+
+        function selectColor(imageUrl, variantId, el) {
+            // Đổi ảnh chính
+            document.getElementById('main-image').src = imageUrl;
+
+            // Cập nhật hidden input
+            const input = document.querySelector('input[name="variant_id"]');
+            if (input) input.value = variantId;
+
+            // Tô viền màu được chọn
+            document.querySelectorAll('.colors span').forEach(span => span.classList.remove('active'));
+            el.classList.add('active');
+        }
     </script>
 @endpush
