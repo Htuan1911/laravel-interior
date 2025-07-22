@@ -23,14 +23,24 @@
 
         <!-- search -->
         <div id="mobile_search" class="d-flex">
-            <div id="mobile_search_content">
+            {{-- <div id="mobile_search_content">
                 <form method="get" action="#">
                     <input type="text" name="s" value="" placeholder="Search">
                     <button type="submit">
                         <i class="fa fa-search"></i>
                     </button>
                 </form>
-            </div>
+            </div> --}}
+            <form method="GET" action="{{ route('client.products.index') }}">
+    <input 
+        type="text" 
+        name="keyword" 
+        placeholder="Tìm kiếm sản phẩm..." 
+        value="{{ request('keyword') }}" 
+    />
+    <button type="submit">Tìm kiếm</button>
+</form>
+
             <div class="desktop_cart">
                 <div class="blockcart block-cart cart-preview tiva-toggle">
                     <div class="header-cart tiva-toggle-btn">
