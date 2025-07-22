@@ -36,6 +36,9 @@
     <!-- Template CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}">
+
+
+ 
 </head>
 
 <body id="home2">
@@ -3888,6 +3891,9 @@
 
     <!-- Template JS -->
     <script src="{{ asset('js/theme.js') }}"></script>
+
+
+    
 </body>
 
 

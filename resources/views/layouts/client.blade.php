@@ -749,6 +749,8 @@
 
     <!-- Template JS -->
     <script src="{{ asset('js/theme.js') }}"></script>
+
+    
 </body>
 
 </body>
