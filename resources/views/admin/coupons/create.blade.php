@@ -3,6 +3,18 @@
 @section('content')
 <div class="container mt-4">
     <h2>Tạo mã giảm giá mới</h2>
+
+    {{-- Hiển thị lỗi tổng quát --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('admin.coupons.store') }}" method="POST">
         @csrf
 
@@ -16,6 +28,13 @@
             <label for="discount_percent" class="form-label">% Giảm</label>
             <input type="number" name="discount_percent" class="form-control" value="{{ old('discount_percent') }}">
             @error('discount_percent') <small class="text-danger">{{ $message }}</small> @enderror
+        </div>
+
+        {{-- ✅ Trường mới: giảm tối đa khi dùng % --}}
+        <div class="mb-3">
+            <label for="max_discount_amount" class="form-label">Giảm tối đa (VNĐ)</label>
+            <input type="number" name="max_discount_amount" class="form-control" value="{{ old('max_discount_amount') }}">
+            @error('max_discount_amount') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
