@@ -16,7 +16,9 @@ class CartController extends Controller
 
         $cart = Cart::with(['items.variant.product'])->where('user_id', $user->id)->first();
 
-        return view('client.carts.index', compact('cart'));
+         $cartItems = $user->cartItems()->with('variant.product')->get();
+
+        return view('client.carts.index', compact('cart', 'cartItems'));
     }
 
     public function add(Request $request)

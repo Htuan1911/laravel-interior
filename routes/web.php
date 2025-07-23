@@ -35,6 +35,9 @@ use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 use App\Http\Controllers\Client\AccountController;
+// use App\Http\Controllers\Client\ReviewController as ClientReviewController;
+use App\Http\Controllers\Client\ClientReviewController;
+
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -214,7 +217,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
-        Route::get('/products/{id}', [ClientProductController::class, 'show'])->name('show');
+        Route::get('/{id}', [ClientProductController::class, 'show'])->name('show');
         // routes/web.php
         Route::get('/category/{id}', [ClientProductController::class, 'category'])->name('category');
         // => client.products.show
@@ -253,6 +256,14 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
+
+
+    // đánh giá 
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+    Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
+    Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
+});
+
 
     // bài viết
     Route::prefix('blog')->group(function () {

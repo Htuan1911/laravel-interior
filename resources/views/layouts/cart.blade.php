@@ -6,7 +6,7 @@
 <html lang="en">
 
 
-<!-- product-grid-sidebar-left10:54-->
+<!-- product-cart07:06-->
 
 <head>
     <!-- Basic Page Needs -->
@@ -18,14 +18,13 @@
     <meta name="description" content="Furnitica - Minimalist Furniture HTML Template">
     <meta name="author" content="tivatheme">
 
-
     <!-- Mobile Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700" rel="stylesheet">
 
-    <!-- Vendor CSS -->
+    <!-- libs CSS -->
     <link rel="stylesheet" href="{{ asset('libs/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/font-awesome/css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/nivo-slider.css') }}">
@@ -34,22 +33,22 @@
     <link rel="stylesheet" href="{{ asset('libs/font-material/css/material-design-iconic-font.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/slider-range/css/jslider.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/owl-carousel/assets/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/slick-slider/css/slick.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/slick-slider/css/slick-theme.css') }}">
 
     <!-- Template CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/reponsive.css') }}">
 </head>
 
-<body id="product-sidebar-left" class="product-grid-sidebar-left">
-    <!-- header -->
+<body class="product-cart checkout-cart blog">
     @include('layouts.clientlayout.header')
 
     <!-- main content -->
-    @yield('contentproduct')
+    @yield('cart-content')
 
     <!-- footer -->
     @include('layouts.clientlayout.footer')
-
 
     <!-- back top top -->
     <div class="back-to-top">
@@ -124,8 +123,8 @@
                             <a href="#" class="hasicon" title="FI">
                                 <img src="img/home/fireplace.png" alt="img">FIREPLACE
                             </a>
-                            <span class="arrow collapsed" data-toggle="collapse" data-target="#fi" aria-expanded="false"
-                                role="status">
+                            <span class="arrow collapsed" data-toggle="collapse" data-target="#fi"
+                                aria-expanded="false" role="status">
                                 <i class="zmdi zmdi-minus"></i>
                                 <i class="zmdi zmdi-plus"></i>
                             </span>
@@ -592,7 +591,8 @@
                                 </span>
                                 <a href="index-2.html" title="Home">
                                     <i class="fa fa-home" aria-hidden="true"></i>Home</a>
-                                <div class="subCategory collapse" id="home1" aria-expanded="true" role="status">
+                                <div class="subCategory collapse" id="home1" aria-expanded="true"
+                                    role="status">
                                     <ul>
                                         <li class="item">
                                             <a href="index-2.html" title="Home Page 1">Home Page 1</a>
@@ -621,11 +621,12 @@
                                 <a href="#" title="Blog">
                                     <i class="fa fa-address-book" aria-hidden="true"></i>Blog</a>
 
-                                <div class="subCategory collapse" id="blog" aria-expanded="true" role="status">
+                                <div class="subCategory collapse" id="blog" aria-expanded="true"
+                                    role="status">
                                     <ul>
                                         <li class="item">
-                                            <a href="blog-list-sidebar-left.html" title="Blog List (Sidebar Left)">Blog
-                                                List (Sidebar Left)</a>
+                                            <a href="blog-list-sidebar-left.html"
+                                                title="Blog List (Sidebar Left)">Blog List (Sidebar Left)</a>
                                         </li>
                                         <li class="item">
                                             <a href="blog-list-sidebar-left2.html"
@@ -636,12 +637,12 @@
                                                 title="Category Blog (Right column)">Blog List (Sidebar Right)</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-list-no-sidebar.html" title="Blog List (No Sidebar)">Blog List
-                                                (No Sidebar)</a>
+                                            <a href="blog-list-no-sidebar.html" title="Blog List (No Sidebar)">Blog
+                                                List (No Sidebar)</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-grid-no-sidebar.html" title="Blog Grid (No Sidebar)">Blog Grid
-                                                (No Sidebar)</a>
+                                            <a href="blog-grid-no-sidebar.html" title="Blog Grid (No Sidebar)">Blog
+                                                Grid (No Sidebar)</a>
                                         </li>
                                         <li class="item">
                                             <a href="blog-detail.html" title="Blog Detail">Blog Detail</a>
@@ -657,7 +658,8 @@
                                 </span>
                                 <a href="#" title="Page">
                                     <i class="fa fa-file-text-o" aria-hidden="true"></i>page</a>
-                                <div class="subCategory collapse" id="page" aria-expanded="true" role="status">
+                                <div class="subCategory collapse" id="page" aria-expanded="true"
+                                    role="status">
                                     <ul class="group-page">
                                         <li class="item container group">
                                             <div>
@@ -690,7 +692,8 @@
                                                                         (Sidebar Left)</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="#">Product Detail (Sidebar Right)</a>
+                                                                    <a href="#">Product Detail (Sidebar
+                                                                        Right)</a>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -746,16 +749,13 @@
     <script src="{{ asset('libs/slider-range/js/jquery.dependClass-0.1.js') }}"></script>
     <script src="{{ asset('libs/slider-range/js/draggable-0.1.js') }}"></script>
     <script src="{{ asset('libs/slider-range/js/jquery.slider.js') }}"></script>
+    <script src="{{ asset('libs/slick-slider/js/slick.min.js') }}"></script>
 
     <!-- Template JS -->
     <script src="{{ asset('js/theme.js') }}"></script>
-
-    
+    @stack('scripts')
 </body>
 
-</body>
-
-
-<!-- product-grid-sidebar-left10:55-->
+<!-- product-cart07:12-->
 
 </html>

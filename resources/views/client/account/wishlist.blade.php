@@ -1,62 +1,53 @@
-@extends('layouts.master')
+@extends('layouts.cart')
 
-@section('account_content')
-    <h4 class="mb-4">Danh sách yêu thích</h4>
+@section('cart-content')
+<div class="container py-4">
+    <h3 class="mb-4">💖 Sản phẩm yêu thích</h3>
 
-    {{-- Thông báo khi xoá thành công --}}
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    {{-- Danh sách yêu thích --}}
-    @if($wishlist->isEmpty())
-        <div class="alert alert-warning">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích.</div>
-    @else
-        <div class="row">
-            @foreach($wishlist as $item)
-                @php
-                    $product = $item->product;
-                    $variant = $product->variants->first(); // lấy biến thể đầu tiên
-                @endphp
+    <div class="row">
+        @forelse ($wishlists as $item)
+            @php
+                $product = $item->product;
+                $name = $product?->translations->first()?->name ?? '---';
+                $variant = $product->variants->first();
+                $price = $variant?->price ?? $product?->price ?? 0;
+                $image = $variant?->image ?? $product?->image;
+            @endphp
 
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        {{-- Hiển thị ảnh sản phẩm --}}
-                        <img 
-                            src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}" 
-                            class="card-img-top" 
-                            alt="{{ $product->name }}"
-                            onerror="this.onerror=null;this.src='{{ asset('images/no-image.png') }}';"
-                        >
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ $image ? asset('storage/' . $image) : 'https://via.placeholder.com/300x200?text=No+Image' }}" class="card-img-top" style="height: 220px; object-fit: cover;">
 
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ $product->name }}</h5>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title">{{ $name }}</h5>
+                        <p class="card-text fw-bold text-danger">{{ number_format($price, 0, ',', '.') }} ₫</p>
 
-                            @if($variant)
-                                <p class="card-text mb-3">
-                                    Giá: <strong>{{ number_format($variant->price, 0, ',', '.') }} đ</strong>
-                                </p>
-                            @else
-                                <p class="card-text mb-3 text-danger">Chưa có biến thể sản phẩm</p>
-                            @endif
-
-                            {{-- Form xoá --}}
-                            <form 
-                                action="{{ route('client.account.wishlist.delete', $item->id) }}" 
-                                method="POST" 
-                                onsubmit="return confirm('Bạn chắc chắn muốn xoá sản phẩm này khỏi danh sách yêu thích?')"
-                                class="mt-auto"
-                            >
+                        <div class="d-flex justify-content-between">
+                            <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm w-100">🗑 Xoá khỏi yêu thích</button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    ❌ Bỏ yêu thích
+                                </button>
+                            </form>
+
+                            <form action="{{ route('client.carts.add') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
+                                <button type="submit" class="btn btn-outline-dark btn-sm">Thêm vào giỏ</button>
                             </form>
                         </div>
                     </div>
                 </div>
-            @endforeach
-        </div>
-    @endif
+            </div>
+        @empty
+            <div class="col-12 text-center">
+                <p class="text-muted">Bạn chưa có sản phẩm yêu thích nào.</p>
+            </div>
+        @endforelse
+    </div>
+</div>
 @endsection

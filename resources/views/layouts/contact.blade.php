@@ -6,7 +6,7 @@
 <html lang="en">
 
 
-<!-- product-grid-sidebar-left10:54-->
+<!-- contact11:09-->
 
 <head>
     <!-- Basic Page Needs -->
@@ -25,31 +25,34 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700" rel="stylesheet">
 
-    <!-- Vendor CSS -->
-    <link rel="stylesheet" href="{{ asset('libs/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/font-awesome/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/nivo-slider.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/animate.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/font-material/css/material-design-iconic-font.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/slider-range/css/jslider.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/owl-carousel/assets/owl.carousel.min.css') }}">
+ <!-- Vendor CSS -->
+<link rel="stylesheet" href="{{ asset('libs/bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/nivo-slider.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/animate.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/font-material/css/material-design-iconic-font.min.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/slider-range/css/jslider.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/owl-carousel/assets/owl.carousel.min.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/owl-carousel/assets/owl.theme.default.min.css') }}">
+<link rel="stylesheet" href="{{ asset('libs/jquery-ui/jquery-ui.css') }}">
 
-    <!-- Template CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
+
+ <!-- Template CSS -->
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
+
 </head>
 
-<body id="product-sidebar-left" class="product-grid-sidebar-left">
-    <!-- header -->
+<body id="contact" class="blog">
     @include('layouts.clientlayout.header')
 
     <!-- main content -->
-    @yield('contentproduct')
+    
+    @yield('contact')
 
     <!-- footer -->
-    @include('layouts.clientlayout.footer')
-
+   @include('layouts.clientlayout.footer')
 
     <!-- back top top -->
     <div class="back-to-top">
@@ -749,13 +752,9 @@
 
     <!-- Template JS -->
     <script src="{{ asset('js/theme.js') }}"></script>
-
-    
-</body>
-
 </body>
 
 
-<!-- product-grid-sidebar-left10:55-->
+<!-- contact11:10-->
 
 </html>

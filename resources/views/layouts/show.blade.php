@@ -3,11 +3,10 @@
 <!--[if IE 9 ]><html class="ie ie9" lang="en"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <!--<![endif]-->
-<html lang="en">
+<html lang="zxx">
 
 
-<!-- product-grid-sidebar-left10:54-->
-
+<!-- product-detail06:46-->
 <head>
     <!-- Basic Page Needs -->
     <meta charset="utf-8">
@@ -29,27 +28,25 @@
     <link rel="stylesheet" href="{{ asset('libs/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/font-awesome/css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/nivo-slider.css') }}">
-    <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/animate.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/preview.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/nivo-slider/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/font-material/css/material-design-iconic-font.min.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/slider-range/css/jslider.css') }}">
     <link rel="stylesheet" href="{{ asset('libs/owl-carousel/assets/owl.carousel.min.css') }}">
 
     <!-- Template CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/reponsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/reponsive.css') }}">
 </head>
 
-<body id="product-sidebar-left" class="product-grid-sidebar-left">
-    <!-- header -->
-    @include('layouts.clientlayout.header')
+<body id="product-detail">
+   @include('layouts.clientlayout.header')
 
     <!-- main content -->
-    @yield('contentproduct')
+   @yield('content-dead')
 
     <!-- footer -->
     @include('layouts.clientlayout.footer')
-
 
     <!-- back top top -->
     <div class="back-to-top">
@@ -63,15 +60,14 @@
         <button type="button" class="close" aria-label="Close">
             <i class="zmdi zmdi-close"></i>
         </button>
-        <div class="tiva-verticalmenu block" data-count_showmore="17">
+        <div id="desktop_verticalmenu" class="tiva-verticalmenu block" data-count_showmore="17">
             <div class="box-content block-content">
                 <div class="verticalmenu" role="navigation">
                     <ul class="menu level1">
                         <li class="item  parent">
                             <a href="#" class="hasicon" title="SIDE TABLE">
                                 <img src="img/home/table-lamp.png" alt="img">SIDE TABLE</a>
-                            <span class="arrow collapsed" data-toggle="collapse" data-target="#SIDE-TABLE"
-                                aria-expanded="false" role="status">
+                            <span class="arrow collapsed" data-toggle="collapse" data-target="#SIDE-TABLE">
                                 <i class="zmdi zmdi-minus"></i>
                                 <i class="zmdi zmdi-plus"></i>
                             </span>
@@ -82,13 +78,11 @@
                                     </li>
                                     <li class="item  parent-submenu">
                                         <a href="#" title="Duis Reprehenderit">Duis Reprehenderit</a>
-                                        <span class="arrow collapsed" data-toggle="collapse" data-target="#sub-Category"
-                                            aria-expanded="false" role="status">
+                                        <span class="arrow collapsed" data-toggle="collapse" data-target="#sub-Category">
                                             <i class="zmdi zmdi-minus"></i>
                                             <i class="zmdi zmdi-plus"></i>
                                         </span>
-                                        <div class="subCategory collapse" id="sub-Category" aria-expanded="true"
-                                            role="status">
+                                        <div class="subCategory collapse" id="sub-Category" aria-expanded="true" role="status">
                                             <ul>
                                                 <li class="item">
                                                     <a href="#" title="Aliquam lobortis">Aliquam lobortis</a>
@@ -124,8 +118,7 @@
                             <a href="#" class="hasicon" title="FI">
                                 <img src="img/home/fireplace.png" alt="img">FIREPLACE
                             </a>
-                            <span class="arrow collapsed" data-toggle="collapse" data-target="#fi" aria-expanded="false"
-                                role="status">
+                            <span class="arrow collapsed" data-toggle="collapse" data-target="#fi">
                                 <i class="zmdi zmdi-minus"></i>
                                 <i class="zmdi zmdi-plus"></i>
                             </span>
@@ -376,8 +369,7 @@
                         <li class="item group-category-img parent group">
                             <a href="#" class="hasicon" title="TABLE LAMP">
                                 <img src="img/home/table-lamp.png" alt="img">TABLE LAMP</a>
-                            <span class="arrow collapsed" data-toggle="collapse" data-target="#table-lamp"
-                                aria-expanded="false" role="status">
+                            <span class="arrow collapsed" data-toggle="collapse" data-target="#table-lamp">
                                 <i class="zmdi zmdi-minus"></i>
                                 <i class="zmdi zmdi-plus"></i>
                             </span>
@@ -582,11 +574,10 @@
             <div class="box-content">
                 <nav>
                     <!-- Brand and toggle get grouped for better mobile display -->
-                    <div id="megamenu" class="nov-megamenu clearfix">
+                    <div id="megamenu" class="clearfix">
                         <ul class="menu level1">
                             <li class="item home-page has-sub">
-                                <span class="arrow collapsed" data-toggle="collapse" data-target="#home1"
-                                    aria-expanded="true" role="status">
+                                <span class="arrow collapsed" data-toggle="collapse" data-target="#home1" aria-expanded="true" role="status">
                                     <i class="zmdi zmdi-minus"></i>
                                     <i class="zmdi zmdi-plus"></i>
                                 </span>
@@ -613,8 +604,7 @@
                                 </div>
                             </li>
                             <li class="item has-sub">
-                                <span class="arrow collapsed" data-toggle="collapse" data-target="#blog"
-                                    aria-expanded="false" role="status">
+                                <span class="arrow collapsed" data-toggle="collapse" data-target="#blog" aria-expanded="false" role="status">
                                     <i class="zmdi zmdi-minus"></i>
                                     <i class="zmdi zmdi-plus"></i>
                                 </span>
@@ -624,24 +614,19 @@
                                 <div class="subCategory collapse" id="blog" aria-expanded="true" role="status">
                                     <ul>
                                         <li class="item">
-                                            <a href="blog-list-sidebar-left.html" title="Blog List (Sidebar Left)">Blog
-                                                List (Sidebar Left)</a>
+                                            <a href="blog-list-sidebar-left.html" title="Blog List (Sidebar Left)">Blog List (Sidebar Left)</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-list-sidebar-left2.html"
-                                                title="Blog List (Sidebar Left) 2">Blog List (Sidebar Left) 2</a>
+                                            <a href="blog-list-sidebar-left2.html" title="Blog List (Sidebar Left) 2">Blog List (Sidebar Left) 2</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-list-sidebar-right.html"
-                                                title="Category Blog (Right column)">Blog List (Sidebar Right)</a>
+                                            <a href="blog-list-sidebar-right.html" title="Category Blog (Right column)">Blog List (Sidebar Right)</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-list-no-sidebar.html" title="Blog List (No Sidebar)">Blog List
-                                                (No Sidebar)</a>
+                                            <a href="blog-list-no-sidebar.html" title="Blog List (No Sidebar)">Blog List (No Sidebar)</a>
                                         </li>
                                         <li class="item">
-                                            <a href="blog-grid-no-sidebar.html" title="Blog Grid (No Sidebar)">Blog Grid
-                                                (No Sidebar)</a>
+                                            <a href="blog-grid-no-sidebar.html" title="Blog Grid (No Sidebar)">Blog Grid (No Sidebar)</a>
                                         </li>
                                         <li class="item">
                                             <a href="blog-detail.html" title="Blog Detail">Blog Detail</a>
@@ -650,8 +635,7 @@
                                 </div>
                             </li>
                             <li class="item group has-sub">
-                                <span class="arrow collapsed" data-toggle="collapse" data-target="#page"
-                                    aria-expanded="false" role="status">
+                                <span class="arrow collapsed" data-toggle="collapse" data-target="#page" aria-expanded="false" role="status">
                                     <i class="zmdi zmdi-minus"></i>
                                     <i class="zmdi zmdi-plus"></i>
                                 </span>
@@ -667,16 +651,13 @@
                                                         <div class="menu-content">
                                                             <ul class="col">
                                                                 <li>
-                                                                    <a href="product-grid-sidebar-left.html">Product
-                                                                        Grid (Sidebar Left)</a>
+                                                                    <a href="product-grid-sidebar-left.html">Product Grid (Sidebar Left)</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="product-grid-sidebar-right.html">Product
-                                                                        Grid (Sidebar Right)</a>
+                                                                    <a href="product-grid-sidebar-right.html">Product Grid (Sidebar Right)</a>
                                                                 </li>
                                                                 <li>
-                                                                    <a href="product-list-sidebar-left.html">Product
-                                                                        List (Sidebar Left) </a>
+                                                                    <a href="product-list-sidebar-left.html">Product List (Sidebar Left) </a>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -686,8 +667,7 @@
                                                         <div class="menu-content">
                                                             <ul>
                                                                 <li>
-                                                                    <a href="product-detail.html">Product Detail
-                                                                        (Sidebar Left)</a>
+                                                                    <a href="product-detail.html">Product Detail (Sidebar Left)</a>
                                                                 </li>
                                                                 <li>
                                                                     <a href="#">Product Detail (Sidebar Right)</a>
@@ -725,37 +705,23 @@
         </div>
     </div>
 
-    <!-- Page Loader -->
-    <div id="page-preloader">
-        <div class="page-loading">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-    </div>
+  <!-- Vendor JS -->
+<script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('libs/popper/popper.min.js') }}"></script>
+<script src="{{ asset('libs/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('libs/nivo-slider/js/jquery.nivo.slider.js') }}"></script>
+<script src="{{ asset('libs/owl-carousel/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('libs/slider-range/js/tmpl.js') }}"></script>
+<script src="{{ asset('libs/slider-range/js/jquery.dependClass-0.1.js') }}"></script>
+<script src="{{ asset('libs/slider-range/js/draggable-0.1.js') }}"></script>
+<script src="{{ asset('libs/slider-range/js/jquery.slider.js') }}"></script>
 
-    <!-- Vendor JS -->
-    <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('libs/popper/popper.min.js') }}"></script>
-    <script src="{{ asset('libs/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('libs/nivo-slider/js/jquery.nivo.slider.js') }}"></script>
-    <script src="{{ asset('libs/owl-carousel/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('libs/slider-range/js/tmpl.js') }}"></script>
-    <script src="{{ asset('libs/slider-range/js/jquery.dependClass-0.1.js') }}"></script>
-    <script src="{{ asset('libs/slider-range/js/draggable-0.1.js') }}"></script>
-    <script src="{{ asset('libs/slider-range/js/jquery.slider.js') }}"></script>
-
-    <!-- Template JS -->
-    <script src="{{ asset('js/theme.js') }}"></script>
-
-    
-</body>
+<!-- Template JS -->
+<script src="{{ asset('js/theme.js') }}"></script>
+@stack('scripts')
 
 </body>
 
 
-<!-- product-grid-sidebar-left10:55-->
-
+<!-- product-detail07:06-->
 </html>
