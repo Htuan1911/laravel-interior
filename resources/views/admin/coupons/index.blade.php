@@ -33,21 +33,28 @@
                 </thead>
                 <tbody>
                     @forelse($coupons as $coupon)
+                        @php
+                            $isExpired = $coupon->expires_at && \Carbon\Carbon::parse($coupon->expires_at)->lt(\Carbon\Carbon::now());
+                        @endphp
                         <tr>
                             <td><strong>{{ $coupon->code }}</strong></td>
-                            <td>{{ $coupon->discount_percent }}%</td>
-                            <td>{{ number_format($coupon->discount_amount) }}đ</td>
+                            <td>{{ $coupon->discount_percent ? $coupon->discount_percent . '%' : '-' }}</td>
+                            <td>
+                                {{ $coupon->discount_amount ? number_format($coupon->discount_amount) . 'đ' : '-' }}
+                            </td>
                             <td>{{ number_format($coupon->min_order_amount) }}đ</td>
                             <td>{{ $coupon->max_uses }}</td>
                             <td>{{ $coupon->used_count }}</td>
                             <td>
-                                {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}
+                                {{ $coupon->expires_at ? \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') : '-' }}
                             </td>
                             <td>
-                                @if ($coupon->is_active)
-                                    <span class="badge bg-success">Đang hoạt động</span>
-                                @else
+                                @if (!$coupon->is_active)
                                     <span class="badge bg-secondary">Tạm ngưng</span>
+                                @elseif ($isExpired)
+                                    <span class="badge bg-danger">Hết hạn</span>
+                                @else
+                                    <span class="badge bg-success">Đang hoạt động</span>
                                 @endif
                             </td>
                             <td>

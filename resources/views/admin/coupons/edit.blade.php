@@ -32,9 +32,15 @@
         </div>
 
         <div class="mb-3">
-            <label for="max_uses" class="form-label">Số lượt sử dụng</label>
+            <label for="max_uses" class="form-label">Số lượt sử dụng tối đa</label>
             <input type="number" name="max_uses" class="form-control" value="{{ old('max_uses', $coupon->max_uses) }}">
             @error('max_uses') <small class="text-danger">{{ $message }}</small> @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="used_count" class="form-label">Đã sử dụng</label>
+            <input type="number" name="used_count" class="form-control" value="{{ old('used_count', $coupon->used_count) }}">
+            @error('used_count') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
