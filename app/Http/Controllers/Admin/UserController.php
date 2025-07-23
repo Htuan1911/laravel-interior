@@ -76,60 +76,31 @@ class UserController extends Controller
     }
 
     // Hiển thị form cập nhật
-    public function edit($id)
-    {
-        $user = User::findOrFail($id);
-        $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
-    }
+   // Hiển thị form cập nhật (chỉ sửa trạng thái)
+public function edit($id)
+{
+    $user = User::findOrFail($id);
+    return view('admin.users.edit', compact('user'));
+}
 
-    // Xử lý cập nhật người dùng
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'password' => [
-                'nullable',
-                'string',
-                'min:8',
-                // 'confirmed',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/'
-            ],
-            'phone' => 'required|regex:/^0\d{9}$/',
-            'role_id' => 'required|exists:roles,id',
-            'status' => 'required|in:active,inactive',
-        ], [
-            'name.required' => 'Vui lòng nhập tên.',
-            'name.max' => 'Tên không được vượt quá 100 ký tự.',
-            'email.required' => 'Vui lòng nhập email.',
-            'email.email' => 'Email không hợp lệ.',
-            'email.unique' => 'Email đã tồn tại.',
-            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
-            // 'password.confirmed' => 'Mật khẩu nhập lại không khớp.',
-            'password.regex' => 'Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.',
-            'phone.required' => 'Vui lòng nhập số điện thoại.',
-            'phone.regex' => 'Số điện thoại không hợp lệ. Phải gồm 10 số và bắt đầu bằng 0.',
-            'role_id.required' => 'Vui lòng chọn vai trò.',
-            'role_id.exists' => 'Vai trò không hợp lệ.',
-            'status.required' => 'Vui lòng chọn trạng thái.',
-            'status.in' => 'Trạng thái không hợp lệ.',
-        ]);
+// Xử lý cập nhật người dùng (chỉ cập nhật trạng thái)
+public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
 
-        $data = $request->all();
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        } else {
-            unset($data['password']);
-        }
+    $request->validate([
+        'status' => 'required|in:active,inactive',
+    ], [
+        'status.required' => 'Vui lòng chọn trạng thái.',
+        'status.in' => 'Trạng thái không hợp lệ.',
+    ]);
 
-        $user->update($data);
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công');
-    }
+    $user->status = $request->status;
+    $user->save();
+
+    return redirect()->route('admin.users.index')->with('success', 'Cập nhật trạng thái người dùng thành công');
+}
+
 
     // Xoá mềm người dùng
     public function destroy($id)

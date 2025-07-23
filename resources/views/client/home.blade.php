@@ -981,19 +981,19 @@
                                                                                     @csrf
                                                                                     <a class="addToWishlist favorite-btn" href="#" data-rel="{{ $product->id }}"
                                                                                         onclick="event.preventDefault(); this.closest('form').submit();" title="Yêu thích">
-                                                                                        <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '' }} fa-heart {{ auth()->user()->wishlists->contains('product_id', $product->id) ? 'text-danger' : '' }}" 
+                                                                                        <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '' }} fa-heart {{ auth()->user()->wishlists->contains('product_id', $product->id) ? 'text-danger' : '' }}"
                                                                                         aria-hidden="true"></i>
                                                                                     </a>
                                                                                 </form>
                                                                             @else
-                                                                                <a class="addToWishlist" href="{{ route('login') }}" 
+                                                                                <a class="addToWishlist" href="{{ route('login') }}"
                                                                                 title="Đăng nhập để yêu thích">
                                                                                     <i class="fa fa-heart" aria-hidden="true"></i>
                                                                                 </a>
                                                                             @endauth
 
                                                                             {{-- Quick View / Xem chi tiết --}}
-                                                                            <a href="{{ route('client.products.show', $product->id) }}" 
+                                                                            <a href="{{ route('client.products.show', $product->id) }}"
                                                                             class="quick-view" data-link-action="quickview" title="Xem chi tiết">
                                                                                 <i class="fa fa-eye" aria-hidden="true"></i>
                                                                             </a>
@@ -2824,21 +2824,26 @@
                                                                 </div>
                                                             </div>
                                                             <div class="product-buttons d-flex justify-content-center">
-                                                                <form
-                                                                    action="{{ route('client.carts.add', $product->id) }}"
-                                                                    method="post" class="formAddToCart">
-                                                                    @csrf
-                                                                    <a class="add-to-cart"
-                                                                        href="{{ route('client.carts.add', $product->id) }}"
-                                                                        data-button-action="add-to-cart">
-                                                                        <i class="fa fa-shopping-cart"
-                                                                            aria-hidden="true"></i>
-                                                                    </a>
-                                                                </form>
-                                                                <a class="addToWishlist wishlistProd_{{ $product->id }}"
-                                                                    href="#" data-rel="{{ $product->id }}">
-                                                                    <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                </a>
+                                                                <form action="{{ route('client.carts.add') }}" method="POST" class="formAddToCart">
+    @csrf
+    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id ?? '' }}">
+    <a class="add-to-cart"
+       href="#"
+       onclick="event.preventDefault(); this.closest('form').submit();"
+       data-button-action="add-to-cart">
+        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+    </a>
+</form>
+    <form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
+        @csrf
+        <a class="addToWishlist wishlistProd_{{ $product->id }}"
+           href="#"
+           onclick="event.preventDefault(); this.closest('form').submit();"
+           data-rel="{{ $product->id }}"
+           title="Yêu thích">
+         <i class="fa fa-heart{{ auth()->check() && auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}" aria-hidden="true"></i>
+        </a>
+    </form>
                                                                 <a href="{{ route('client.products.show', $product->id) }}"
                                                                     class="quick-view hidden-sm-down"
                                                                     data-link-action="quickview">
@@ -2917,21 +2922,25 @@
                                                             </div>
 
                                                             <div class="product-buttons d-flex justify-content-center">
-                                                                <form
-                                                                    action="{{ route('client.carts.add', $product->variants->first()->id ?? 0) }}"
-                                                                    method="post" class="formAddToCart">
-                                                                    @csrf
-                                                                    <a class="add-to-cart" href="#"
-                                                                        onclick="event.preventDefault(); this.closest('form').submit();">
-                                                                        <i class="fa fa-shopping-cart"
-                                                                            aria-hidden="true"></i>
-                                                                    </a>
-                                                                </form>
-
-                                                                <a class="addToWishlist"
-                                                                    href="">
-                                                                    <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                </a>
+                                                                                                                       <form action="{{ route('client.carts.add') }}" method="POST" class="formAddToCart">
+    @csrf
+    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id ?? '' }}">
+    <a class="add-to-cart"
+       href="#"
+       onclick="event.preventDefault(); this.closest('form').submit();"
+       data-button-action="add-to-cart">
+        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+    </a>
+<form action="{{ route('client.wishlist.toggle', $product->id) }}" method="POST" class="d-inline">
+    @csrf
+    <a class="addToWishlist wishlistProd_{{ $product->id }}"
+       href="#"
+       onclick="event.preventDefault(); this.closest('form').submit();"
+       data-rel="{{ $product->id }}"
+       title="Yêu thích">
+        <i class="fa fa-heart{{ auth()->check() && auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}" aria-hidden="true"></i>
+    </a>
+</form>
 
                                                                 <a href="{{ route('client.products.show', $product->id) }}"
                                                                     class="quick-view hidden-sm-down">

@@ -356,8 +356,7 @@
                                                                             data-rel="{{ $product->id }}"
                                                                             onclick="event.preventDefault(); this.closest('form').submit();"
                                                                             title="Yêu thích">
-                                                                            <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '' }} fa-heart {{ auth()->user()->wishlists->contains('product_id', $product->id) ? 'text-danger' : '' }}"
-                                                                                aria-hidden="true"></i>
+                                                                           <i class="fa fa-heart{{ auth()->check() && auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}" aria-hidden="true"></i>
                                                                         </a>
                                                                     </form>
                                                                     @else
