@@ -25,27 +25,35 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
 {
     // Thử đăng nhập với email và password
-    if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-        $request->session()->regenerate();
+ if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+    $request->session()->regenerate();
 
-        $user = Auth::user();
+    $user = Auth::user();
 
-        // Nếu vẫn còn mã OTP chưa xác minh
-        if (!is_null($user->otp)) {
-            Auth::logout(); // Đăng xuất nếu chưa xác minh
-
-            // Lưu email vào session để xác minh OTP
-            session(['email' => $user->email]);
-
-            return redirect()->route('verify.otp.form')
-                ->withErrors(['otp' => 'Tài khoản chưa được xác minh. Vui lòng nhập mã OTP được gửi tới email.']);
-        }
-
-        // Chuyển hướng sau đăng nhập thành công theo vai trò
-        return $user->role_id == 1
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('client.home');
+    // Kiểm tra trạng thái tài khoản
+    if ($user->status !== 'active') {
+        Auth::logout();
+        return back()->withErrors([
+            'email' => 'Tài khoản của bạn chưa được kích hoạt hoặc đã bị khóa.',
+        ]);
     }
+
+    // Nếu vẫn còn mã OTP chưa xác minh
+    if (!is_null($user->otp)) {
+        Auth::logout(); // Đăng xuất nếu chưa xác minh
+
+        // Lưu email vào session để xác minh OTP
+        session(['email' => $user->email]);
+
+        return redirect()->route('verify.otp.form')
+            ->withErrors(['otp' => 'Tài khoản chưa được xác minh. Vui lòng nhập mã OTP được gửi tới email.']);
+    }
+
+    // Chuyển hướng sau đăng nhập thành công theo vai trò
+    return $user->role_id == 1
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('client.home');
+}
 
     return back()->withErrors([
         'email' => 'Thông tin đăng nhập không chính xác.',
