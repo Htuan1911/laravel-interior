@@ -213,7 +213,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])
         ->name('categories.show');
- 
+
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
@@ -258,7 +258,7 @@ Route::prefix('client')->name('client.')->group(function () {
     });
 
 
-    // đánh giá 
+    // đánh giá
     Route::prefix('reviews')->name('reviews.')->group(function () {
     Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
     Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
@@ -276,8 +276,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
 
 });
+// routes/web.php
 
-
+    // Liên hệ
+    Route::prefix('contact')->group(function () {
+        Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
+        Route::post('/', [ContactController::class, 'send'])->name('contact.send');
+    });
+});
 Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá mềm sản phẩm trong giỏ
     Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
@@ -291,16 +297,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá vĩnh viễn
     Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
 });
-
-
-// routes/web.php
-
-    // Liên hệ
-    Route::prefix('contact')->group(function () {
-        Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
-        Route::post('/', [ContactController::class, 'send'])->name('contact.send');
-    });
-});
-
 
 require __DIR__ . '/auth.php';
