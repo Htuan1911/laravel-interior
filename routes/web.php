@@ -35,6 +35,9 @@ use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 use App\Http\Controllers\Client\AccountController;
+// use App\Http\Controllers\Client\ReviewController as ClientReviewController;
+use App\Http\Controllers\Client\ClientReviewController;
+
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -248,10 +251,19 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/vouchers', [AccountController::class, 'vouchers'])->name('vouchers');
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
+
+
+    // đánh giá 
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+    Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
+    Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
+});
+
 
     // bài viết
     Route::prefix('blog')->group(function () {

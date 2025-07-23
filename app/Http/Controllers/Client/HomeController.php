@@ -40,22 +40,38 @@ class HomeController extends Controller
 
 
         // Lấy sản phẩm bán chạy dựa trên tổng số lượng trong order_items
-        $bestSellers = Product::where('products.status', 'active')
-            ->with(['translations' => function ($query) {
-                $query->where('language_code', 'vi');
-            }, 'variants'])
-            ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-            ->join('order_items', 'product_variants.id', '=', 'order_items.variant_id')
-            ->groupBy('products.id')
-            ->select('products.*', DB::raw('SUM(order_items.quantity) as total_sold'))
-            ->orderByDesc('total_sold')
-            ->limit(4)
-            ->get()
-            ->map(function ($product) {
-                $product->name = $product->translations->first()->name ?? 'Không có tên';
-                $product->base_price = $product->variants->min('price') ?? 0;
-                return $product;
-            });
+     $bestSellers = Product::where('products.status', 'active')
+    ->with(['translations' => function ($query) {
+        $query->where('language_code', 'vi');
+    }, 'variants'])
+    ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+    ->join('order_items', 'product_variants.id', '=', 'order_items.variant_id')
+    ->select(
+        'products.id',
+        'products.category_id',
+        'products.status',
+        'products.image',
+        'products.created_at',
+        'products.updated_at',
+        DB::raw('SUM(order_items.quantity) as total_sold')
+    )
+    ->groupBy(
+        'products.id',
+        'products.category_id',
+        'products.status',
+        'products.image',
+        'products.created_at',
+        'products.updated_at'
+    )
+    ->orderByDesc('total_sold')
+    ->limit(4)
+    ->get()
+    ->map(function ($product) {
+        $product->name = $product->translations->first()->name ?? 'Không có tên';
+        $product->base_price = $product->variants->min('price') ?? 0;
+        return $product;
+    });
+
 
         $latestProducts = Product::where('status', 'active')
             ->with(['translations' => function ($q) {
