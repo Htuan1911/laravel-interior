@@ -19,10 +19,10 @@ class Order extends Model
         'status',
     ];
 
-   public function user()
-{
-    return $this->belongsTo(\App\Models\User::class);
-}
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 
 
     public function coupon()
@@ -38,5 +38,18 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            'pending' => 'Chờ xử lý',
+            'processing' => 'Đang xử lý',
+            'completed' => 'Hoàn tất',
+            'cancelled' => 'Đã hủy',
+            'paid' => 'đã thanh toán',
+            'refunded' => 'Đã hoàn tiền',
+            default => 'Không xác định',
+        };
     }
 }
