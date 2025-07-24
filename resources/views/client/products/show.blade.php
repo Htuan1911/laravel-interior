@@ -398,7 +398,7 @@
                                                 <div class="product-info col-xs-12 col-md-7 col-sm-7">
                                                     <div class="detail-description">
                                                         <div class="price-del">
-                                                            <span class="price text-danger fw-bold">
+                                                            <span id="variant-price" class="price text-danger fw-bold">
                                                                 {{ number_format($variant->price ?? $product->base_price, 0, ',', '.') }}
                                                                 đ
                                                             </span>
@@ -418,7 +418,8 @@
                                                                         <option value="">Choose your size</option>
                                                                         @foreach ($sizes as $size)
                                                                             <option value="{{ $size }}">
-                                                                                {{ strtoupper($size) }}</option>
+                                                                                {{ strtoupper($size) }}
+                                                                            </option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -437,7 +438,12 @@
                                                                                 );
                                                                             @endphp
                                                                             <span class="{{ $colorClass }}"
-                                                                                onclick="selectColor('{{ asset('storage/' . $v->image) }}', '{{ $v->id }}', this)"
+                                                                                data-color="{{ $v->color }}"
+                                                                                data-size="{{ $v->size }}"
+                                                                                data-image="{{ asset('storage/' . $v->image) }}"
+                                                                                data-price="{{ $v->price }}"
+                                                                                data-variant-id="{{ $v->id }}"
+                                                                                onclick="handleSelection(this)"
                                                                                 title="{{ $v->color }}"></span>
                                                                         @endif
                                                                     @endforeach
@@ -488,6 +494,7 @@
                                                                                 method="POST" class="d-inline">
                                                                                 @csrf
                                                                                 <input type="hidden" name="variant_id"
+                                                                                    id="variant-id"
                                                                                     value="{{ $variant->id }}">
                                                                                 <input type="hidden" name="quantity"
                                                                                     id="add-cart-qty" value="1">
@@ -889,17 +896,57 @@
             }
         });
 
-        function selectColor(imageUrl, variantId, el) {
-            // Đổi ảnh chính
-            document.getElementById('main-image').src = imageUrl;
+        let selectedColor = null;
+        let selectedSize = null;
 
-            // Cập nhật hidden input
-            const input = document.querySelector('input[name="variant_id"]');
-            if (input) input.value = variantId;
+        // Khi chọn màu
+        function handleSelection(el) {
+            selectedColor = el.getAttribute('data-color');
 
-            // Tô viền màu được chọn
+            // Tô viền
             document.querySelectorAll('.colors span').forEach(span => span.classList.remove('active'));
             el.classList.add('active');
+
+            updateVariant();
+        }
+
+        // Khi chọn size
+        document.getElementById('sizeSelect').addEventListener('change', function() {
+            selectedSize = this.value;
+            updateVariant();
+        });
+
+        // Hàm tìm variant phù hợp và cập nhật giao diện
+        function updateVariant() {
+            const allVariants = document.querySelectorAll('.colors span');
+
+            let matchedVariant = null;
+
+            allVariants.forEach(v => {
+                const color = v.getAttribute('data-color');
+                const size = v.getAttribute('data-size');
+
+                if (color === selectedColor && size === selectedSize) {
+                    matchedVariant = v;
+                }
+            });
+
+            if (matchedVariant) {
+                const price = matchedVariant.getAttribute('data-price');
+                const image = matchedVariant.getAttribute('data-image');
+                const variantId = matchedVariant.getAttribute('data-variant-id');
+
+                // Cập nhật ảnh
+                document.getElementById('main-image').src = image;
+
+                // Cập nhật giá
+                document.getElementById('variant-price').innerText = parseInt(price).toLocaleString('vi-VN') + ' đ';
+
+                // Cập nhật variant_id hidden
+                const input = document.getElementById('variant-id');
+                if (input) input.value = variantId;
+
+            }
         }
     </script>
 @endpush
