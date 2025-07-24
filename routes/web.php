@@ -55,7 +55,8 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 
 // Khu vực quản trị
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [App\Http\Controllers\Admin\RevenueController::class, 'index'])->name('dashboard');
 
     // Danh mục
     Route::prefix('categories')->name('categories.')->group(function () {
@@ -297,5 +298,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá vĩnh viễn
     Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
 });
+
 
 require __DIR__ . '/auth.php';
