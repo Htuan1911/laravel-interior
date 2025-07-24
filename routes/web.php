@@ -307,6 +307,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
         Route::post('/', [ContactController::class, 'send'])->name('contact.send');
     });
+    // So sánh sản phẩm
+    Route::prefix('compare')->name('compare.')->group(function () {
+    Route::get('/', [CompareController::class, 'index'])->name('index');
+    Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
+    Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
+    Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
+});
 });
 Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá mềm sản phẩm trong giỏ
@@ -323,13 +330,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-    // So sánh sản phẩm
-    Route::prefix('compare')->name('compare.')->group(function () {
-    Route::get('/', [CompareController::class, 'index'])->name('index');
-    Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
-    Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
-    Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
-});
+    
 
 
 });
