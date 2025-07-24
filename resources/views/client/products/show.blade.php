@@ -37,6 +37,10 @@
             background-color: pink;
         }
 
+        .black {
+            background-color: black;
+        }
+
         /* màu đặc biệt có dấu cách */
         .xanh-navy {
             background-color: #001f3f;
@@ -144,38 +148,13 @@
                                                 </div>
                                                 <div class="cateTitle hasSubCategory open level1">
                                                     <span class="arrow collapsed collapse-icons" data-toggle="collapse"
-                                                        data-target="#bathroom">
-                                                        <i class="zmdi zmdi-minus"></i>
-                                                        <i class="zmdi zmdi-plus"></i>
-                                                    </span>
-                                                    <a class="cateItem" href="#">Bathroom</a>
-                                                    <div class="subCategory collapse" id="bathroom">
-                                                        <div class="cateTitle">
-                                                            <a href="#" class="cateItem">TOMATO</a>
-                                                        </div>
-                                                        <div class="cateTitle">
-                                                            <a href="#" class="cateItem">BROCCOLI</a>
-                                                        </div>
-                                                        <div class="cateTitle">
-                                                            <a href="#" class="cateItem">CABBAGE</a>
-                                                        </div>
-                                                        <div class="cateTitle">
-                                                            <a href="#" class="cateItem">CUCUMBER</a>
-                                                        </div>
-                                                        <div class="cateTitle">
-                                                            <a href="#" class="cateItem">EGGPLANT</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="cateTitle hasSubCategory open level1">
-                                                    <span class="arrow collapsed collapse-icons" data-toggle="collapse"
                                                         data-target="#diningroom">
                                                         <i class="zmdi zmdi-minus"></i>
                                                         <i class="zmdi zmdi-plus"></i>
                                                     </span>
                                                     <a class="cateItem" href="#">Dining Rooom</a>
-                                                    <div class="subCategory collapse" id="diningroom"
-                                                        aria-expanded="true" role="status">
+                                                    <div class="subCategory collapse" id="diningroom" aria-expanded="true"
+                                                        role="status">
                                                         <div class="cateTitle">
                                                             <a href="#" class="cateItem">DRY BREAD</a>
                                                         </div>
@@ -230,6 +209,31 @@
                                                             <a href="#" class="cateItem">APPLE JUICES</a>
                                                         </div>
 
+                                                    </div>
+                                                </div>
+                                                <div class="cateTitle hasSubCategory open level1">
+                                                    <span class="arrow collapsed collapse-icons" data-toggle="collapse"
+                                                        data-target="#bathroom">
+                                                        <i class="zmdi zmdi-minus"></i>
+                                                        <i class="zmdi zmdi-plus"></i>
+                                                    </span>
+                                                    <a class="cateItem" href="#">Exterior</a>
+                                                    <div class="subCategory collapse" id="bathroom">
+                                                        <div class="cateTitle">
+                                                            <a href="#" class="cateItem">TOMATO</a>
+                                                        </div>
+                                                        <div class="cateTitle">
+                                                            <a href="#" class="cateItem">BROCCOLI</a>
+                                                        </div>
+                                                        <div class="cateTitle">
+                                                            <a href="#" class="cateItem">CABBAGE</a>
+                                                        </div>
+                                                        <div class="cateTitle">
+                                                            <a href="#" class="cateItem">CUCUMBER</a>
+                                                        </div>
+                                                        <div class="cateTitle">
+                                                            <a href="#" class="cateItem">EGGPLANT</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -303,15 +307,17 @@
                                                                             </form>
                                                                             @auth
                                                                                 <form
-                                                                                    action="{{ route('client.wishlist.toggle', $item->id) }}"
+                                                                                    action="{{ route('client.wishlist.toggle', $product->id) }}"
                                                                                     method="POST" class="d-inline">
                                                                                     @csrf
-                                                                                    <button type="submit"
-                                                                                        class="addToWishlist"
-                                                                                        data-rel="{{ $item->id }}">
-                                                                                        <i class="fa{{ auth()->user()->wishlists->contains('product_id', $item->id) ? 's' : '-regular' }} fa-heart"
+                                                                                    <a class="addToWishlist wishlistProd_{{ $product->id }}"
+                                                                                        href="#"
+                                                                                        onclick="event.preventDefault(); this.closest('form').submit();"
+                                                                                        data-rel="{{ $product->id }}"
+                                                                                        title="Yêu thích">
+                                                                                        <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                             aria-hidden="true"></i>
-                                                                                    </button>
+                                                                                    </a>
                                                                                 </form>
                                                                             @else
                                                                                 <a class="addToWishlist"
@@ -397,10 +403,28 @@
                                                                 đ
                                                             </span>
 
+                                                            @php
+                                                                $sizes = $product->variants
+                                                                    ->pluck('size')
+                                                                    ->unique()
+                                                                    ->filter()
+                                                                    ->values();
+                                                            @endphp
+
                                                             <div class="option has-border d-lg-flex size-color">
+                                                                <div class="size">
+                                                                    <span class="size">Size:</span>
+                                                                    <select id="sizeSelect">
+                                                                        <option value="">Choose your size</option>
+                                                                        @foreach ($sizes as $size)
+                                                                            <option value="{{ $size }}">
+                                                                                {{ strtoupper($size) }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+
                                                                 <div class="colors">
                                                                     <a class="title">Color:</a>
-
                                                                     @foreach ($product->variants as $v)
                                                                         @if ($v->color)
                                                                             @php
@@ -410,7 +434,7 @@
                                                                                         '-',
                                                                                         $v->color,
                                                                                     ),
-                                                                                ); // ví dụ: 'Xanh Navy' → 'xanh-navy'
+                                                                                );
                                                                             @endphp
                                                                             <span class="{{ $colorClass }}"
                                                                                 onclick="selectColor('{{ asset('storage/' . $v->image) }}', '{{ $v->id }}', this)"
@@ -419,6 +443,7 @@
                                                                     @endforeach
                                                                 </div>
                                                             </div>
+
 
 
                                                             <span class="float-right">
@@ -480,12 +505,12 @@
                                                                                     action="{{ route('client.wishlist.toggle', $product->id) }}"
                                                                                     method="POST" class="d-inline">
                                                                                     @csrf
-                                                                                    <a class="addToWishlist favorite-btn"
+                                                                                    <a class="addToWishlist wishlistProd_{{ $product->id }}"
                                                                                         href="#"
-                                                                                        data-rel="{{ $product->id }}"
                                                                                         onclick="event.preventDefault(); this.closest('form').submit();"
+                                                                                        data-rel="{{ $product->id }}"
                                                                                         title="Yêu thích">
-                                                                                        <i class="fa{{ auth()->user()->wishlists->contains('product_id', $product->id) ? 's' : '' }} fa-heart {{ auth()->user()->wishlists->contains('product_id', $product->id) ? 'text-danger' : '' }}"
+                                                                                        <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                             aria-hidden="true"></i>
                                                                                     </a>
                                                                                 </form>
@@ -745,15 +770,17 @@
                                                                                 {{-- Nút Yêu thích --}}
                                                                                 @auth
                                                                                     <form
-                                                                                        action="{{ route('client.wishlist.toggle', $item->id) }}"
+                                                                                        action="{{ route('client.wishlist.toggle', $product->id) }}"
                                                                                         method="POST" class="d-inline">
                                                                                         @csrf
-                                                                                        <button type="submit"
-                                                                                            class="addToWishlist"
-                                                                                            data-rel="{{ $item->id }}">
-                                                                                            <i class="fa fa-heart"
+                                                                                        <a class="addToWishlist wishlistProd_{{ $product->id }}"
+                                                                                            href="#"
+                                                                                            onclick="event.preventDefault(); this.closest('form').submit();"
+                                                                                            data-rel="{{ $product->id }}"
+                                                                                            title="Yêu thích">
+                                                                                            <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                                 aria-hidden="true"></i>
-                                                                                        </button>
+                                                                                        </a>
                                                                                     </form>
                                                                                 @else
                                                                                     <a class="addToWishlist"
