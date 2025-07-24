@@ -36,11 +36,13 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label>Tỉnh / Thành phố</label>
-                            <input type="text" name="province" class="form-control">
+                            <<input type="email" name="shipping_email" class="form-control"
+                            value="{{ auth()->user()->province ?? '' }}">
                         </div>
                         <div class="col-md-6">
                             <label>Quận / Huyện</label>
-                            <input type="text" name="district" class="form-control">
+                            <<input type="email" name="shipping_email" class="form-control"
+                            value="{{ auth()->user()->district ?? '' }}">
                         </div>
                     </div>
 

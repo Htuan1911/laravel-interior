@@ -20,6 +20,9 @@ class User extends Authenticatable
         'otp', // Mã OTP
         'otp_expires_at', // Thời gian hết hạn của mã OTP
         'is_verified',
+        'province',      // Tỉnh/Thành phố
+        'district',      // Quận/Huyện
+        'avatar',        // Ảnh đại diện
     ];
 
     protected $hidden = [
@@ -52,7 +55,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Wishlist::class);
     }
-
 
     public function orders()
     {
