@@ -29,12 +29,13 @@ use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
-
+use App\Http\Controllers\Client\CouponController as ClientCouponController;
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 
 use App\Http\Controllers\Client\AccountController;
+use GuzzleHttp\Client;
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -198,6 +199,20 @@ Route::prefix('admin/carts')->group(function () {
     Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('admin.carts.forceDelete');
 });
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Xoá mềm sản phẩm trong giỏ
+    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
+
+    // Hiển thị sản phẩm đã xoá (thùng rác)
+    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
+
+    // Khôi phục sản phẩm
+    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
+
+    // Xoá vĩnh viễn
+    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
+});
+
 
 
 
@@ -210,7 +225,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])
         ->name('categories.show');
- 
+
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
@@ -243,6 +258,10 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
 
 
+    Route::get('/check-coupon', [ClientCouponController::class, 'check']);
+
+    Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
+
     // Tài khoản người dùng
     Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
@@ -259,29 +278,14 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
     });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
-
-});
-
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Xoá mềm sản phẩm trong giỏ
-    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
-
-    // Hiển thị sản phẩm đã xoá (thùng rác)
-    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
-
-    // Khôi phục sản phẩm
-    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
-
-    // Xoá vĩnh viễn
-    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
-});
+    Route::middleware('auth')->group(function () {
+        Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
+        Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
+    });
 
 
-// routes/web.php
+
+    // routes/web.php
 
     // Liên hệ
     Route::prefix('contact')->group(function () {

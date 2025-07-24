@@ -201,7 +201,7 @@
                                     <a class="login" href="{{ route('client.account.info') }}" rel="nofollow"
                                         title="Log in to your customer account">
                                         <i class="fa fa-cog"></i>
-                                        <span>My Account</span>
+                                        <span>Tài khoản</span>
                                     </a>
                                 </div>
                                 @guest
@@ -209,34 +209,28 @@
                                         <a class="login" href="{{ route('login') }}" rel="nofollow"
                                             title="Log in to your customer account">
                                             <i class="fa fa-sign-in"></i>
-                                            <span>Sign in</span>
+                                            <span>Đăng nhâp</span>
                                         </a>
                                     </div>
                                     <div>
                                         <a class="register" href="{{ route('register') }}" rel="nofollow"
                                             title="Register Account">
                                             <i class="fa fa-user"></i>
-                                            <span>Register Account</span>
+                                            <span>Đăng kí</span>
                                         </a>
                                     </div>
                                 @endguest
                                 <div>
-                                    <a class="check-out" href="product-checkout.html" rel="nofollow"
+                                    <a class="check-out" href="{{ route('client.account.orders') }}" rel="nofollow"
                                         title="Checkout">
                                         <i class="fa fa-check" aria-hidden="true"></i>
-                                        <span>Checkout</span>
+                                        <span>Lịch sử đơn hàng</span>
                                     </a>
                                 </div>
                                 <div>
                                     <a href="{{ route('client.account.wishlist') }}" title="My Wishlists">
                                         <i class="fa fa-heart"></i>
-                                        <span>My Wishlists</span>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="{{ route('client.account.orders') }}" title="History">
-                                        <i class="fa fa-file-alt"></i>
-                                        <span>History</span>
+                                        <span>Yêu thích</span>
                                     </a>
                                 </div>
                                 <div>
@@ -249,7 +243,7 @@
                                         title="Log out from your account"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="fa fa-sign-out"></i>
-                                        <span>Sign out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </div>
 

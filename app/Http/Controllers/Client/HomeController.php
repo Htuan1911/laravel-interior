@@ -30,6 +30,7 @@ class HomeController extends Controller
             ->with(['translations' => function ($query) {
                 $query->where('language_code', 'vi');
             }, 'variants'])
+            ->take(12)
             ->get()
             ->map(function ($product) {
                 $product->name = $product->translations->first()->name ?? 'Không có tên';
