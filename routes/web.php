@@ -17,10 +17,6 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
 
 
-
-
-
-
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
@@ -29,13 +25,17 @@ use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
+use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Client\CouponController as ClientCouponController;
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
 
 use App\Http\Controllers\Client\AccountController;
-use GuzzleHttp\Client;
+
+// use App\Http\Controllers\Client\ReviewController as ClientReviewController;
+use App\Http\Controllers\Client\ClientReviewController;
+
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -53,7 +53,8 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 
 // Khu vực quản trị
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [RevenueController::class, 'index'])->name('dashboard');
 
     // Danh mục
     Route::prefix('categories')->name('categories.')->group(function () {
@@ -267,10 +268,19 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/vouchers', [AccountController::class, 'vouchers'])->name('vouchers');
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
     });
+
+
+    // đánh giá
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+    Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
+    Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
+});
+
 
     // bài viết
     Route::prefix('blog')->group(function () {
@@ -278,20 +288,32 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
     });
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
-        Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
-    });
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
 
-
-
-    // routes/web.php
+});
+// routes/web.php
 
     // Liên hệ
     Route::prefix('contact')->group(function () {
         Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
         Route::post('/', [ContactController::class, 'send'])->name('contact.send');
     });
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Xoá mềm sản phẩm trong giỏ
+    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
+
+    // Hiển thị sản phẩm đã xoá (thùng rác)
+    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
+
+    // Khôi phục sản phẩm
+    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
+
+    // Xoá vĩnh viễn
+    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
+
 });
 
 
