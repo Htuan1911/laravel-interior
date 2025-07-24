@@ -91,7 +91,7 @@
                                             <div class="title-block">Categories</div>
                                             <div class="block-content">
                                                 <div class="cateTitle hasSubCategory open level1">
-<span class="arrow collapse-icons collapsed" data-toggle="collapse"
+                                                    <span class="arrow collapse-icons collapsed" data-toggle="collapse"
                                                         data-target="#livingroom">
                                                         <i class="zmdi zmdi-minus"></i>
                                                         <i class="zmdi zmdi-plus"></i>
@@ -124,7 +124,7 @@
                                                                 <div class="cateTitle">
                                                                     <a href="#" class="cateItem">cushion</a>
                                                                 </div>
-</div>
+                                                            </div>
                                                         </div>
                                                         <div class="cateTitle">
                                                             <a href="#" class="cateItem">FIREPLACE</a>
@@ -161,7 +161,7 @@
                                                         <div class="cateTitle">
                                                             <a href="#" class="cateItem">BREAD SLICES</a>
                                                         </div>
-<div class="cateTitle">
+                                                        <div class="cateTitle">
                                                             <a href="#" class="cateItem">FRENCH BREAD</a>
                                                         </div>
                                                         <div class="cateTitle">
@@ -198,7 +198,7 @@
                                                     </span>
                                                     <a class="cateItem" href="#">Kitchen</a>
                                                     <div class="subCategory collapse" id="kitchen" aria-expanded="true"
-role="status">
+                                                        role="status">
                                                         <div class="cateTitle">
                                                             <a href="#" class="cateItem">ORANGE JUICES</a>
                                                         </div>
@@ -236,7 +236,7 @@ role="status">
                                                         </div>
                                                     </div>
                                                 </div>
-</div>
+                                            </div>
                                         </div>
 
 
@@ -257,8 +257,7 @@ role="status">
                                                                 <div class="product-miniature item-one first-item d-flex">
                                                                     <div class="thumbnail-container border"
                                                                         style="width: 100%; aspect-ratio: 5 / 4; overflow: hidden; border-radius: 8px;">
-                                                                        <a
-                                                                            href="{{ route('client.products.show', $item->id) }}">
+                                                                        <a href="{{ route('client.products.show', $item->id) }}">
                                                                             <img class="img-fluid"
                                                                                 src="{{ asset('storage/' . ($variant->image ?? ($item->image ?? 'default.jpg'))) }}"
                                                                                 alt="{{ $translation->name ?? 'Product Image' }}"
@@ -271,7 +270,7 @@ role="status">
                                                                             <div class="product-title">
                                                                                 <a
                                                                                     href="{{ route('client.products.show', $item->id) }}">
-{{ $translation->name ?? 'Nulla et justo augue' }}
+                                                                                    {{ $translation->name ?? 'Nulla et justo augue' }}
                                                                                 </a>
                                                                             </div>
                                                                             <div class="rating">
@@ -290,17 +289,15 @@ role="status">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div
-                                                                            class="product-buttons d-flex justify-content-center">
+                                                                        <div class="product-buttons d-flex justify-content-center">
                                                                             <form action="{{ route('client.carts.add') }}"
                                                                                 method="POST" class="formAddToCart">
                                                                                 @csrf
                                                                                 <input type="hidden" name="variant_id"
                                                                                     value="{{ $variant->id ?? '' }}">
-                                                                                <input type="hidden" name="quantity"
-                                                                                    value="1">
+                                                                                <input type="hidden" name="quantity" value="1">
                                                                                 <button type="submit" class="add-to-cart"
-data-button-action="add-to-cart">
+                                                                                    data-button-action="add-to-cart">
                                                                                     <i class="fa fa-shopping-cart"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -313,26 +310,23 @@ data-button-action="add-to-cart">
                                                                                     <a class="addToWishlist wishlistProd_{{ $product->id }}"
                                                                                         href="#"
                                                                                         onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                                        data-rel="{{ $product->id }}"
-                                                                                        title="Yêu thích">
+                                                                                        data-rel="{{ $product->id }}" title="Yêu thích">
                                                                                         <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                             aria-hidden="true"></i>
                                                                                     </a>
                                                                                 </form>
                                                                             @else
-                                                                                <a class="addToWishlist"
-                                                                                    href="{{ route('login') }}">
+                                                                                <a class="addToWishlist" href="{{ route('login') }}">
                                                                                     <i class="fa-regular fa-heart"
                                                                                         aria-hidden="true"></i>
                                                                                 </a>
                                                                             @endauth
                                                                             <a href="{{ route('client.products.show', $item->id) }}"
-class="quick-view hidden-sm-down"
+                                                                                class="quick-view hidden-sm-down"
                                                                                 data-link-action="quickview"
                                                                                 data-product-id="{{ $item->id }}"
                                                                                 onclick="openQuickView(event, this)">
-                                                                                <i class="fa fa-eye"
-                                                                                    aria-hidden="true"></i>
+                                                                                <i class="fa fa-eye" aria-hidden="true"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -365,7 +359,7 @@ class="quick-view hidden-sm-down"
                                                             {{-- Ảnh chính --}}
                                                             <div class="mb-3">
                                                                 <img id="main-image"
-src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
+                                                                    src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
                                                                     class="img-fluid rounded w-100"
                                                                     style="object-fit: contain; max-height: 400px;"
                                                                     alt="{{ $product->translations[0]->name }}">
@@ -397,7 +391,7 @@ src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
 
                                                 <div class="product-info col-xs-12 col-md-7 col-sm-7">
                                                     <div class="detail-description">
-<div class="price-del">
+                                                        <div class="price-del">
                                                             <span id="variant-price" class="price text-danger fw-bold">
                                                                 {{ number_format($variant->price ?? $product->base_price, 0, ',', '.') }}
                                                                 đ
@@ -433,7 +427,7 @@ src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
                                                                                     preg_replace(
                                                                                         '/\s+/',
                                                                                         '-',
-$v->color,
+                                                                                        $v->color,
                                                                                     ),
                                                                                 );
                                                                             @endphp
@@ -470,7 +464,7 @@ $v->color,
 
                                                         {{-- Tăng giảm số lượng và nút mua --}}
                                                         <div class="has-border cart-area">
-<div class="product-quantity">
+                                                            <div class="product-quantity">
                                                                 <div class="qty">
                                                                     <div class="input-group">
                                                                         <div class="quantity">
@@ -498,7 +492,7 @@ $v->color,
                                                                                     value="{{ $variant->id }}">
                                                                                 <input type="hidden" name="quantity"
                                                                                     id="add-cart-qty" value="1">
-<button
+                                                                                <button
                                                                                     class="btn btn-primary add-to-cart add-item"
                                                                                     data-button-action="add-to-cart"
                                                                                     type="submit">
@@ -525,7 +519,7 @@ $v->color,
                                                                                 <a class="addToWishlist"
                                                                                     href="{{ route('login') }}"
                                                                                     title="Đăng nhập để yêu thích">
-<i class="fa fa-heart"
+                                                                                    <i class="fa fa-heart"
                                                                                         aria-hidden="true"></i>
                                                                                 </a>
                                                                             @endauth
@@ -553,12 +547,11 @@ $v->color,
                                                             <div class="btn-group">
                                                                 <a href="#"><i
                                                                         class="zmdi zmdi-share"></i><span>Share</span></a>
-                                                                <a href="#" class="email"><i
-                                                                        class="fa fa-envelope"
+                                                                <a href="#" class="email"><i class="fa fa-envelope"
                                                                         aria-hidden="true"></i><span>SEND TO A
                                                                         FRIEND</span></a>
                                                                 <a href="#" class="print"><i
-class="zmdi zmdi-print"></i><span>Print</span></a>
+                                                                        class="zmdi zmdi-print"></i><span>Print</span></a>
                                                             </div>
                                                         </div>
 
@@ -593,7 +586,7 @@ class="zmdi zmdi-print"></i><span>Print</span></a>
                                                                         href="#">{{ $product->sku ?? 'e-02154' }}</a></span>
                                                             </p>
                                                             <p>Categories: <span class="content2"><a
-href="#">{{ $product->category->translations[0]->name ?? 'Clothing' }}</a></span>
+                                                                        href="#">{{ $product->category->translations[0]->name ?? 'Clothing' }}</a></span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -629,88 +622,50 @@ href="#">{{ $product->category->translations[0]->name ?? 'Clothing' }}</a></span
                                                             @foreach ($product->tags ?? ['Jacket', 'Overcoat', 'Luxury', 'men', 'summer', 'autumn'] as $tag)
                                                                 <a href="#">{{ $tag }}</a>,
                                                             @endforeach
-</p>
+                                                        </p>
                                                     </div>
+                                                    
+                                                    
+                                               
                                                     <div id="review" class="tab-pane fade">
-                                                        <div class="spr-form">
-                                                            <div class="user-comment">
-                                                                @foreach ($product->reviews ?? [] as $review)
-                                                                    <div class="spr-review">
-                                                                        <div class="spr-review-header">
-                                                                            <span class="spr-review-header-byline">
-                                                                                <strong>{{ $review->user->name ?? 'Anonymous' }}</strong>
-                                                                                -
-                                                                                <span>{{ $review->created_at->format('M d, Y') }}</span>
-                                                                            </span>
-                                                                            <div class="rating">
-                                                                                <div class="star-content">
-                                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                                        <div
-                                                                                            class="star{{ $i <= $review->rating ? '' : ' empty' }}">
-                                                                                        </div>
-                                                                                    @endfor
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="spr-review-content">
-                                                                            <p class="spr-review-content-body">
-                                                                                {{ $review->comment }}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                            <form method="post" action="" class="new-review-form">
-                                                                @csrf
-<input type="hidden" name="product_id"
-                                                                    value="{{ $product->id }}">
-                                                                <h3 class="spr-form-title">Write a review</h3>
-                                                                <fieldset>
-                                                                    <div class="spr-form-review-rating">
-                                                                        <label class="spr-form-label">Your Rating</label>
-                                                                        <fieldset class="ratings">
-                                                                            @for ($i = 5; $i >= 1; $i--)
-                                                                                <input type="radio"
-                                                                                    id="star{{ $i }}"
-                                                                                    name="rating"
-                                                                                    value="{{ $i }}" />
-                                                                                <label class="full"
-                                                                                    for="star{{ $i }}"
-                                                                                    title="{{ $i }} stars"></label>
-                                                                            @endfor
-                                                                        </fieldset>
-                                                                    </div>
-                                                                </fieldset>
-                                                                <fieldset class="spr-form-contact">
-                                                                    <div class="spr-form-contact-name">
-                                                                        <input
-                                                                            class="spr-form-input spr-form-input-text form-control"
-                                                                            name="name"
-                                                                            value="{{ auth()->user()->name ?? '' }}"
-                                                                            placeholder="Enter your name">
-                                                                    </div>
-                                                                    <div class="spr-form-contact-email">
-                                                                        <input
-                                                                            class="spr-form-input spr-form-input-email form-control"
-name="email"
-                                                                            value="{{ auth()->user()->email ?? '' }}"
-                                                                            placeholder="Enter your email">
-                                                                    </div>
-                                                                </fieldset>
-                                                                <fieldset>
-                                                                    <div class="spr-form-review-body">
-                                                                        <div class="spr-form-input">
-                                                                            <textarea class="spr-form-input-textarea" name="comment" rows="10" placeholder="Write your comments here"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </fieldset>
-                                                                <div class="submit">
-                                                                    <input type="submit" name="addComment"
-                                                                        id="submitComment" class="btn btn-default"
-                                                                        value="Submit Review">
-                                                                </div>
-                                                            </form>
-                                                        </div>
+                                                        <div class="tab-pane fade show active" id="reviews">
+    <h5>Đánh giá sản phẩm</h5>
+
+    @php
+        $allReviews = collect();
+
+        foreach ($product->variants as $variant) {
+            $allReviews = $allReviews->merge($variant->reviews);
+        }
+    @endphp
+
+    @if ($allReviews->isEmpty())
+        <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+    @else
+        @foreach ($allReviews as $review)
+     <div class="border p-3 mb-3 rounded">
+    <strong>{{ $review->user->name ?? 'Người dùng' }}</strong>
+
+    {{-- ⭐ Hiển thị số sao --}}
+    <div class="text-warning">
+        @for ($i = 1; $i <= 5; $i++)
+            @if ($i <= $review->rating)
+                <i class="bi bi-star-fill"></i>
+            @else
+                <i class="bi bi-star"></i>
+            @endif
+        @endfor
+    </div>
+
+    {{-- 💬 Hiển thị bình luận --}}
+    <p class="mt-2">{{ $review->comment }}</p>
+</div>
+        @endforeach
+    @endif
+</div>
+
                                                     </div>
+                                                  
                                                 </div>
                                             </div>
 
@@ -727,7 +682,7 @@ name="email"
                                                             @foreach ($relatedProducts as $item)
                                                                 @php
                                                                     $translation = $item->translations->first();
-$variant = $item->variants->first();
+                                                                    $variant = $item->variants->first();
                                                                 @endphp
                                                                 <div class="item text-center col-md-4">
                                                                     <div
@@ -755,13 +710,12 @@ $variant = $item->variants->first();
                                                                                 <div class="rating">
                                                                                     <div class="star-content">
                                                                                         @for ($i = 1; $i <= 5; $i++)
-<div class="star"></div>
+                                                                                            <div class="star"></div>
                                                                                         @endfor
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="product-group-price">
-                                                                                    <div
-                                                                                        class="product-price-and-shipping">
+                                                                                    <div class="product-price-and-shipping">
                                                                                         <span
                                                                                             class="price">{{ number_format($variant->price ?? $item->base_price, 0, ',', '.') }}
                                                                                             đ</span>
@@ -771,19 +725,15 @@ $variant = $item->variants->first();
                                                                             <div
                                                                                 class="product-buttons d-flex justify-content-center">
                                                                                 {{-- Nút Thêm vào giỏ hàng --}}
-                                                                                <form
-                                                                                    action="{{ route('client.carts.add') }}"
+                                                                                <form action="{{ route('client.carts.add') }}"
                                                                                     method="POST" class="formAddToCart">
                                                                                     @csrf
-                                                                                    <input type="hidden"
-                                                                                        name="variant_id"
+                                                                                    <input type="hidden" name="variant_id"
                                                                                         value="{{ $variant->id ?? '' }}">
-                                                                                    <input type="hidden" name="quantity"
-                                                                                        value="1">
-                                                                                    <button type="submit"
-                                                                                        class="add-to-cart"
+                                                                                    <input type="hidden" name="quantity" value="1">
+                                                                                    <button type="submit" class="add-to-cart"
                                                                                         data-button-action="add-to-cart">
-<i class="fa fa-shopping-cart"
+                                                                                        <i class="fa fa-shopping-cart"
                                                                                             aria-hidden="true"></i>
                                                                                     </button>
                                                                                 </form>
@@ -810,13 +760,12 @@ $variant = $item->variants->first();
                                                                                     </a>
                                                                                 @endauth
                                                                                 {{-- Nút Xem nhanh --}}
-<a href="{{ route('client.products.show', $item->id) }}"
+                                                                                <a href="{{ route('client.products.show', $item->id) }}"
                                                                                     class="quick-view hidden-sm-down"
                                                                                     data-link-action="quickview"
                                                                                     data-product-id="{{ $item->id }}"
                                                                                     onclick="openQuickView(event, this)">
-                                                                                    <i class="fa fa-eye"
-                                                                                        aria-hidden="true"></i>
+                                                                                    <i class="fa fa-eye" aria-hidden="true"></i>
                                                                                 </a>
                                                                             </div>
                                                                         </div>
@@ -845,13 +794,13 @@ $variant = $item->variants->first();
 {{-- Script Xem thêm / Thu gọn và Tăng giảm số lượng --}}
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const btn = document.getElementById('toggle-description');
             const shortDesc = document.getElementById('short-description');
             const fullDesc = document.getElementById('full-description');
             let expanded = false;
 
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 expanded = !expanded;
                 if (expanded) {
                     shortDesc.style.display = 'none';
@@ -878,7 +827,7 @@ $variant = $item->variants->first();
         }
 
         function updateQtyDisplay() {
-document.getElementById('quantity_wanted').value = quantity;
+            document.getElementById('quantity_wanted').value = quantity;
             document.getElementById('add-cart-qty').value = quantity;
             // Nếu bạn thêm nút "Mua ngay" với id="buy-now-qty", hãy thêm dòng sau:
             // document.getElementById('buy-now-qty').value = quantity;
@@ -889,13 +838,13 @@ document.getElementById('quantity_wanted').value = quantity;
         });
 
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const btn = document.getElementById('toggle-description');
             const dots = document.getElementById('dots');
             const moreText = document.getElementById('more');
 
             if (btn) {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (moreText.style.display === "none") {
                         moreText.style.display = "inline";
                         dots.style.display = "none";
@@ -924,7 +873,7 @@ document.getElementById('quantity_wanted').value = quantity;
         }
 
         // Khi chọn size
-        document.getElementById('sizeSelect').addEventListener('change', function() {
+        document.getElementById('sizeSelect').addEventListener('change', function () {
             selectedSize = this.value;
             updateVariant();
         });
@@ -956,7 +905,7 @@ document.getElementById('quantity_wanted').value = quantity;
                 document.getElementById('variant-price').innerText = parseInt(price).toLocaleString('vi-VN') + ' đ';
 
                 // Cập nhật variant_id hidden
-const input = document.getElementById('variant-id');
+                const input = document.getElementById('variant-id');
                 if (input) input.value = variantId;
 
             }

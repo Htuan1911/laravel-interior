@@ -64,24 +64,36 @@
         @else
             @foreach ($orders as $order)
                 <div class="order-card">
-                    <div class="order-header">
-                        <strong>Mã đơn:</strong> {{ $order->id }} |
-                        <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-                        <strong>Trạng thái:</strong> {{ $order->status }} |
-                        <strong>Phương thức:</strong>
-                        @switch(optional($order->payment)->method)
-                            @case('cod')
-                                Thanh toán khi nhận hàng
-                            @break
+                 <div class="order-header d-flex justify-content-between align-items-center">
+    <div>
+        <strong>Mã đơn:</strong> {{ $order->id }} |
+        <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
+        <strong>Trạng thái:</strong> {{ $order->status_label }} |
+        <strong>Phương thức:</strong>
+        @switch(optional($order->payment)->method)
+            @case('cod')
+                Thanh toán khi nhận hàng
+                @break
+            @case('online')
+                Ví MoMo
+                @break
+            @default
+                <span class="text-danger">Không xác định</span>
+        @endswitch
+    </div>
 
-                            @case('online')
-                                Ví MoMo
-                            @break
+    @if ($order->status === 'pending')
+        <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-sm btn-danger">
+                <i class="bi bi-x-circle-fill"></i> Hủy đơn
+            </button>
+        </form>
+    @endif
+</div>
 
-                            @default
-                                <span class="text-danger">Không xác định</span>
-                        @endswitch
-                    </div>
 
                     <div class="order-body">
                         <p><strong>Người nhận:</strong> {{ $order->shipping_name }} - {{ $order->shipping_phone }}</p>
@@ -102,7 +114,6 @@
                                             Tổng: {{ number_format($item->total_price, 0, ',', '.') }} đ
                                         </p>
 
-                                        {{-- Kiểm tra đánh giá --}}
                                         @php
                                             $userReview = $item->reviews()->where('user_id', auth()->id())->first();
                                         @endphp
@@ -122,17 +133,15 @@
                                                     @endfor
                                                 </p>
                                                 <p><strong>Bình luận:</strong> {{ $userReview->comment }}</p>
-                                            @else
+                                            @elseif ($order->status === 'completed')
                                                 <h6 class="mb-2">Đánh giá sản phẩm</h6>
                                                 <form action="{{ route('client.reviews.store') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="order_item_id" value="{{ $item->id }}">
 
-                                                    {{-- Icon sao --}}
                                                     <div class="mb-2 rating-stars d-flex">
                                                         @for ($i = 1; $i <= 5; $i++)
-                                                            <input type="radio" name="rating" id="star-{{ $item->id }}-{{ $i }}"
-                                                                   value="{{ $i }}">
+                                                            <input type="radio" name="rating" id="star-{{ $item->id }}-{{ $i }}" value="{{ $i }}">
                                                             <label for="star-{{ $item->id }}-{{ $i }}" class="star-label">
                                                                 <i class="bi bi-star-fill text-secondary"></i>
                                                             </label>

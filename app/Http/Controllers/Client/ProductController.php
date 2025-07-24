@@ -289,7 +289,7 @@ case 'price_desc':
     {
         $product = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
-            'variants',
+            'variants.reviews.user',
             'category.translations' => fn($q) => $q->where('language_code', 'vi'),
         ])->findOrFail($id);
 
@@ -315,6 +315,7 @@ case 'price_desc':
             ->get();
 
         return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts'));
+
     }
 
     // ClientProductController.php
