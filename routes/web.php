@@ -25,8 +25,14 @@ use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
+
+
+use App\Http\Controllers\Client\CompareController;
+
+
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Client\CouponController as ClientCouponController;
+
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
 
 
@@ -97,6 +103,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}/force', [ProductController::class, 'forceDelete'])->name('force-delete');
         Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
         Route::get('/trashed', [ProductController::class, 'trashed'])->name('trashed');
+        Route::get('/{id}/show', [ProductController::class, 'show'])->name('show');
     });
 
 
@@ -313,6 +320,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Xoá vĩnh viễn
     Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
+
+
+
+    // So sánh sản phẩm
+    Route::prefix('compare')->name('compare.')->group(function () {
+    Route::get('/', [CompareController::class, 'index'])->name('index');
+    Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
+    Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
+    Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
+});
+
 
 });
 

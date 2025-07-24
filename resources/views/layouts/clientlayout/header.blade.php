@@ -240,6 +240,12 @@
                                     </a>
                                 </div>
                                 <div>
+                                    <a href="{{ route('client.compare.index') }}" title="History">
+                                        <i class="fa fa-file-alt"></i>
+                                        <span>so sánh</span>
+                                    </a>
+                                </div>
+                                <div>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                         style="display: none;">
                                         @csrf

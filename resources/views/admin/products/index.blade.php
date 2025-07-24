@@ -148,6 +148,8 @@
                                         onclick="return confirm('Xoá mềm sản phẩm này?')">Xoá</button>
                                 </form>
                             @endif
+                            <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-sm btn-info">
+                                Xem
                         </td>
                     </tr>
                 @endforeach

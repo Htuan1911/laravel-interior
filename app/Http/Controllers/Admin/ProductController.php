@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -247,42 +249,36 @@ public function getOptionsByCategory($id)
 
 public function edit($id)
 {
-    $languageCode = 'vi';
+    $product = DB::table('products')->where('id', $id)->first();
+    if (!$product) {
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không tồn tại.');
+    }
 
-    $product = DB::table('products')
-        ->join('product_translations', function ($join) use ($languageCode) {
-            $join->on('products.id', '=', 'product_translations.product_id')
-                ->where('product_translations.language_code', '=', $languageCode);
-        })
-        ->where('products.id', $id)
-        ->select(
-            'products.*',
-            'product_translations.name',
-            'product_translations.description',
-            'product_translations.material',
-            'product_translations.style'
-        )
+    $translation = DB::table('product_translations')
+        ->where('product_id', $id)
+        ->where('language_code', 'vi')
         ->first();
+
+    $categories = DB::table('categories')
+        ->join('category_translations', function ($join) {
+            $join->on('categories.id', '=', 'category_translations.category_id')
+                 ->where('category_translations.language_code', 'vi');
+        })
+        ->select('categories.id', 'category_translations.name')
+        ->get();
 
     $variants = DB::table('product_variants')
         ->where('product_id', $id)
         ->get();
 
-    $categories = DB::table('categories')
-        ->join('category_translations', function ($join) {
-            $join->on('categories.id', '=', 'category_translations.category_id')
-                ->where('category_translations.language_code', '=', 'vi');
-        })
-        ->select('categories.id', 'category_translations.name')
-        ->get();
-
-    return view('admin.products.edit', compact('product', 'categories', 'variants'));
+    return view('admin.products.edit', compact('product', 'translation', 'categories', 'variants'));
 }
+
 public function update(Request $request, $id)
 {
     $request->validate([
-        'name' => 'required|string',
-        'category_id' => 'required|integer',
+        'name' => 'required|string|max:255',
+        'category_id' => 'required|integer|exists:categories,id',
         'warranty_months' => 'nullable|integer',
         'description' => 'nullable|string',
         'material' => 'nullable|string',
@@ -290,23 +286,27 @@ public function update(Request $request, $id)
         'style' => 'nullable|string',
         'image' => 'nullable|image|max:2048',
         'variants' => 'nullable|array',
-        'variants.*.id' => 'nullable|integer',
         'variants.*.name' => 'required|string',
         'variants.*.sku' => 'nullable|string',
         'variants.*.price' => 'nullable|numeric',
         'variants.*.stock_quantity' => 'nullable|integer',
         'variants.*.weight' => 'nullable|numeric',
         'variants.*.color' => 'nullable|string',
+        'variants.*.material' => 'nullable|string',
+        'variants.*.size' => 'nullable|string',
         'variants.*.image' => 'nullable|image|max:2048',
     ]);
 
-    // Cập nhật ảnh chính nếu có
+    // Ảnh chính
     $mainImagePath = DB::table('products')->where('id', $id)->value('image');
     if ($request->hasFile('image')) {
+        if ($mainImagePath && Storage::disk('public')->exists($mainImagePath)) {
+            Storage::disk('public')->delete($mainImagePath);
+        }
         $mainImagePath = $request->file('image')->store('products', 'public');
     }
 
-    // Cập nhật bảng products
+    // Cập nhật sản phẩm
     DB::table('products')->where('id', $id)->update([
         'category_id' => $request->category_id,
         'dimensions' => $request->dimensions,
@@ -315,7 +315,7 @@ public function update(Request $request, $id)
         'updated_at' => now(),
     ]);
 
-    // Cập nhật bản dịch
+    // Translation
     DB::table('product_translations')
         ->where('product_id', $id)
         ->where('language_code', 'vi')
@@ -327,15 +327,43 @@ public function update(Request $request, $id)
             'updated_at' => now(),
         ]);
 
-    // Cập nhật biến thể
+    // Xử lý biến thể
+    $existingIds = DB::table('product_variants')->where('product_id', $id)->pluck('id')->toArray();
+    $submittedIds = collect($request->variants ?? [])->pluck('id')->filter()->toArray();
+
+    // Xóa biến thể không còn
+    $toDelete = array_diff($existingIds, $submittedIds);
+    if ($toDelete) {
+        $variantImages = DB::table('product_variants')->whereIn('id', $toDelete)->pluck('image');
+        foreach ($variantImages as $img) {
+            if ($img && Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
+            }
+        }
+        DB::table('product_variants')->whereIn('id', $toDelete)->delete();
+    }
+
+    // Thêm hoặc cập nhật biến thể
     if ($request->has('variants')) {
-        foreach ($request->variants as $index => $variant) {
-            $variantImagePath = DB::table('product_variants')->where('id', $variant['id'])->value('image') ?? null;
-            if ($request->hasFile("variants.$index.image")) {
-                $variantImagePath = $request->file("variants.$index.image")->store('variant_images', 'public');
+        foreach ($request->variants as $i => $variant) {
+            // Log kiểm tra
+            Log::info("Update variant #$i", [
+                'material' => $variant['material'] ?? 'null',
+                'size' => $variant['size'] ?? 'null',
+            ]);
+
+            $variantImage = $variant['id'] 
+                ? DB::table('product_variants')->where('id', $variant['id'])->value('image') 
+                : null;
+
+            if ($request->hasFile("variants.$i.image")) {
+                if ($variantImage && Storage::disk('public')->exists($variantImage)) {
+                    Storage::disk('public')->delete($variantImage);
+                }
+                $variantImage = $request->file("variants.$i.image")->store('variant_images', 'public');
             }
 
-            DB::table('product_variants')->where('id', $variant['id'])->update([
+            $variantData = [
                 'name' => $variant['name'],
                 'variant_name' => $variant['name'],
                 'sku' => $variant['sku'] ?? null,
@@ -343,14 +371,25 @@ public function update(Request $request, $id)
                 'stock_quantity' => $variant['stock_quantity'] ?? 0,
                 'weight' => $variant['weight'] ?? null,
                 'color' => $variant['color'] ?? null,
-                'image' => $variantImagePath,
+                'material' => $variant['material'] ?? null,
+                'size' => $variant['size'] ?? null,
+                'image' => $variantImage,
                 'updated_at' => now(),
-            ]);
+            ];
+
+            if (!empty($variant['id'])) {
+                DB::table('product_variants')->where('id', $variant['id'])->update($variantData);
+            } else {
+                $variantData['product_id'] = $id;
+                $variantData['created_at'] = now();
+                DB::table('product_variants')->insert($variantData);
+            }
         }
     }
 
     return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công.');
 }
+
 
 public function destroy($id)
 {
@@ -417,6 +456,50 @@ public function trashed()
 
     return view('admin.products.trashed', compact('products'));
 }
+public function show($id)
+{
+    $languageCode = 'vi';
+
+    // Lấy thông tin sản phẩm
+    $product = DB::table('products')
+        ->join('product_translations', function ($join) use ($languageCode) {
+            $join->on('products.id', '=', 'product_translations.product_id')
+                ->where('product_translations.language_code', '=', $languageCode);
+        })
+        ->join('categories', 'products.category_id', '=', 'categories.id')
+        ->join('category_translations', function ($join) use ($languageCode) {
+            $join->on('categories.id', '=', 'category_translations.category_id')
+                ->where('category_translations.language_code', '=', $languageCode);
+        })
+        ->where('products.id', $id)
+        ->select(
+            'products.id',
+            'products.image as main_image',
+            'product_translations.name',
+            'product_translations.description',
+            'product_translations.material',
+            'product_translations.style',
+            'products.dimensions',
+            'products.warranty_months',
+            'products.status',
+            'category_translations.name as category_name',
+            'products.created_at'
+        )
+        ->first();
+
+    if (!$product) {
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không tồn tại.');
+    }
+
+    // Lấy danh sách biến thể
+    $variants = DB::table('product_variants')
+        ->where('product_variants.product_id', $id)
+        ->select('id', 'name', 'sku', 'price', 'stock_quantity', 'color', 'size', 'material', 'image')
+        ->get();
+
+    return view('admin.products.show', compact('product', 'variants'));
+}
+
 
 
 }
