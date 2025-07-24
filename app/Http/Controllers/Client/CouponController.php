@@ -14,42 +14,62 @@ class CouponController extends Controller
         $code = $request->code;
         $subtotal = (float) $request->subtotal;
 
-        $discount = Coupon::where('code', $code)
+        $coupon = Coupon::where('code', $code)
             ->where('is_active', 1)
             ->where('expires_at', '>', Carbon::now())
             ->first();
 
-        if (!$discount) {
+        if (!$coupon) {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn']);
         }
 
-        if ($discount->min_order_amount && $subtotal < $discount->min_order_amount) {
+        if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
             return response()->json(['success' => false, 'message' => 'Đơn hàng chưa đạt giá trị tối thiểu']);
         }
 
-        if ($discount->max_uses && $discount->used_count >= $discount->max_uses) {
+        if ($coupon->max_uses && $coupon->used_count >= $coupon->max_uses) {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá đã được sử dụng tối đa']);
         }
 
-        // Tính giảm
+        // Tính số tiền giảm
         $discountAmount = 0;
-        if ($discount->discount_percent) {
-            $discountAmount = $subtotal * ($discount->discount_percent / 100);
-        } elseif ($discount->discount_amount) {
-            $discountAmount = $discount->discount_amount;
+
+        if ($coupon->discount_percent && !$coupon->discount_amount) {
+            // Tính giảm theo %
+            $discountAmount = $subtotal * ($coupon->discount_percent / 100);
+
+            // Nếu số tiền giảm > giới hạn, chỉ giảm tới mức giới hạn
+            if (!is_null($coupon->max_discount_amount) && $discountAmount > $coupon->max_discount_amount) {
+                $discountAmount = $coupon->max_discount_amount;
+            }
+        } elseif ($coupon->discount_amount && !$coupon->discount_percent) {
+            // Giảm theo số tiền
+            $discountAmount = $coupon->discount_amount;
+        } else {
+            // Nếu có cả % và số tiền thì báo lỗi
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không hợp lệ (không được vừa % vừa số tiền)',
+            ]);
         }
 
-        $discountAmount = min($discountAmount, $subtotal); // Không âm
+        // Đảm bảo không giảm vượt quá tổng tiền đơn hàng
+        $discountAmount = min($discountAmount, $subtotal);
         $total = $subtotal - $discountAmount;
 
-        // Lưu vào session để áp dụng sau khi submit đơn
-        session(['applied_coupon_id' => $discount->id]);
-        session(['discount_amount' => $discountAmount]);
-        session(['discount_total' => $total]);
+        // Lưu thông tin vào session
+        session([
+            'applied_coupon_id' => $coupon->id,
+            'discount_amount' => $discountAmount,
+            'discount_total' => $total,
+        ]);
 
+        // Trả kết quả
         return response()->json([
             'success' => true,
-            'message' => "Áp dụng mã {$code} thành công - giảm " . number_format($discountAmount, 0, ',', '.') . "đ",
+            'message' => "Áp dụng mã {$code} thành công - giảm "
+                . number_format($discountAmount, 0, ',', '.') . "đ"
+                . ($coupon->max_discount_amount ? " (giảm tối đa: " . number_format($coupon->max_discount_amount, 0, ',', '.') . "đ)" : ""),
             'total' => $total,
             'shipping_fee' => 0,
         ]);

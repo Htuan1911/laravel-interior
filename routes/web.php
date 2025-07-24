@@ -166,6 +166,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
+
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('client.orders.history');
+
     // post
     Route::prefix('posts')->middleware('auth')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.index');
@@ -257,6 +260,8 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
+    
+    Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
 
 
     Route::get('/check-coupon', [ClientCouponController::class, 'check']);
