@@ -37,17 +37,14 @@ class CouponController extends Controller
             $amount = $request->discount_amount;
             $minOrder = $request->min_order_amount;
 
-            // Không được nhập cả hai loại giảm
             if ($percent && $amount) {
                 $validator->errors()->add('discount_amount', 'Không được nhập cả % và số tiền giảm cùng lúc.');
             }
 
-            // Số tiền giảm không được lớn hơn hoặc bằng đơn tối thiểu
             if ($amount && $minOrder && $amount >= $minOrder) {
                 $validator->errors()->add('discount_amount', 'Số tiền giảm phải nhỏ hơn đơn tối thiểu.');
             }
 
-            // Nếu có phần trăm giảm thì cần giới hạn số tiền giảm tối đa
             if ($percent && !$request->max_discount_amount) {
                 $validator->errors()->add('max_discount_amount', 'Cần nhập giới hạn số tiền giảm nếu dùng %.');
             }
@@ -122,5 +119,45 @@ class CouponController extends Controller
         $coupon->delete();
 
         return redirect()->route('admin.coupons.index')->with('success', 'Xóa mã giảm giá thành công!');
+    }
+
+    // ===============================
+    // ✅ Logic áp mã giảm giá cố định
+    // ===============================
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'code' => 'required',
+            'order_total' => 'required|numeric|min:0',
+        ]);
+
+        $coupon = Coupon::where('code', $request->code)
+            ->where('is_active', true)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$coupon) {
+            return response()->json(['error' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn.'], 400);
+        }
+
+        // Kiểm tra điều kiện đơn tối thiểu
+        if ($request->order_total < $coupon->min_order_amount) {
+            return response()->json(['error' => 'Đơn hàng chưa đủ điều kiện áp mã.'], 400);
+        }
+
+        $discount = 0;
+        if ($coupon->discount_percent) {
+            $discount = $request->order_total * ($coupon->discount_percent / 100);
+            // Giới hạn giảm tối đa
+            $discount = min($discount, $coupon->max_discount_amount);
+        } elseif ($coupon->discount_amount) {
+            $discount = $coupon->discount_amount;
+        }
+
+        return response()->json([
+            'message' => 'Áp mã thành công!',
+            'discount' => round($discount),
+            'final_total' => round($request->order_total - $discount),
+        ]);
     }
 }
