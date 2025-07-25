@@ -557,28 +557,36 @@
 
                                                         {{-- Đánh giá và bình luận --}}
                                                         <div class="rating-comment has-border d-flex">
+
+
+
+
+
                                                             <div class="review-description d-flex">
                                                                 <span>REVIEW :</span>
                                                                 <div class="rating">
                                                                     <div class="star-content">
+                                                                  <span>{{ $averageRating }} / 5</span>
                                                                         <div class="star"></div>
-                                                                        <div class="star"></div>
-                                                                        <div class="star"></div>
-                                                                        <div class="star"></div>
-                                                                        <div class="star"></div>
+                                                                      
                                                                     </div>
                                                                 </div>
                                                             </div>
+
+
+{{--                                                             
                                                             <div class="read after-has-border">
-                                                                <a href="#review"><i class="fa fa-commenting-o color"
-                                                                        aria-hidden="true"></i><span>READ REVIEWS
+                                                                <a href="#review">
+                                                                    <i class="fa fa-commenting-o color"
+                                                                        aria-hidden="true"></i>
+                                                                        <span>READ REVIEWS
                                                                         (3)</span></a>
                                                             </div>
                                                             <div class="apen after-has-border">
                                                                 <a href="#review"><i class="fa fa-pencil color"
                                                                         aria-hidden="true"></i><span>WRITE A
                                                                         REVIEW</span></a>
-                                                            </div>
+                                                            </div> --}}
                                                         </div>
 
                                                         <div class="content">
@@ -599,7 +607,9 @@
                                                     <li class="active"><a data-toggle="tab" href="#description"
                                                             class="active show">Description</a></li>
                                                     <li><a data-toggle="tab" href="#tag">Product Tags</a></li>
-                                                    <li><a data-toggle="tab" href="#review">Reviews (2)</a></li>
+                                                    <li>
+                                                        <a data-toggle="tab" href="#review">Reviews ({{ $reviewCount }})</a>
+                                                    </li>
                                                 </ul>
                                                 <div class="tab-content">
                                                     <div id="description" class="tab-pane fade in active show">

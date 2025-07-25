@@ -36,4 +36,8 @@ class Product extends Model
         return $this->hasOne(ProductTranslation::class)
             ->where('language_code', app()->getLocale());
     }
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
 }

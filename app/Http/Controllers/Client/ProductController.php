@@ -290,6 +290,8 @@ case 'price_desc':
     $product = Product::with([
         'translations' => fn($q) => $q->where('language_code', 'vi'),
 
+       
+
         // Lọc review có is_visible = true và load user
         'variants.reviews' => fn($q) => $q->where('is_visible', true)->with('user'),
 
@@ -317,7 +319,22 @@ case 'price_desc':
         ->take(2)
         ->get();
 
-    return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts'));
+            // ✅ Lấy toàn bộ review từ các variant
+    $allReviews = $product->variants->flatMap->reviews;
+
+    // ✅ Tổng số đánh giá
+    $reviewCount = $allReviews->count();
+
+    // ✅ Tính trung bình số sao
+    $averageRating = $reviewCount > 0
+        ? round($allReviews->avg('rating'), 1)
+        : 0;
+
+
+
+  //       $reviewCount = $product->variants->flatMap->reviews->count();
+
+    return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts','reviewCount','averageRating' ));
 }
 
 
