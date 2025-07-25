@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Mail\OrderSuccessMail;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -255,6 +257,7 @@ class OrderController extends Controller
                 'transaction_code' => $request->transId,
                 'paid_at' => now(),
             ]);
+            Mail::to($order->user->email)->send(new OrderSuccessMail($order));
 
             return redirect()->route('client.orders.history')->with('success', 'Thanh toán MoMo thành công!');
         } else {
@@ -372,6 +375,8 @@ class OrderController extends Controller
                 'transaction_code' => $vnp_TransactionNo,
                 'paid_at' => now(),
             ]);
+
+            Mail::to($order->user->email)->send(new OrderSuccessMail($order));
 
             return redirect()->route('client.orders.history')->with('success', 'Thanh toán VNPay thành công!');
         } else {
