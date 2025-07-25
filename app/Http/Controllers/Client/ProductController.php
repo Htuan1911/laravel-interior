@@ -285,38 +285,41 @@ case 'price_desc':
 
 
 
-    public function show($id)
-    {
-        $product = Product::with([
-            'translations' => fn($q) => $q->where('language_code', 'vi'),
-            'variants.reviews.user',
-            'category.translations' => fn($q) => $q->where('language_code', 'vi'),
-        ])->findOrFail($id);
+  public function show($id)
+{
+    $product = Product::with([
+        'translations' => fn($q) => $q->where('language_code', 'vi'),
 
-        // Lấy các sản phẩm cùng danh mục
-        $relatedProducts = Product::with([
-            'translations' => fn($q) => $q->where('language_code', 'vi'),
-            'variants',
-        ])
-            ->where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('status', 'active')
-            ->take(3)
-            ->get();
+        // Lọc review có is_visible = true và load user
+        'variants.reviews' => fn($q) => $q->where('is_visible', true)->with('user'),
 
-        // Lấy sản phẩm mới nhất
-        $newestProducts = Product::with([
-            'translations' => fn($q) => $q->where('language_code', 'vi'),
-            'variants',
-        ])
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->take(2)
-            ->get();
+        'category.translations' => fn($q) => $q->where('language_code', 'vi'),
+    ])->findOrFail($id);
 
-        return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts'));
+    // Lấy các sản phẩm cùng danh mục
+    $relatedProducts = Product::with([
+        'translations' => fn($q) => $q->where('language_code', 'vi'),
+        'variants',
+    ])
+        ->where('category_id', $product->category_id)
+        ->where('id', '!=', $product->id)
+        ->where('status', 'active')
+        ->take(3)
+        ->get();
 
-    }
+    // Lấy sản phẩm mới nhất
+    $newestProducts = Product::with([
+        'translations' => fn($q) => $q->where('language_code', 'vi'),
+        'variants',
+    ])
+        ->where('status', 'active')
+        ->orderBy('created_at', 'desc')
+        ->take(2)
+        ->get();
+
+    return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts'));
+}
+
 
     // ClientProductController.php
     public function category($id)

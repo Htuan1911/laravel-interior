@@ -11,6 +11,7 @@ class Review extends Model
         'order_item_id',
         'rating',
         'comment',
+        'is_visible',
     ];
 
     public function user()

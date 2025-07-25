@@ -151,6 +151,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{reviews}/edit', [ReviewController::class, 'edit'])->name('edit');
         Route::put('/{reviews}/update', [ReviewController::class, 'update'])->name('update');
         Route::delete('/{reviews}/destroy', [ReviewController::class, 'destroy'])->name('destroy');
+        Route::patch('/{review}/toggle-visibility', [ReviewController::class, 'toggleVisibility'])
+    ->name('toggleVisibility');
+
     });
 
 
