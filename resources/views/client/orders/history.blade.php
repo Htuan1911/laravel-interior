@@ -46,12 +46,12 @@
             display: none;
         }
 
-        .rating-stars input[type="radio"]:checked ~ label i {
+        .rating-stars input[type="radio"]:checked~label i {
             color: #ffc107 !important;
         }
 
         .rating-stars label:hover i,
-        .rating-stars label:hover ~ label i {
+        .rating-stars label:hover~label i {
             color: #ffc107 !important;
         }
     </style>
@@ -64,35 +64,37 @@
         @else
             @foreach ($orders as $order)
                 <div class="order-card">
-                 <div class="order-header d-flex justify-content-between align-items-center">
-    <div>
-        <strong>Mã đơn:</strong> {{ $order->id }} |
-        <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-        <strong>Trạng thái:</strong> {{ $order->status_label }} |
-        <strong>Phương thức:</strong>
-        @switch(optional($order->payment)->method)
-            @case('cod')
-                Thanh toán khi nhận hàng
-                @break
-            @case('online')
-                Ví MoMo
-                @break
-            @default
-                <span class="text-danger">Không xác định</span>
-        @endswitch
-    </div>
+                    <div class="order-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Mã đơn:</strong> {{ $order->id }} |
+                            <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
+                            <strong>Trạng thái:</strong> {{ $order->status_label }} |
+                            <strong>Phương thức:</strong>
+                            @switch(optional($order->payment)->method)
+                                @case('cod')
+                                    Thanh toán khi nhận hàng
+                                @break
 
-    @if ($order->status === 'pending')
-        <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
-            @csrf
-            @method('PUT')
-            <button type="submit" class="btn btn-sm btn-danger">
-                <i class="bi bi-x-circle-fill"></i> Hủy đơn
-            </button>
-        </form>
-    @endif
-</div>
+                                @case('online')
+                                    Ví MoMo
+                                @break
+
+                                @default
+                                    <span class="text-danger">Không xác định</span>
+                            @endswitch
+                        </div>
+
+                        @if ($order->status === 'pending')
+                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-x-circle-fill"></i> Hủy đơn
+                                </button>
+                            </form>
+                        @endif
+                    </div>
 
 
                     <div class="order-body">
@@ -103,8 +105,8 @@
                             @foreach ($order->items as $item)
                                 <li class="mb-4 d-flex">
                                     <img src="{{ asset('storage/' . ($item->variant->image ?? 'default.jpg')) }}"
-                                         alt="Sản phẩm" width="80" height="80" class="me-3"
-                                         style="object-fit: cover; border-radius: 5px;">
+                                        alt="Sản phẩm" width="80" height="80" class="me-3"
+                                        style="object-fit: cover; border-radius: 5px;">
 
                                     <div style="flex-grow: 1;">
                                         <p class="mb-1"><strong>{{ $item->variant_name }}</strong></p>
@@ -115,7 +117,10 @@
                                         </p>
 
                                         @php
-                                            $userReview = $item->reviews()->where('user_id', auth()->id())->first();
+                                            $userReview = $item
+                                                ->reviews()
+                                                ->where('user_id', auth()->id())
+                                                ->first();
                                         @endphp
 
                                         <div class="review-box mt-3">
@@ -141,17 +146,21 @@
 
                                                     <div class="mb-2 rating-stars d-flex">
                                                         @for ($i = 1; $i <= 5; $i++)
-                                                            <input type="radio" name="rating" id="star-{{ $item->id }}-{{ $i }}" value="{{ $i }}">
-                                                            <label for="star-{{ $item->id }}-{{ $i }}" class="star-label">
+                                                            <input type="radio" name="rating"
+                                                                id="star-{{ $item->id }}-{{ $i }}"
+                                                                value="{{ $i }}">
+                                                            <label for="star-{{ $item->id }}-{{ $i }}"
+                                                                class="star-label">
                                                                 <i class="bi bi-star-fill text-secondary"></i>
                                                             </label>
                                                         @endfor
                                                     </div>
 
                                                     <div class="mb-2">
-                                                        <label for="comment-{{ $item->id }}" class="form-label">Bình luận:</label>
-                                                        <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control"
-                                                                  maxlength="500" placeholder="Nhập nhận xét của bạn..."></textarea>
+                                                        <label for="comment-{{ $item->id }}" class="form-label">Bình
+                                                            luận:</label>
+                                                        <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control" maxlength="500"
+                                                            placeholder="Nhập nhận xét của bạn..."></textarea>
                                                     </div>
 
                                                     <button type="submit" class="btn btn-warning">
