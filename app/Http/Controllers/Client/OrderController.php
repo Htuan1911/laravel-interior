@@ -52,7 +52,7 @@ class OrderController extends Controller
         $discountAmount = session('discount_amount', 0);
         $total = max(0, $productTotal + $shippingFee - $discountAmount);
 
-        if ($request->payment_method === 'online' && $total > 50000000) {
+        if ($request->payment_method === 'momo' && $total > 50000000) {
             return redirect()
                 ->route('client.carts.index')
                 ->with('error', 'Không thể thanh toán online cho đơn hàng trên 50 triệu.');
@@ -126,10 +126,11 @@ class OrderController extends Controller
 
             if ($request->payment_method === 'cod') {
                 return redirect()->route('client.orders.history')->with('success', 'Đặt hàng thành công!');
-            } elseif ($request->payment_method === 'online') {
+            } elseif ($request->payment_method === 'momo') {
                 return $this->momo_payment($request, $order);
+            } elseif ($request->payment_method === 'vnpay') {
+                return $this->vnpay_payment($request, $order); // Gọi xử lý VNPay tại đây
             }
-
             return redirect()->route('client.carts.index')->with('error', 'Phương thức thanh toán không hợp lệ.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -299,6 +300,91 @@ class OrderController extends Controller
 
         return response('OK', 200); // MoMo cần phản hồi 'OK'
     }
+
+    public function vnpay_payment(Request $request, Order $order)
+    {
+        $code_cart = $order->id . '-' . time(); // tạo mã đơn hàng duy nhất
+
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        $vnp_Returnurl = route('client.orders.vnpay_return');
+        $vnp_TmnCode = "QZIUA5MS";
+        $vnp_HashSecret = "1CBH5W640QCETVSBBWI4IEY7L2QSN0EK";
+
+        $vnp_TxnRef = $code_cart;
+        $vnp_OrderInfo = 'Thanh toán đơn hàng #' . $order->id;
+        $vnp_OrderType = 'billpayment';
+        $vnp_Amount = (int) $order->total_amount * 100; // từ order thay vì $request
+        $vnp_Locale = 'vn';
+        $vnp_IpAddr = $request->ip();
+
+        $inputData = [
+            "vnp_Version" => "2.1.0",
+            "vnp_TmnCode" => $vnp_TmnCode,
+            "vnp_Amount" => $vnp_Amount,
+            "vnp_Command" => "pay",
+            "vnp_CreateDate" => now()->format('YmdHis'),
+            "vnp_CurrCode" => "VND",
+            "vnp_IpAddr" => $vnp_IpAddr,
+            "vnp_Locale" => $vnp_Locale,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_OrderType" => $vnp_OrderType,
+            "vnp_ReturnUrl" => $vnp_Returnurl,
+            "vnp_TxnRef" => $vnp_TxnRef,
+        ];
+
+        ksort($inputData);
+        $hashdata = '';
+        $query = '';
+
+        foreach ($inputData as $key => $value) {
+            $hashdata .= ($hashdata ? '&' : '') . urlencode($key) . '=' . urlencode($value);
+            $query .= urlencode($key) . '=' . urlencode($value) . '&';
+        }
+
+        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+        $vnp_Url .= '?' . $query . 'vnp_SecureHash=' . $vnpSecureHash;
+
+        return redirect()->away($vnp_Url);
+    }
+
+    public function vnpayReturn(Request $request)
+    {
+        Log::info('VNPay RETURN:', $request->all());
+
+        $vnp_ResponseCode = $request->vnp_ResponseCode;
+        $vnp_TxnRef = $request->vnp_TxnRef;
+        $vnp_TransactionNo = $request->vnp_TransactionNo;
+
+        // Lấy order id từ mã đơn hàng
+        $orderIdOnly = explode('-', $vnp_TxnRef)[0] ?? null;
+        $order = Order::find($orderIdOnly);
+
+        if (!$order) {
+            return redirect()->route('client.orders.history')->with('error', 'Không tìm thấy đơn hàng!');
+        }
+
+        if ($vnp_ResponseCode == '00') {
+            // Thanh toán thành công
+            $order->update(['status' => 'paid']);
+
+            $order->payment()->update([
+                'status' => 'paid',
+                'transaction_code' => $vnp_TransactionNo,
+                'paid_at' => now(),
+            ]);
+
+            return redirect()->route('client.orders.history')->with('success', 'Thanh toán VNPay thành công!');
+        } else {
+            // Thanh toán thất bại
+            $order->update(['status' => 'pending']);
+
+            return redirect()->route('client.orders.history')->with('error', 'Thanh toán VNPay thất bại hoặc bị hủy!');
+        }
+    }
+
+
+
+
 
     public function cancel(Order $order)
     {

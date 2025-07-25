@@ -75,8 +75,12 @@
                                     Thanh toán khi nhận hàng
                                 @break
 
-                                @case('online')
+                                @case('momo')
                                     Ví MoMo
+                                @break
+
+                                @case('vnpay')
+                                    Ví VNPAY
                                 @break
 
                                 @default

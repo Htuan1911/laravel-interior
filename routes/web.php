@@ -265,9 +265,15 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/orders/momo-return', [ClientOrderController::class, 'momoReturn'])->name('orders.momo_return');
     Route::post('/orders/momo-ipn', [ClientOrderController::class, 'momoIpn'])->name('orders.momo_ipn');
 
+    // Gửi yêu cầu thanh toán đến VNPay (POST)
+    Route::post('/client/vnpay_payment', [ClientOrderController::class, 'vnpay_payment'])->name('order.vnpay_payment');
+    Route::get('/orders/vnpay-return', [ClientOrderController::class, 'vnpayReturn'])->name('orders.vnpay_return');
+
+
+
     Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
-    
+
     Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
 
 
@@ -289,9 +295,9 @@ Route::prefix('client')->name('client.')->group(function () {
 
     // đánh giá
     Route::prefix('reviews')->name('reviews.')->group(function () {
-    Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
-    Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
-});
+        Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
+        Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
+    });
 
 
     // bài viết
@@ -300,12 +306,11 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
     });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
-
-});
-// routes/web.php
+    Route::middleware('auth')->group(function () {
+        Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
+        Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
+    });
+    // routes/web.php
 
     // Liên hệ
     Route::prefix('contact')->group(function () {
@@ -314,11 +319,11 @@ Route::middleware('auth')->group(function () {
     });
     // So sánh sản phẩm
     Route::prefix('compare')->name('compare.')->group(function () {
-    Route::get('/', [CompareController::class, 'index'])->name('index');
-    Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
-    Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
-    Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
-});
+        Route::get('/', [CompareController::class, 'index'])->name('index');
+        Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
+        Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
+        Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
+    });
 });
 Route::prefix('admin')->name('admin.')->group(function () {
     // Xoá mềm sản phẩm trong giỏ
@@ -332,12 +337,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Xoá vĩnh viễn
     Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
-
-
-
-    
-
-
 });
 
 

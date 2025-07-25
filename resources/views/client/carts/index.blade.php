@@ -175,20 +175,40 @@
                                         </div>
                                     </div>
                                     <form id="checkout-form" action="{{ route('client.orders.shipping') }}" method="GET"
-                                        class="d-inline">
+                                        class="d-inline-block p-3 border rounded"
+                                        style="max-width: 400px; background-color: #f9f9f9;">
                                         <div class="mb-2">
-                                            <label><input type="radio" name="payment_method" value="cod" checked> Thanh
-                                                toán khi nhận hàng</label><br>
-                                            <label><input type="radio" name="payment_method" value="online"> Thanh toán
-                                                online</label>
+                                            <label class="form-label fw-semibold mb-2">Phương thức thanh toán:</label>
+
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input" type="radio" name="payment_method"
+                                                    id="cod" value="cod" checked>
+                                                <label class="form-check-label" for="cod">
+                                                    Thanh toán khi nhận hàng
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-1">
+                                                <input class="form-check-input" type="radio" name="payment_method"
+                                                    id="momo" value="momo">
+                                                <label class="form-check-label" for="momo">
+                                                    Thanh toán MoMo
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="payment_method"
+                                                    id="vnpay" value="vnpay">
+                                                <label class="form-check-label" for="vnpay">
+                                                    Thanh toán VNPAY
+                                                </label>
+                                            </div>
                                         </div>
 
-                                        <button type="submit" class="continue btn btn-primary pull-xs-right">
-                                            Continue
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            Tiếp tục
                                         </button>
                                     </form>
-
-
                                 </div>
                                 @php
                                     $totalQuantity = 0;
