@@ -197,34 +197,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{id}/update', [PostCategoryController::class, 'update'])->name('update');
         Route::delete('/{id}/destroy', [PostCategoryController::class, 'destroy'])->name('destroy');
     });
+       Route::prefix('carts')->name('carts.')->group(function () {
+        // Carts
+        Route::get('/', [AdminCartController::class, 'index'])->name('index');
+        Route::get('/trashed', [AdminCartController::class, 'trashed'])->name('trashed');
+        Route::get('/{id}', [AdminCartController::class, 'show'])->name('show');
+        Route::put('/{id}/status', [AdminCartController::class, 'updateStatus'])->name('updateStatus');
+        Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('forceDelete');
+
+        // Cart items
+        Route::delete('/items/{id}', [CartItemController::class, 'destroy'])->name('items.destroy');
+        Route::get('/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('items.trashed');
+        Route::post('/items/{id}/restore', [CartItemController::class, 'restore'])->name('items.restore');
+        Route::delete('/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('items.forceDelete');
+    });
 });
-
-// Cart
-Route::prefix('admin/carts')->group(function () {
-    Route::get('/', [AdminCartController::class, 'index'])->name('admin.carts.index');
-    Route::get('/trashed', [AdminCartController::class, 'trashed'])->name('admin.carts.trashed');
-    Route::get('/{id}', [AdminCartController::class, 'show'])->name('admin.carts.show');
-    Route::put('/{id}/status', [AdminCartController::class, 'updateStatus'])->name('admin.carts.updateStatus');
-    Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('admin.carts.destroy');
-    Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('admin.carts.restore');
-    Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('admin.carts.forceDelete');
-});
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Xoá mềm sản phẩm trong giỏ
-    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
-
-    // Hiển thị sản phẩm đã xoá (thùng rác)
-    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
-
-    // Khôi phục sản phẩm
-    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
-
-    // Xoá vĩnh viễn
-    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
-});
-
-
 
 
 Route::prefix('client')->name('client.')->group(function () {
@@ -324,19 +313,6 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
         Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
     });
-});
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Xoá mềm sản phẩm trong giỏ
-    Route::delete('carts/items/{id}', [CartItemController::class, 'destroy'])->name('carts.items.destroy');
-
-    // Hiển thị sản phẩm đã xoá (thùng rác)
-    Route::get('carts/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('carts.items.trashed');
-
-    // Khôi phục sản phẩm
-    Route::post('carts/items/{id}/restore', [CartItemController::class, 'restore'])->name('carts.items.restore');
-
-    // Xoá vĩnh viễn
-    Route::delete('carts/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('carts.items.forceDelete');
 });
 
 
