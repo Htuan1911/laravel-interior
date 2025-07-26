@@ -58,7 +58,7 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 
 
 // Khu vực quản trị
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('auth','admin')->name('admin.')->group(function () {
     // Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/', [RevenueController::class, 'index'])->name('dashboard');
 
