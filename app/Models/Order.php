@@ -23,8 +23,6 @@ class Order extends Model
     {
         return $this->belongsTo(\App\Models\User::class);
     }
-
-
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
@@ -39,7 +37,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-
+    public function statusLogs()
+    {
+        return $this->hasMany(OrderStatusLog::class)->orderBy('created_at');
+    }
     public function getStatusLabelAttribute()
     {
         return match ($this->status) {

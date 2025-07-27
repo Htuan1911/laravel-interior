@@ -320,3 +320,5 @@ Route::prefix('client')->name('client.')->group(function () {
 
 
 require __DIR__ . '/auth.php';
+
+
