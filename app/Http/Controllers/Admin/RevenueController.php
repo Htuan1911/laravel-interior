@@ -29,10 +29,18 @@ class RevenueController extends Controller
         $labels = $dailyRevenue->pluck('date')->map(fn($date) => Carbon::parse($date)->format('d/m/Y'));
 
         // Tổng đơn hàng
-        $totalOrders = Order::where('status', 'paid')
+      $totalOrders = Order::whereIn('status', ['paid', 'shipped', 'completed'])
+
             ->whereDate('created_at', '>=', $from)
             ->whereDate('created_at', '<=', $to)
             ->count();
+
+// Tổng đơn hàng chưa hoàn thành (đã huỷ hoặc đang chờ xử lý)
+$pendingOrders = Order::whereIn('status', ['pending', 'cancelled'])
+    ->whereDate('created_at', '>=', $from)
+    ->whereDate('created_at', '<=', $to)
+    ->count();
+
 
         // Tổng sản phẩm tồn kho
         $totalStock = ProductVariant::sum('stock_quantity');
@@ -100,6 +108,7 @@ class RevenueController extends Controller
             'to',
             'totalRevenue',
             'totalOrders',
+            'pendingOrders',
             'totalStock',
             'topSelling',
             'lowSoldHighStock',
