@@ -16,11 +16,17 @@ class CartController extends Controller
 
         $cart = Cart::with(['items.variant.product'])->where('user_id', $user->id)->first();
 
-        return view('client.carts.index', compact('cart'));
+         $cartItems = $user->cartItems()->with('variant.product')->get();
+
+        return view('client.carts.index', compact('cart', 'cartItems'));
     }
 
     public function add(Request $request)
     {
+
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm vào giỏ hàng.');
+        }
         $user = auth()->user();
         $variantId = $request->variant_id;
         $quantity = max(1, (int) $request->quantity); // đảm bảo >= 1

@@ -89,7 +89,20 @@
         class="nav-link text-white {{ request()->routeIs('admin.carts.*') ? 'active bg-primary' : '' }}">
         <i class="fas fa-shopping-cart me-2"></i> Quản lý giỏ hàng
     </a>
-</li>
+</li>  
+
+    <li class="nav-item mb-2">
+            <a href="{{ route('admin.posts.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.posts.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-star me-2"></i> Bài Viết 
+            </a>
+    </li>
+    <li class="nav-item mb-2">
+            <a href="{{ route('admin.post_categories.index') }}"
+               class="nav-link text-white {{ request()->routeIs('admin.post_categories.*') ? 'active bg-primary' : '' }}">
+                <i class="fas fa-star me-2"></i> Danh Mục Bài Viết 
+            </a>
+    </li>
 
     </ul>
 </div>

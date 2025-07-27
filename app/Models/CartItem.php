@@ -3,10 +3,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CartItem extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['cart_id', 'variant_id', 'quantity', 'price'];
 
@@ -20,7 +21,6 @@ class CartItem extends Model
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
-    // ✅ Refactor dùng accessor an toàn
     public function getProductAttribute()
     {
         return optional($this->variant)->product;

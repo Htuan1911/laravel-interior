@@ -1,8 +1,8 @@
-@extends('layouts.master')
+@extends('layouts.cart')
 
-@section('content')
+@section('cart-content')
 <div class="container py-5">
-    <h2>Thông tin cá nhân</h2>
+    <h2 class="mb-4">Thông tin cá nhân</h2>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -18,24 +18,60 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('client.account.update') }}">
+    <form method="POST" action="{{ route('client.account.update') }}" enctype="multipart/form-data">
         @csrf
-        <div class="mb-3">
-            <label for="name" class="form-label">Họ tên</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+        <div class="row">
+            <!-- Ảnh đại diện -->
+            <div class="col-md-3 text-center mb-4">
+                <div class="avatar-wrapper mb-2">
+                    @if($user->avatar)
+                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover;">
+                    @else
+                        <img src="https://via.placeholder.com/150" class="rounded-circle shadow" alt="avatar" style="width: 150px; height: 150px; object-fit: cover;">
+                    @endif
+                </div>
+                <input type="file" name="avatar" class="form-control">
+            </div>
+
+            <!-- Thông tin cơ bản -->
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Họ tên</label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
+                    </div>
+
+                    <!-- <div class="col-md-6 mb-3">
+                        <label for="birthday" class="form-label">Ngày sinh</label>
+                        <input type="date" name="birthday" class="form-control" value="{{ old('birthday', $user->birthday) }}">
+                    </div> -->
+
+                    <div class="col-md-6 mb-3">
+                        <label for="province" class="form-label">Tỉnh/Thành phố</label>
+                        <input type="text" name="province" class="form-control" value="{{ old('province', $user->province) }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="district" class="form-label">Quận/Huyện</label>
+                        <input type="text" name="district" class="form-control" value="{{ old('district', $user->district) }}">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
         </div>
-
-        <div class="mb-3">
-            <label for="phone" class="form-label">Số điện thoại</label>
-            <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
     </form>
 </div>
 @endsection

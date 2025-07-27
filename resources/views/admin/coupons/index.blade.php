@@ -22,6 +22,7 @@
                     <tr>
                         <th>Mã</th>
                         <th>% Giảm</th>
+                        <th>Giảm tối đa</th>
                         <th>Tiền giảm</th>
                         <th>Đơn tối thiểu</th>
                         <th>Lượt tối đa</th>
@@ -33,21 +34,35 @@
                 </thead>
                 <tbody>
                     @forelse($coupons as $coupon)
+                        @php
+                            $isExpired = $coupon->expires_at && \Carbon\Carbon::parse($coupon->expires_at)->lt(\Carbon\Carbon::now());
+                        @endphp
                         <tr>
                             <td><strong>{{ $coupon->code }}</strong></td>
-                            <td>{{ $coupon->discount_percent }}%</td>
-                            <td>{{ number_format($coupon->discount_amount) }}đ</td>
-                            <td>{{ number_format($coupon->min_order_amount) }}đ</td>
-                            <td>{{ $coupon->max_uses }}</td>
-                            <td>{{ $coupon->used_count }}</td>
+                            <td>{{ $coupon->discount_percent ? $coupon->discount_percent . '%' : '-' }}</td>
                             <td>
-                                {{ \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') }}
+                                @if ($coupon->discount_percent && $coupon->max_discount_amount)
+                                    {{ number_format($coupon->max_discount_amount) }}đ
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td>
-                                @if ($coupon->is_active)
-                                    <span class="badge bg-success">Đang hoạt động</span>
-                                @else
+                                {{ $coupon->discount_amount ? number_format($coupon->discount_amount) . 'đ' : '-' }}
+                            </td>
+                            <td>{{ number_format($coupon->min_order_amount) }}đ</td>
+                            <td>{{ $coupon->max_uses ?? '-' }}</td>
+                            <td>{{ $coupon->used_count }}</td>
+                            <td>
+                                {{ $coupon->expires_at ? \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') : '-' }}
+                            </td>
+                            <td>
+                                @if (!$coupon->is_active)
                                     <span class="badge bg-secondary">Tạm ngưng</span>
+                                @elseif ($isExpired)
+                                    <span class="badge bg-danger">Hết hạn</span>
+                                @else
+                                    <span class="badge bg-success">Đang hoạt động</span>
                                 @endif
                             </td>
                             <td>
@@ -67,7 +82,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted">Chưa có mã giảm giá nào.</td>
+                            <td colspan="10" class="text-center text-muted">Chưa có mã giảm giá nào.</td>
                         </tr>
                     @endforelse
                 </tbody>

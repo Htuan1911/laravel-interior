@@ -20,6 +20,9 @@ class User extends Authenticatable
         'otp', // Mã OTP
         'otp_expires_at', // Thời gian hết hạn của mã OTP
         'is_verified',
+        'province',      // Tỉnh/Thành phố
+        'district',      // Quận/Huyện
+        'avatar',        // Ảnh đại diện
     ];
 
     protected $hidden = [
@@ -47,13 +50,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
-    public function orders()
+
+    public function wishlists()
     {
-        return $this->hasMany(\App\Models\Order::class);
+        return $this->hasMany(Wishlist::class);
     }
 
-    public function wishlist()
+    public function orders()
     {
-        return $this->hasMany(\App\Models\Wishlist::class);
+        return $this->hasMany(Order::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class); // giả sử mỗi user có 1 giỏ hàng
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(Cart::class);
     }
 }

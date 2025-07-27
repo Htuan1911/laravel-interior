@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Product extends Model
 {
     use SoftDeletes;
@@ -29,4 +30,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductTranslation::class);
     }
+
+    public function translation()
+    {
+        return $this->hasOne(ProductTranslation::class)
+            ->where('language_code', app()->getLocale());
+    }
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
 }

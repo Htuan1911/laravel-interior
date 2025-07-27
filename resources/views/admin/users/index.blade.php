@@ -20,7 +20,8 @@
                     <table class="table table-bordered table-hover align-middle text-center">
                         <thead class="table-dark">
                             <tr>
-                                <th>#</th>
+                                <th>ID</th>
+                                <th>Ảnh</th> <!-- Cột ảnh -->
                                 <th>Họ tên</th>
                                 <th>Email</th>
                                 <th>SĐT</th>
@@ -33,6 +34,17 @@
                             @foreach ($users as $user)
                                 <tr>
                                     <td>{{ $user->id }}</td>
+                                    <td>
+                                        @if ($user->avatar)
+                                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar"
+                                                 width="50" height="50"
+                                                 class="rounded-circle object-fit-cover">
+                                        @else
+                                            <img src="{{ asset('images/default-avatar.png') }}" alt="no-avatar"
+                                                 width="50" height="50"
+                                                 class="rounded-circle object-fit-cover">
+                                        @endif
+                                    </td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->phone }}</td>

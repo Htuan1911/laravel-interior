@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cart extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $fillable = ['user_id', 'status'];
@@ -25,5 +27,9 @@ class Cart extends Model
     {
         return $this->items->sum(fn($item) => $item->price * $item->quantity);
     }
-}
 
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+}
