@@ -114,7 +114,7 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th>Top</th>
                                 <th>Sản phẩm</th>
                                 <th>Biến thể</th>
                                 <th>SKU</th>
@@ -145,16 +145,16 @@
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-warning text-dark">
-                    <i class="fas fa-boxes me-2"></i>Tồn kho cao nhưng bán ít
+                    <i class="fas fa-boxes me-2"></i>Top sản phẩm bán ít
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th>Top</th>
                                 <th>Sản phẩm</th>
                                 <th>Biến thể</th>
-                                <th>Tồn kho</th>
+                                <th>Còn</th>
                                 <th>Đã bán</th>
                             </tr>
                         </thead>
@@ -188,7 +188,7 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th>Top</th>
                                 <th>Sản phẩm</th>
                                 <th>Lượt yêu thích</th>
                             </tr>
