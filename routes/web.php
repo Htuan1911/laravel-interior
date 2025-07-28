@@ -220,7 +220,7 @@ Route::prefix('auth','admin')->name('admin.')->group(function () {
 
 
 Route::prefix('client')->name('client.')->group(function () {
-
+  Route::middleware(['auth', 'check.status'])->group(function (){
     // Trang chủ
     Route::get('/', [HomeController::class, 'index'])->name('client.home');
 
@@ -274,7 +274,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
 
     // Tài khoản người dùng
-    Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+    Route::prefix('account')->name('account.')->group(function () {
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
@@ -309,6 +309,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
         Route::post('/', [ContactController::class, 'send'])->name('contact.send');
     });
+});
     // So sánh sản phẩm
     Route::prefix('compare')->name('compare.')->group(function () {
         Route::get('/', [CompareController::class, 'index'])->name('index');
@@ -317,7 +318,6 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
     });
 });
-
 
 require __DIR__ . '/auth.php';
 

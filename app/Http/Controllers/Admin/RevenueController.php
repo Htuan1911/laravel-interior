@@ -46,44 +46,53 @@ $pendingOrders = Order::whereIn('status', ['pending', 'cancelled'])
         $totalStock = ProductVariant::sum('stock_quantity');
 
         // Top 5 sản phẩm bán chạy
-        $topSelling = DB::table('order_items')
-            ->join('product_variants', 'order_items.variant_id', '=', 'product_variants.id')
-            ->join('products', 'product_variants.product_id', '=', 'products.id')
-            ->join('product_translations', function ($join) {
-                $join->on('product_translations.product_id', '=', 'products.id')
-                    ->where('product_translations.language_code', '=', 'vi');
-            })
-            ->select(
-                'product_translations.name as product_name',
-                'product_variants.name as variant_name',
-                'product_variants.sku',
-                DB::raw('SUM(order_items.quantity) as total_sold')
-            )
-            ->groupBy('product_translations.name', 'product_variants.name', 'product_variants.sku')
-            ->orderByDesc('total_sold')
-            ->limit(5)
-            ->get();
+       $topSelling = DB::table('order_items')
+    ->join('orders', 'order_items.order_id', '=', 'orders.id') // 👉 join thêm orders
+    ->join('product_variants', 'order_items.variant_id', '=', 'product_variants.id')
+    ->join('products', 'product_variants.product_id', '=', 'products.id')
+    ->join('product_translations', function ($join) {
+        $join->on('product_translations.product_id', '=', 'products.id')
+            ->where('product_translations.language_code', '=', 'vi');
+    })
+    ->whereIn('orders.status', ['paid', 'shipped', 'completed']) // 👉 chỉ tính đơn hàng hoàn tất
+    ->select(
+        'product_translations.name as product_name',
+        'product_variants.name as variant_name',
+        'product_variants.sku',
+        DB::raw('SUM(order_items.quantity) as total_sold')
+    )
+    ->groupBy('product_translations.name', 'product_variants.name', 'product_variants.sku')
+    ->orderByDesc('total_sold')
+    ->limit(5)
+    ->get();
+
 
         // Top 5 sản phẩm tồn kho cao nhưng bán ít
-        $lowSoldHighStock = DB::table('product_variants')
-            ->leftJoin('order_items', 'order_items.variant_id', '=', 'product_variants.id')
-            ->join('products', 'product_variants.product_id', '=', 'products.id')
-            ->join('product_translations', function ($join) {
-                $join->on('product_translations.product_id', '=', 'products.id')
-                    ->where('product_translations.language_code', '=', 'vi');
-            })
-            ->select(
-                'product_translations.name as product_name',
-                'product_variants.name as variant_name',
-                'product_variants.sku',
-                'product_variants.stock_quantity as stock',
-                DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_sold')
-            )
-            ->groupBy('product_translations.name', 'product_variants.name', 'product_variants.sku', 'product_variants.stock_quantity')
-            ->orderByDesc('stock')
-            ->orderBy('total_sold')
-            ->limit(5)
-            ->get();
+    $lowSoldHighStock = DB::table('product_variants')
+    ->leftJoin('order_items', 'order_items.variant_id', '=', 'product_variants.id')
+    ->leftJoin('orders', 'order_items.order_id', '=', 'orders.id') // 👉 thêm join orders
+    ->join('products', 'product_variants.product_id', '=', 'products.id')
+    ->join('product_translations', function ($join) {
+        $join->on('product_translations.product_id', '=', 'products.id')
+            ->where('product_translations.language_code', '=', 'vi');
+    })
+    ->where(function ($query) {
+        $query->whereNull('orders.status')
+              ->orWhereIn('orders.status', ['paid', 'shipped', 'completed']); // 👉 chỉ tính đơn hoàn tất
+    })
+    ->select(
+        'product_translations.name as product_name',
+        'product_variants.name as variant_name',
+        'product_variants.sku',
+        'product_variants.stock_quantity as stock',
+        DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_sold')
+    )
+    ->groupBy('product_translations.name', 'product_variants.name', 'product_variants.sku', 'product_variants.stock_quantity')
+    ->orderByDesc('stock')
+    ->orderBy('total_sold')
+    ->limit(5)
+    ->get();
+
 
         // Top sản phẩm yêu thích
         $mostWished = DB::table('wishlists')
