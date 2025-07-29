@@ -24,7 +24,7 @@ class CouponController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required|unique:coupons,code',
-            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'discount_percent' => 'nullable|numeric|min:0|max:70',
             'discount_amount' => 'nullable|numeric|min:0',
             'max_discount_amount' => 'nullable|numeric|min:0',
             'min_order_amount' => 'required|numeric|min:0',
