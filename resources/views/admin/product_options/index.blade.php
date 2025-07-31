@@ -3,6 +3,14 @@
 @section('title', 'Quản lý Thuộc tính sản phẩm')
 
 @section('content')
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="h3 mb-0">Danh sách thuộc tính sản phẩm</h1>
@@ -16,9 +24,7 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+    
 
         <div class="card shadow-sm">
             <div class="card-body">

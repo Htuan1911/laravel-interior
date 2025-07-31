@@ -41,13 +41,13 @@
                         </form>
 
                         {{-- (Tuỳ chọn) Xóa vĩnh viễn nếu có route forceDelete --}}
-                        {{-- 
+                        
                         <form method="POST" action="{{ route('admin.product_options.force_delete', $option->id) }}">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn?')">Xóa vĩnh viễn</button>
                         </form>
-                        --}}
+                       
                     </td>
                 </tr>
             @empty

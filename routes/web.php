@@ -84,6 +84,7 @@ Route::prefix('auth','admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [ProductOptionController::class, 'destroy'])->name('destroy');
         Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
         Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [ProductOptionController::class, 'forceDelete'])->name('force_delete');
     });
 
 
