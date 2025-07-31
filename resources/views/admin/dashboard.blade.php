@@ -112,30 +112,40 @@
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Top</th>
-                                <th>Sản phẩm</th>
-                                <th>Biến thể</th>
-                                <th>SKU</th>
-                                <th>Đã bán</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($topSelling as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td>{{ $item->variant_name ?? 'N/A' }}</td>
-                                    <td>{{ $item->sku }}</td>
-                                    <td>{{ $item->total_sold }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có dữ liệu</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                      <thead class="table-light">
+    <tr>
+        <th>Top</th>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Biến thể</th>
+        <th>SKU</th>
+        <th>Đã bán</th>
+    </tr>
+</thead>
+
+                       <tbody>
+@forelse($topSelling as $index => $item)
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>
+            @if($item->variant_image)
+                <img src="{{ asset('storage/' . $item->variant_image) }}" width="60" height="60" style="object-fit:cover;" class="rounded">
+            @else
+                <span class="text-muted">N/A</span>
+            @endif
+        </td>
+        <td>{{ $item->product_name }}</td>
+        <td>{{ $item->variant_name ?? 'N/A' }}</td>
+        <td>{{ $item->sku }}</td>
+        <td>{{ $item->total_sold }}</td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+    </tr>
+@endforelse
+</tbody>
+
                     </table>
                 </div>
             </div>
@@ -149,30 +159,40 @@
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Top</th>
-                                <th>Sản phẩm</th>
-                                <th>Biến thể</th>
-                                <th>Còn</th>
-                                <th>Đã bán</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($lowSoldHighStock as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td>{{ $item->variant_name ?? 'N/A' }}</td>
-                                    <td>{{ $item->stock }}</td>
-                                    <td>{{ $item->total_sold }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có dữ liệu</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                       <thead class="table-light">
+    <tr>
+        <th>Top</th>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Biến thể</th>
+        <th>Còn</th>
+        <th>Đã bán</th>
+    </tr>
+</thead>
+
+                      <tbody>
+@forelse($lowSoldHighStock as $index => $item)
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>
+            @if($item->variant_image)
+                <img src="{{ asset('storage/' . $item->variant_image) }}" width="60" height="60" style="object-fit:cover;" class="rounded">
+            @else
+                <span class="text-muted">N/A</span>
+            @endif
+        </td>
+        <td>{{ $item->product_name }}</td>
+        <td>{{ $item->variant_name ?? 'N/A' }}</td>
+        <td>{{ $item->stock }}</td>
+        <td>{{ $item->total_sold }}</td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+    </tr>
+@endforelse
+</tbody>
+
                     </table>
                 </div>
             </div>
@@ -234,6 +254,11 @@
 .table-hover tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
+img.rounded {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
 </style>
 @endsection
 
