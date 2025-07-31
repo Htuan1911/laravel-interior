@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h4 class="mb-4">Sửa thuộc tính sản phẩm</h4>
+<div class="container py-4">
+    <h2 class="mb-4 fw-bold">✏️ Chỉnh sửa thuộc tính sản phẩm</h2>
 
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
@@ -13,101 +13,114 @@
         @method('PUT')
 
         <div class="mb-3">
-            <label>Tên thuộc tính *</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $option->name) }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label>Loại *</label>
-            <select name="type" class="form-select" id="type-select" required>
-                <option value="color" {{ $option->type === 'color' ? 'selected' : '' }}>Màu sắc</option>
-                <option value="size" {{ $option->type === 'size' ? 'selected' : '' }}>Kích thước</option>
-                <option value="material" {{ $option->type === 'material' ? 'selected' : '' }}>Chất liệu</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Trạng thái *</label>
-            <select name="status" class="form-select" required>
-                <option value="1" {{ $option->status ? 'selected' : '' }}>Hiện</option>
-                <option value="0" {{ !$option->status ? 'selected' : '' }}>Ẩn</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Danh mục *</label>
-            <select name="category_id" class="form-select" required>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ $option->category_id == $category->id ? 'selected' : '' }}>
+            <label for="category_id" class="form-label">Danh mục</label>
+            <select class="form-select @error('category_id') is-invalid @enderror" name="category_id">
+                <option value="">-- Chọn danh mục --</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id', $option->category_id) == $category->id ? 'selected' : '' }}>
                         {{ $category->name }}
                     </option>
                 @endforeach
             </select>
+            @error('category_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="mb-3">
-            <label>Giá trị thuộc tính *</label>
-            <div id="value-container">
-                @foreach($option->values as $index => $value)
-                    <div class="row align-items-center mb-2">
-                        <div class="col-md-5">
-                            <input type="text" name="values[]" class="form-control" value="{{ $value->value }}" required>
-                        </div>
-                        <div class="col-md-5 color-code-group" style="{{ $option->type == 'color' ? '' : 'display:none;' }}">
-                            <input type="color" name="color_codes[]" class="form-control form-control-color" value="{{ $value->color_code ?? '#000000' }}">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-sm remove-value">X</button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            <button type="button" class="btn btn-sm btn-success" id="add-value">+ Thêm giá trị</button>
+            <label for="name" class="form-label">Tên thuộc tính</label>
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                value="{{ old('name', $option->name) }}">
+            @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
-        <a href="{{ route('admin.product_options.index') }}" class="btn btn-secondary">Hủy</a>
+        <div class="mb-3">
+            <label for="type" class="form-label">Loại thuộc tính</label>
+            <select name="type" class="form-select @error('type') is-invalid @enderror" id="type-select">
+                <option value="color" {{ old('type', $option->type) == 'color' ? 'selected' : '' }}>Màu sắc</option>
+                <option value="material" {{ old('type', $option->type) == 'material' ? 'selected' : '' }}>Chất liệu</option>
+                <option value="size" {{ old('type', $option->type) == 'size' ? 'selected' : '' }}>Kích thước</option>
+            </select>
+            @error('type')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div id="value-list">
+            <label class="form-label">Giá trị thuộc tính</label>
+
+            @php
+                $oldValues = old('values', collect($optionValues)->pluck('value')->toArray());
+                $oldColors = old('color_codes', collect($optionValues)->pluck('color_code')->toArray());
+            @endphp
+
+            @foreach($oldValues as $index => $val)
+                <div class="row mb-2 value-row">
+                    <div class="col-md-6">
+                        <input type="text" name="values[]" class="form-control @error('values.' . $index) is-invalid @enderror"
+                            value="{{ $val }}" placeholder="Giá trị (văn bản)">
+                        @error('values.' . $index)
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <input type="color" name="color_codes[]" class="form-control form-control-color"
+                            value="{{ $oldColors[$index] ?? '#000000' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm remove-value">X</button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" id="add-value">➕ Thêm giá trị</button>
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Trạng thái</label>
+            <select name="status" class="form-select @error('status') is-invalid @enderror">
+                <option value="1" {{ old('status', $option->status) == 1 ? 'selected' : '' }}>Hiển thị</option>
+                <option value="0" {{ old('status', $option->status) == 0 ? 'selected' : '' }}>Ẩn</option>
+            </select>
+            @error('status')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button class="btn btn-primary">💾 Cập nhật</button>
+        <a href="{{ route('admin.product_options.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const valueContainer = document.getElementById('value-container');
-    const addButton = document.getElementById('add-value');
-    const typeSelect = document.getElementById('type-select');
-
-    addButton.addEventListener('click', function () {
-        const isColor = typeSelect.value === 'color';
-        const row = document.createElement('div');
-        row.classList.add('row', 'align-items-center', 'mb-2');
-        row.innerHTML = `
-            <div class="col-md-5">
-                <input type="text" name="values[]" class="form-control" required>
-            </div>
-            <div class="col-md-5 color-code-group" ${isColor ? '' : 'style="display:none;"'}>
-                <input type="color" name="color_codes[]" class="form-control form-control-color" value="#000000">
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger btn-sm remove-value">X</button>
+    function createValueRow(value = '', color = '#000000') {
+        return `
+            <div class="row mb-2 value-row">
+                <div class="col-md-6">
+                    <input type="text" name="values[]" class="form-control" value="${value}">
+                </div>
+                <div class="col-md-4">
+                    <input type="color" name="color_codes[]" class="form-control form-control-color" value="${color}">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-value">X</button>
+                </div>
             </div>
         `;
-        valueContainer.appendChild(row);
+    }
+
+    document.getElementById('add-value').addEventListener('click', function () {
+        document.getElementById('value-list').insertAdjacentHTML('beforeend', createValueRow());
     });
 
-    valueContainer.addEventListener('click', function (e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-value')) {
-            e.target.closest('.row').remove();
+            e.target.closest('.value-row').remove();
         }
     });
-
-    typeSelect.addEventListener('change', function () {
-        const isColor = this.value === 'color';
-        document.querySelectorAll('.color-code-group').forEach(group => {
-            group.style.display = isColor ? '' : 'none';
-        });
-    });
-});
 </script>
-@endsection
+@endpush

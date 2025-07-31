@@ -172,7 +172,8 @@ function generateVariants() {
 
     function fetchOptionsForCategory(categoryId) {
         document.getElementById('generate-variants-btn').disabled = true;
-        fetch(`/admin/products/category/${categoryId}/options`)
+        
+         fetch(`/auth/products/category/${categoryId}/options`)
             .then(response => response.json())
             .then(data => {
                 allOptions = data;

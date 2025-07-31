@@ -18,7 +18,7 @@
                 <select name="category_id" id="category-select" class="form-select" required>
                     <option value="">-- Chọn danh mục --</option>
                     @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -40,9 +40,12 @@
 
         <h5>Thông số kỹ thuật</h5>
         <div class="row mb-3">
-            <div class="col-md-4"><input type="text" name="material" class="form-control" placeholder="Chất liệu..."></div>
-            <div class="col-md-4"><input type="text" name="dimensions" class="form-control" placeholder="Kích thước..."></div>
-            <div class="col-md-4"><input type="text" name="style" class="form-control" placeholder="Phong cách..."></div>
+            <div class="col-md-4"><input type="text" name="material" class="form-control" placeholder="Chất liệu...">
+            </div>
+            <div class="col-md-4"><input type="text" name="dimensions" class="form-control" placeholder="Kích thước...">
+            </div>
+            <div class="col-md-4"><input type="text" name="style" class="form-control" placeholder="Phong cách...">
+            </div>
         </div>
 
         <!-- Biến thể sản phẩm -->
@@ -72,7 +75,8 @@
 
         <!-- Tự động -->
         <div class="mb-3">
-            <button type="button" class="btn btn-warning" id="generate-variants-btn" disabled>Tự động tạo biến thể</button>
+            <button type="button" class="btn btn-warning" id="generate-variants-btn" disabled>Tự động tạo biến
+                thể</button>
         </div>
 
         <div id="variants-container"></div>
@@ -92,7 +96,8 @@
         const categoryId = this.value;
         document.getElementById('generate-variants-btn').disabled = true;
 
-        fetch(`/admin/products/category/${categoryId}/options`)
+    fetch(`/auth/products/category/${categoryId}/options`)
+        
             .then(response => response.json())
             .then(data => {
                 allOptions = data;
@@ -120,6 +125,7 @@
             .catch(error => {
                 console.error('Lỗi khi lấy thuộc tính:', error);
             });
+            console.log("Category ID đã chọn:", categoryId);
     });
 
     // Tự động tạo biến thể
