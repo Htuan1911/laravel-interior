@@ -249,7 +249,7 @@ class OrderController extends Controller
 
         if ($resultCode == 0) {
             // Thành công
-            $order->update(['status' => 'paid']);
+            $order->update(['status' => 'pending']);
 
             // Cập nhật payment nếu có
             $order->payment()->update([
@@ -285,7 +285,7 @@ class OrderController extends Controller
 
         if ($data['resultCode'] == 0) {
             // Thành công
-            $order->update(['status' => 'paid']);
+            $order->update(['status' => 'pending']);
 
             $order->payment()->update([
                 'status' => 'paid',
@@ -368,7 +368,7 @@ class OrderController extends Controller
 
         if ($vnp_ResponseCode == '00') {
             // Thanh toán thành công
-            $order->update(['status' => 'paid']);
+            $order->update(['status' => 'pending']);
 
             $order->payment()->update([
                 'status' => 'paid',

@@ -13,6 +13,8 @@
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
+    @elseif (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="card shadow-sm">
@@ -25,70 +27,82 @@
                                 <th>ID</th>
                                 <th>Người dùng</th>
                                 <th>SĐT</th>
-                                <th>Địa chỉ</th>
                                 <th>Tổng tiền</th>
                                 <th>Ngày đặt</th>
                                 <th>Trạng thái đơn hàng</th>
                                 <th>Thanh toán</th>
+                                <th>Phương thức thanh toán</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($orders as $order)
-                                @php
-                                    // Lấy trạng thái đơn hàng mới nhất
-                                    $latestStatus = $order->statusLogs?->last()?->new_status ?? $order->status;
-                                    $latestStatusLower = strtolower($latestStatus);
+                                    @php
+                                        // Trạng thái đơn hàng từ DB
+                                        $latestStatus = strtolower($order->statusLogs?->last()?->new_status ?? $order->status);
 
-                                    $statusBadge = match($latestStatusLower) {
-                                        'pending' => 'secondary',
-                                        'processing' => 'warning',
-                                        'paid' => 'info',
-                                        'shipped' => 'primary',
-                                        'completed' => 'success',
-                                        'cancelled' => 'danger',
-                                        default => 'dark',
-                                    };
+                                        $statusBadge = match($latestStatus) {
+                                            'pending'   => 'secondary', // Chờ xử lý
+                                            'confirmed' => 'info',      // Đã xác nhận, chờ giao
+                                            'shipping'  => 'primary',   // Đang giao hàng
+                                            'completed' => 'success',   // Hoàn tất đơn hàng
+                                            'cancelled' => 'danger',    // Đơn bị hủy
+                                            default     => 'secondary',
+                                        };
 
-                                    $translatedStatus = match($latestStatusLower) {
-                                        'pending' => 'Đang chờ xử lý',
-                                        'processing' => 'Đang xử lý',
-                                        'paid' => 'Đã thanh toán',
-                                        'shipped' => 'Đã giao hàng',
-                                        'completed' => 'Hoàn tất',
-                                        'cancelled' => 'Đã hủy',
-                                        default => ucfirst($latestStatus),
-                                    };
+                                        $translatedStatus = match($latestStatus) {
+                                            'pending'   => 'Chờ xử lý',
+                                            'confirmed' => 'Đã xác nhận',
+                                            'shipping'  => 'Đang giao hàng',
+                                            'completed' => 'Hoàn tất',
+                                            'cancelled' => 'Đã hủy',
+                                            default     => ucfirst($latestStatus),
+                                        };
 
-                                    // Trạng thái thanh toán từ bảng payment
-                                    $rawPaymentStatus = strtolower($order->payment?->status ?? 'unpaid');
+                                        // Trạng thái thanh toán
+                                        $paymentStatus = strtolower($order->payment?->status ?? 'unpaid');
+                                        $paymentMethod = strtolower($order->payment?->method ?? 'cod');
 
-                                    // Nếu trạng thái đơn hàng là paid/shipped/completed → thanh toán coi là paid
-                                    $paymentStatus = in_array($latestStatusLower, ['paid', 'shipped', 'completed']) ? 'paid' : $rawPaymentStatus;
+                                        $paymentBadge = match($paymentStatus) {
+                                            'paid', 'success' => 'success',
+                                            'pending'         => 'warning',
+                                            'failed'          => 'danger',
+                                            default           => 'secondary',
+                                        };
 
-                                    $paymentBadge = match($paymentStatus) {
-                                        'paid', 'success' => 'success',
-                                        'pending' => 'warning',
-                                        'failed' => 'danger',
-                                        default => 'secondary',
-                                    };
+                                        $paymentText = match($paymentStatus) {
+                                            'paid', 'success' => 'Đã thanh toán',
+                                            'pending'         => 'Chưa thanh toán',
+                                            'failed'          => 'Thanh toán thất bại',
+                                            default           => 'Chưa thanh toán',
+                                        };
 
-                                    $paymentText = match($paymentStatus) {
-                                        'paid', 'success' => 'Đã thanh toán',
-                                        'pending' => 'Đang xử lý',
-                                        'failed' => 'Thất bại',
-                                        default => 'Chưa thanh toán',
-                                    };
+                                        $paymentMethod = $order->payment?->method ?? 'Không rõ';
 
-                                    $isLocked = in_array($latestStatusLower, ['paid', 'shipped', 'completed']) &&
-                                                in_array($paymentStatus, ['paid', 'success']);
-                                @endphp
+                                        // Khóa sửa nếu đơn hàng đã xác nhận trở lên và đã thanh toán, hoặc bị huỷ
+                                      $isLocked = (in_array($latestStatus, ['confirmed', 'shipping', 'completed']) &&
+                                                  (in_array($paymentStatus, ['paid', 'success']) || $paymentMethod === 'cod')
+                                                ) || $latestStatus === 'cancelled';
+
+
+                                        $disableDelete =
+                                            // Đơn đang giao, hoàn tất hoặc đã hủy thì không được xóa
+                                            in_array(strtolower($order->status), ['shipping', 'completed', 'cancelled'])
+
+                                            // Hoặc đơn đã thanh toán online (trừ COD)
+                                            || (
+                                                in_array(strtolower($order->payment?->status ?? ''), ['paid', 'success']) &&
+                                                strtolower($order->payment?->method ?? '') !== 'cod'
+                                            );
+
+
+                                    @endphp
+
 
                                 <tr>
                                     <td>#{{ $order->id }}</td>
                                     <td>{{ $order->user->name ?? 'Không rõ' }}</td>
                                     <td>{{ $order->shipping_phone }}</td>
-                                    <td>{{ $order->shipping_address }}</td>
                                     <td>{{ number_format($order->total_amount, 0, ',', '.') }}₫</td>
                                     <td>{{ $order->created_at->format('d/m/Y') }}</td>
                                     <td>
@@ -101,6 +115,7 @@
                                             {{ $paymentText }}
                                         </span>
                                     </td>
+                                    <td>{{ ucfirst($paymentMethod) }}</td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             @if ($order->trashed())
@@ -124,7 +139,8 @@
                                                 <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Xóa đơn hàng này?')" class="d-inline-block">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa"
+                                                        {{ $disableDelete ? 'disabled' : '' }}>
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -142,4 +158,13 @@
         </div>
     </div>
 </div>
+<script>
+    setInterval(function() {
+        fetch('/run-scheduler')
+            .then(response => response.json())
+            .then(data => console.log('Đã gọi schedule:', data.status));
+    }, 15000); // gọi mỗi 15 giây
+</script>
+
 @endsection
+
