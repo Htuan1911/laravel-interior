@@ -39,13 +39,17 @@ class Order extends Model
     }
     public function statusLogs()
     {
-        return $this->hasMany(OrderStatusLog::class)->orderBy('created_at');
+        return $this->hasMany(OrderStatusLog::class);
+    }
+    public function latestStatus()
+    {
+        return $this->statusLogs()->latest('changed_at')->first()?->new_status ?? $this->status;
     }
     public function getStatusLabelAttribute()
     {
         return match ($this->status) {
             'pending' => 'Chờ xử lý',
-            'processing' => 'Đang xử lý',
+            'confirmed' => 'Đã xác nhận',
             'completed' => 'Hoàn tất',
             'cancelled' => 'Đã hủy',
             'paid' => 'đã thanh toán',

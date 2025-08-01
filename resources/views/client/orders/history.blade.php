@@ -73,8 +73,8 @@
                     <div class="order-header d-flex justify-content-between align-items-center">
                         <div>
                             <strong>Mã đơn:</strong> {{ $order->id }} |
-                            <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-                            <strong>Trạng thái:</strong> {{ $order->status_label }} |
+                            <strong>Tổng tiền:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
+                            <strong>Trạng thái đơn hàng:</strong> {{ $order->status_label }} |
                             <strong>Phương thức:</strong>
                             @switch(optional($order->payment)->method)
                                 @case('cod')

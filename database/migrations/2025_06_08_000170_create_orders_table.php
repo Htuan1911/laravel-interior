@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('shipping_phone', 20)->nullable();
             $table->text('shipping_address')->nullable();
             $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'shipped', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'])->default('pending');
             $table->timestamps();
             $table->softDeletes();
         });
