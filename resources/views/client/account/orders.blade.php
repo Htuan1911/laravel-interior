@@ -7,7 +7,7 @@
     <style>
         .review-box {
             background-color: #f9f9f9;
-            border-left: 4px solid #ffc107;
+            border: 1px solid #000;
             padding: 1rem;
             border-radius: 4px;
         }
@@ -40,13 +40,20 @@
 
         .star-label i {
             font-size: 1.4rem;
+            color: #ccc;
+        }
+
+        .rating-stars {
+            display: flex;
+            flex-direction: row-reverse;
         }
 
         .rating-stars input[type="radio"] {
             display: none;
         }
 
-        .rating-stars input[type="radio"]:checked ~ label i {
+        .rating-stars input[type="radio"]:checked ~ label i,
+        .rating-stars input[type="radio"]:checked + label i {
             color: #ffc107 !important;
         }
 
@@ -64,36 +71,35 @@
         @else
             @foreach ($orders as $order)
                 <div class="order-card">
-                 <div class="order-header d-flex justify-content-between align-items-center">
-    <div>
-        <strong>Mã đơn:</strong> {{ $order->id }} |
-        <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-        <strong>Trạng thái:</strong> {{ $order->status_label }} |
-        <strong>Phương thức:</strong>
-        @switch(optional($order->payment)->method)
-            @case('cod')
-                Thanh toán khi nhận hàng
-                @break
-            @case('online')
-                Ví MoMo
-                @break
-            @default
-                <span class="text-danger">Không xác định</span>
-        @endswitch
-    </div>
+                    <div class="order-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Mã đơn:</strong> {{ $order->id }} |
+                            <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
+                            <strong>Trạng thái:</strong> {{ $order->status_label }} |
+                            <strong>Phương thức:</strong>
+                            @switch(optional($order->payment)->method)
+                                @case('cod')
+                                    Thanh toán khi nhận hàng
+                                    @break
+                                @case('online')
+                                    Ví MoMo
+                                    @break
+                                @default
+                                    <span class="text-danger">Không xác định</span>
+                            @endswitch
+                        </div>
 
-    @if ($order->status === 'pending')
-        <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
-            @csrf
-            @method('PUT')
-            <button type="submit" class="btn btn-sm btn-danger">
-                <i class="bi bi-x-circle-fill"></i> Hủy đơn
-            </button>
-        </form>
-    @endif
-</div>
-
+                        @if ($order->status === 'pending')
+                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-x-circle-fill"></i> Hủy đơn
+                                </button>
+                            </form>
+                        @endif
+                    </div>
 
                     <div class="order-body">
                         <p><strong>Người nhận:</strong> {{ $order->shipping_name }} - {{ $order->shipping_phone }}</p>
@@ -135,29 +141,62 @@
                                                 <p><strong>Bình luận:</strong> {{ $userReview->comment }}</p>
                                             @elseif ($order->status === 'completed')
                                                 <h6 class="mb-2">Đánh giá sản phẩm</h6>
-                                                <form action="{{ route('client.reviews.store') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="order_item_id" value="{{ $item->id }}">
+                                                
+                                                <form action="{{ route('client.reviews.store') }}" method="POST" onsubmit="return validateReviewForm({{ $item->id }})">
+    @csrf
+    <input type="hidden" name="order_item_id" value="{{ $item->id }}">
 
-                                                    <div class="mb-2 rating-stars d-flex">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            <input type="radio" name="rating" id="star-{{ $item->id }}-{{ $i }}" value="{{ $i }}">
-                                                            <label for="star-{{ $item->id }}-{{ $i }}" class="star-label">
-                                                                <i class="bi bi-star-fill text-secondary"></i>
-                                                            </label>
-                                                        @endfor
-                                                    </div>
+    <div class="mb-2 rating-stars">
+        @for ($i = 5; $i >= 1; $i--)
+            <input type="radio" name="rating_{{ $item->id }}" id="star-{{ $item->id }}-{{ $i }}" value="{{ $i }}">
+            <label for="star-{{ $item->id }}-{{ $i }}" class="star-label">
+                <i class="bi bi-star-fill"></i>
+            </label>
+        @endfor
+    </div>
 
-                                                    <div class="mb-2">
-                                                        <label for="comment-{{ $item->id }}" class="form-label">Bình luận:</label>
-                                                        <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control"
-                                                                  maxlength="500" placeholder="Nhập nhận xét của bạn..."></textarea>
-                                                    </div>
+    <input type="hidden" name="rating" id="rating-value-{{ $item->id }}">
 
-                                                    <button type="submit" class="btn btn-warning">
-                                                        <i class="bi bi-send"></i> Gửi đánh giá
-                                                    </button>
-                                                </form>
+    <div class="mb-2">
+        <label for="comment-{{ $item->id }}" class="form-label">Bình luận:</label>
+        <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control"
+                  maxlength="500" placeholder="Nhập nhận xét của bạn..." required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-warning">
+        <i class="bi bi-send"></i> Gửi đánh giá
+    </button>
+</form>
+
+{{-- Gán giá trị rating và kiểm tra khi submit --}}
+<script>
+    document.querySelectorAll('input[name="rating_{{ $item->id }}"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            document.getElementById('rating-value-{{ $item->id }}').value = this.value;
+        });
+    });
+
+    function validateReviewForm(itemId) {
+        const ratingValue = document.getElementById('rating-value-' + itemId).value;
+        const comment = document.getElementById('comment-' + itemId).value.trim();
+
+        if (!ratingValue) {
+            alert("Vui lòng chọn số sao đánh giá.");
+            return false;
+        }
+
+        if (!comment) {
+            alert("Vui lòng nhập bình luận.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+
+
+                                      
                                             @endif
                                         </div>
                                     </div>

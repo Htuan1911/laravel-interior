@@ -47,9 +47,9 @@
         <a href="{{ route('admin.reviews.show', $review->id) }}" class="btn btn-sm btn-info">
             <i class="fas fa-eye"></i>
         </a>
-        <a href="{{ route('admin.reviews.edit', $review->id) }}" class="btn btn-sm btn-warning">
+        {{-- <a href="{{ route('admin.reviews.edit', $review->id) }}" class="btn btn-sm btn-warning">
             <i class="fas fa-edit"></i>
-        </a> 
+        </a>  --}}
         {{-- <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST"
               onsubmit="return confirm('Bạn chắc chắn muốn xóa?');" style="display:inline;">
             @csrf
