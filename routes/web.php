@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
@@ -15,33 +14,22 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\AdminCartController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
-
+use App\Http\Controllers\Admin\RevenueController;
 
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Client\ProductController as ClientProductController;
-use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistControllers;
 use App\Http\Controllers\Client\PostControllerUser;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Admin\CartItemController;
-
-
 use App\Http\Controllers\Client\CompareController;
-
-
-use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Client\CouponController as ClientCouponController;
-
 use App\Http\Controllers\Client\CategoryController as ClientCategoryController;
-
-
-
+use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\AccountController;
-
-// use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\ClientReviewController;
-
+use Illuminate\Support\Facades\Artisan;
 
 // Trang chính
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -247,32 +235,20 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/increase/{item}', [CartController::class, 'increaseQuantity'])->name('carts.increase');
         Route::post('/decrease/{item}', [CartController::class, 'decreaseQuantity'])->name('carts.decrease');
         Route::delete('/remove/{item}', [CartController::class, 'removeItem'])->name('carts.remove');
-
-        // Đặt hàng nhanh (mua ngay)
-        // Route::post('/checkout/place', [CheckoutController::class, 'placeOrder'])->name('checkout.place');
-
         Route::post('/orders/checkout', [ClientOrderController::class, 'checkout'])->name('orders.checkout');
         // Cổng thanh toán
         Route::post('/client/momo_payment', [ClientOrderController::class, 'momo_payment'])->name('order.momo_payment');
         Route::get('/orders/momo-return', [ClientOrderController::class, 'momoReturn'])->name('orders.momo_return');
         Route::post('/orders/momo-ipn', [ClientOrderController::class, 'momoIpn'])->name('orders.momo_ipn');
-
         // Gửi yêu cầu thanh toán đến VNPay (POST)
         Route::post('/client/vnpay_payment', [ClientOrderController::class, 'vnpay_payment'])->name('order.vnpay_payment');
         Route::get('/orders/vnpay-return', [ClientOrderController::class, 'vnpayReturn'])->name('orders.vnpay_return');
 
-
-
         Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
         Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
-
         Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
-
-
         Route::get('/check-coupon', [ClientCouponController::class, 'check']);
-
         Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
-
         // Tài khoản người dùng
         Route::prefix('account')->name('account.')->group(function () {
             Route::get('/info', [AccountController::class, 'info'])->name('info');
@@ -283,33 +259,27 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
             Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
         });
-
-
         // đánh giá
         Route::prefix('reviews')->name('reviews.')->group(function () {
             Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
             Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
         });
-
-
         // bài viết
         Route::prefix('blog')->group(function () {
             Route::get('/', [PostControllerUser::class, 'index'])->name('blog.index');
             Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
         });
-
         Route::middleware('auth')->group(function () {
             Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
             Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
         });
-        // routes/web.php
-
         // Liên hệ
         Route::prefix('contact')->group(function () {
             Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
             Route::post('/', [ContactController::class, 'send'])->name('contact.send');
         });
     });
+
     // So sánh sản phẩm
     Route::prefix('compare')->name('compare.')->group(function () {
         Route::get('/', [CompareController::class, 'index'])->name('index');
@@ -318,6 +288,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
     });
 });
+
 Route::get('/run-scheduler', function () {
     Artisan::call('orders:auto-update-status');
     return response()->json(['status' => 'Đã chạy command']);
