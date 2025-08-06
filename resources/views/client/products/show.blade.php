@@ -41,12 +41,20 @@
             background-color: black;
         }
 
-        /* màu đặc biệt có dấu cách */
-        .xanh-navy {
-            background-color: #001f3f;
+        .purple {
+            background-color: purple;
         }
 
-        .xám {
+        .cream {
+            background-color: #ccc
+        }
+
+        /* màu đặc biệt có dấu cách */
+        .dark-blue {
+            background-color: #023b2f;
+        }
+
+        .gray {
             background-color: gray;
         }
     </style>
