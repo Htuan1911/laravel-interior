@@ -81,8 +81,11 @@
                                 @case('cod')
                                     Thanh toán khi nhận hàng
                                     @break
-                                @case('online')
+                                @case('momo')
                                     Ví MoMo
+                                    @break
+                                @case('vnpay')
+                                    Ví VNPAY
                                     @break
                                 @default
                                     <span class="text-danger">Không xác định</span>
