@@ -541,9 +541,9 @@
                         <!-- SHOP THE LOOK -->
                         <div class="section spacing-10 groupbanner-special">
                             <div class="title-block">
-                                <span>Shop The LookBook 2018</span>
-                                <span>LookBook</span>
-                                <span>HAND-PICKED ARRIVALS FROM THE BEST DESIGNER</span>
+                                <span>Mua Sắm Tại STYLE HOUSE 2025</span>
+                                <span>STYLE HOUSE</span>
+                                <span>SẢN PHẨM ĐƯỢC THIẾT KẾ TỪ CÁC CHUYÊN GIA</span>
                             </div>
 
                             <div class="row">
@@ -557,7 +557,7 @@
                                                         src="img/home/home1-tolltip1.jpg" alt="lookbook">
 
                                                     <div class="item-lookbook item1">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook lookbook-custom">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -587,11 +587,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
 
                                                     <div class="item-lookbook item2">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -622,7 +622,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -638,7 +638,7 @@
                                                         src="img/home/home1-tolltip2.jpg" alt="lookbook">
 
                                                     <div class="item-lookbook item3">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -669,11 +669,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
 
                                                     <div class="item-lookbook item4">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -703,11 +703,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
 
                                                     <div class="item-lookbook item5">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook lookbook-custom">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -738,7 +738,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -754,7 +754,7 @@
                                                         src="img/home/home1-tolltip3.jpg" alt="lookbook">
 
                                                     <div class="item-lookbook item6">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -785,11 +785,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
 
                                                     <div class="item-lookbook item7">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -820,11 +820,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
 
                                                     <div class="item-lookbook item8">
-                                                        <span class="number-lookbook">+</span>
+                                                        {{-- <span class="number-lookbook">+</span>
                                                         <div class="content-lookbook">
                                                             <div class="main-lookbook d-flex align-items-center">
                                                                 <div class="item-thumb">
@@ -855,7 +855,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
 

@@ -103,7 +103,7 @@
                 <div class="col-sm-2 col-md-2 d-flex align-items-center">
                     <div id="logo">
                         <a href="{{ url('/client') }}">
-                            <img class="img-fluid" src="/img/home/logo.png" alt="logo">
+                            <img class="img-fluid" src="/img/home/logo2.png              " alt="logo">
                         </a>
                     </div>
                 </div>
@@ -113,53 +113,19 @@
                     <div class="menu navbar collapse navbar-collapse">
                         <ul class="menu-top navbar-nav">
                             <li class="nav-link">
-                                <a href="{{ url('/client') }}" class="parent">Home</a>
+                                <a href="{{ url('/client') }}" class="parent">Trang Chủ</a>
 
                             </li>
                             <li>
-                                <a href="{{ route('client.blog.index') }}" class="parent">Blog</a>
+                                <a href="{{ route('client.blog.index') }}" class="parent">Bài Viết</a>
 
                             </li>
                             <li>
-                                <a href="#" class="parent">Page</a>
-                                <div class="dropdown-menu drop-tab">
-                                    <ul>
-                                        <li class="item container group">
-                                            <div class="dropdown-menu dropdown-tab">
-                                                <ul>
-                                                    <li class="item col-md-4 float-left">
-                                                        <span class="menu-title">Category Style</span>
-                                                        <div class="menu-content">
-                                                            <ul class="col">
-                                                                <li>
-                                                                    <a href="{{ route('client.products.index') }}">Product
-                                                                        Grid </a>
-                                                                </li>
-
-                                                            </ul>
-                                                        </div>
-                                                    </li>
-                                                    <li class="item col-md-4 html  float-left">
-                                                        <span class="menu-title">Bonus Page</span>
-                                                        <div class="menu-content">
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="404.html">404 Page</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a href="about-us.html">About Us Page</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <a href="{{ route('client.products.index') }}" class="parent">Sản Phẩm</a>
+                              
                             </li>
                             <li>
-                                <a href="{{ route('client.contact.form') }}" class="parent">Contact US</a>
+                                <a href="{{ route('client.contact.form') }}" class="parent">Liên Hệ</a>
                             </li>
                         </ul>
                     </div>
@@ -259,46 +225,8 @@
                                     </a>
                                 </div>
 
-                                <div id="desktop_currency_selector"
-                                    class="currency-selector groups-selector hidden-sm-down">
-                                    <ul class="list-inline">
-                                        <li>
-                                            <a title="Euro" rel="nofollow" href="#">EUR</a>
-                                        </li>
-                                        <li class="current list-inline-item">
-                                            <a title="British Pound Sterling" rel="nofollow" href="#">GBP</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div id="desktop_language_selector"
-                                    class="language-selector groups-selector hidden-sm-down">
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item current">
-                                            <a href="#">
-                                                <img class="img-fluid" src="/img/home/home1-flas.jpg" alt="English"
-                                                    width="16" height="11">
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="#">
-                                                <img class="img-fluid" src="/img/home/home1-flas2.jpg" alt="Italiano"
-                                                    width="16" height="11">
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="#">
-                                                <img class="img-fluid" src="/img/home/home1-flas3.jpg" alt="Français"
-                                                    width="16" height="11">
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="#">
-                                                <img class="img-fluid" src="/img/home/home1-flas4.jpg" alt="Español"
-                                                    width="16" height="11">
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                              
+                                
                             </div>
                         </div>
                     </div>
