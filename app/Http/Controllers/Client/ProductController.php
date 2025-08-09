@@ -262,7 +262,7 @@ case 'price_desc':
 
 
     // Lấy toàn bộ sản phẩm để tính số lượng theo material
-    $allProducts = $query->get();
+    $allProducts = (clone $query)->get();
 
     // Sản phẩm phân trang để hiển thị
     $products = $query->paginate(12);

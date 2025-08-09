@@ -41,20 +41,6 @@
             @enderror
         </div>
 
-        {{-- Loại thuộc tính --}}
-        <div class="mb-3">
-            <label for="type" class="form-label">Loại thuộc tính</label>
-            <select name="type" id="type" class="form-select @error('type') is-invalid @enderror">
-                <option value="">-- Chọn loại --</option>
-                <option value="color" {{ old('type') == 'color' ? 'selected' : '' }}>Màu sắc</option>
-                <option value="material" {{ old('type') == 'material' ? 'selected' : '' }}>Chất liệu</option>
-                <option value="size" {{ old('type') == 'size' ? 'selected' : '' }}>Kích thước</option>
-            </select>
-            @error('type')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
         {{-- Trạng thái --}}
         <div class="mb-3">
             <label for="status" class="form-label">Trạng thái</label>
@@ -67,38 +53,57 @@
             @enderror
         </div>
 
-        {{-- Giá trị thuộc tính --}}
-        <div class="mb-3">
-            <label class="form-label">Giá trị thuộc tính</label>
-            <div id="value-wrapper">
-                @if(old('values'))
-                    @foreach(old('values') as $i => $val)
+        {{-- Các thuộc tính --}}
+        @foreach (['color', 'size', 'material'] as $type)
+            <div class="mb-4">
+                <label class="form-label fw-bold text-uppercase">{{ ucfirst($type) }}</label>
+                <div id="wrapper-{{ $type }}">
+                    @php
+                        $values = old("attributes.$type.values", []);
+                        $colorCodes = old("attributes.$type.color_codes", []);
+                    @endphp
+
+                    @forelse ($values as $i => $val)
                         <div class="d-flex mb-2 align-items-center">
-                            <input type="text" name="values[]" class="form-control me-2 @error("values.$i") is-invalid @enderror"
-                                   value="{{ $val }}" placeholder="Giá trị...">
-                            <input type="color" name="color_codes[]" class="form-control form-control-color"
-                                   value="{{ old('color_codes')[$i] ?? '#000000' }}"
-                                   style="width: 60px; display: {{ old('type') === 'color' ? 'block' : 'none' }}">
-                            <button type="button" class="btn btn-danger btn-sm ms-2 remove-row">🗑</button>
-                            @error("values.$i")
+                            <input type="text"
+                                name="attributes[{{ $type }}][values][]"
+                                class="form-control me-2 @error("attributes.$type.values.$i") is-invalid @enderror"
+                                value="{{ $val }}"
+                                placeholder="Giá trị {{ $type }}...">
+
+                            @if ($type === 'color')
+                                <input type="color"
+                                    name="attributes[{{ $type }}][color_codes][]"
+                                    class="form-control form-control-color me-2 @error("attributes.$type.color_codes.$i") is-invalid @enderror"
+                                    value="{{ $colorCodes[$i] ?? '#000000' }}"
+                                    style="width: 60px;">
+                            @endif
+
+                            <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
+
+                            {{-- Hiển thị lỗi cụ thể --}}
+                            @error("attributes.$type.values.$i")
                                 <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
                             @enderror
+                            @if ($type === 'color')
+                                @error("attributes.$type.color_codes.$i")
+                                    <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
-                    @endforeach
-                @else
-                    <div class="d-flex mb-2 align-items-center">
-                        <input type="text" name="values[]" class="form-control me-2" placeholder="Giá trị...">
-                        <input type="color" name="color_codes[]" class="form-control form-control-color"
-                               style="width: 60px; display: none">
-                        <button type="button" class="btn btn-danger btn-sm ms-2 remove-row">🗑</button>
-                    </div>
-                @endif
+                    @empty
+                        <div class="d-flex mb-2 align-items-center">
+                            <input type="text" name="attributes[{{ $type }}][values][]" class="form-control me-2" placeholder="Giá trị {{ $type }}...">
+                            @if ($type === 'color')
+                                <input type="color" name="attributes[{{ $type }}][color_codes][]" class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
+                            @endif
+                            <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
+                        </div>
+                    @endforelse
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2 add-value" data-type="{{ $type }}">➕ Thêm giá trị {{ $type }}</button>
             </div>
-            <button type="button" id="add-value" class="btn btn-secondary mt-2">➕ Thêm giá trị</button>
-            @error('values')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        @endforeach
 
         <button type="submit" class="btn btn-primary">💾 Lưu</button>
         <a href="{{ route('admin.product_options.index') }}" class="btn btn-secondary">↩️ Quay lại</a>
@@ -109,36 +114,37 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const typeSelect = document.getElementById('type');
-        const wrapper = document.getElementById('value-wrapper');
+        document.querySelectorAll('.add-value').forEach(button => {
+            button.addEventListener('click', function () {
+                const type = this.dataset.type;
+                const wrapper = document.getElementById('wrapper-' + type);
 
-        function updateColorVisibility() {
-            const type = typeSelect.value;
-            wrapper.querySelectorAll('input[type="color"]').forEach(input => {
-                input.style.display = (type === 'color') ? 'block' : 'none';
+                const div = document.createElement('div');
+                div.classList.add('d-flex', 'mb-2', 'align-items-center');
+
+                let html = `
+                    <input type="text" name="attributes[${type}][values][]" class="form-control me-2" placeholder="Giá trị ${type}...">
+                `;
+
+                if (type === 'color') {
+                    html += `
+                        <input type="color" name="attributes[${type}][color_codes][]" class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
+                    `;
+                }
+
+                html += `<button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>`;
+
+                div.innerHTML = html;
+                wrapper.appendChild(div);
             });
-        }
-
-        updateColorVisibility();
-
-        typeSelect.addEventListener('change', updateColorVisibility);
-
-        document.getElementById('add-value').addEventListener('click', function () {
-            const div = document.createElement('div');
-            div.classList.add('d-flex', 'mb-2', 'align-items-center');
-            div.innerHTML = `
-                <input type="text" name="values[]" class="form-control me-2" placeholder="Giá trị...">
-                <input type="color" name="color_codes[]" class="form-control form-control-color"
-                       style="width: 60px; ${typeSelect.value === 'color' ? 'display: block' : 'display: none'}">
-                <button type="button" class="btn btn-danger btn-sm ms-2 remove-row">🗑</button>
-            `;
-            wrapper.appendChild(div);
         });
 
-        wrapper.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-row')) {
-                e.target.closest('.d-flex').remove();
-            }
+        document.querySelectorAll('[id^="wrapper-"]').forEach(wrapper => {
+            wrapper.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-row')) {
+                    e.target.closest('.d-flex').remove();
+                }
+            });
         });
     });
 </script>

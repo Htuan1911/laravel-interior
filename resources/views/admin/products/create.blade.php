@@ -3,6 +3,15 @@
 @section('content')
 <div class="container mt-4 mb-5">
     <h3>Thêm Sản Phẩm Nội Thất</h3>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="product-form">
         @csrf
@@ -25,6 +34,15 @@
             <div class="col-md-3">
                 <label>Bảo hành (tháng)</label>
                 <input type="number" name="warranty_months" class="form-control" value="12">
+            </div>
+            <!-- Chọn tên thuộc tính -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>Tên thuộc tính</label>
+                    <select id="attribute-name-select" class="form-select">
+                        <option value="">-- Chọn tên thuộc tính --</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -89,110 +107,125 @@
 </div>
 
 <script>
-    let variantCount = 0;
-    let allOptions = {};
+let variantCount = 0;
+let currentValues = { color: [], size: [], material: [] };
 
-    document.getElementById('category-select').addEventListener('change', function () {
-        const categoryId = this.value;
-        document.getElementById('generate-variants-btn').disabled = true;
+const categorySel = document.getElementById('category-select');
+const attrSel = document.getElementById('attribute-name-select');
+const colorSel = document.getElementById('color');
+const sizeSel = document.getElementById('size');
+const materialSel = document.getElementById('material');
+const genBtn = document.getElementById('generate-variants-btn');
 
-    fetch(`/auth/products/category/${categoryId}/options`)
-        
-            .then(response => response.json())
-            .then(data => {
-                allOptions = data;
-                document.getElementById('generate-variants-btn').disabled = false;
+// 1. Khi chọn DANH MỤC → load TÊN thuộc tính
+categorySel.addEventListener('change', () => {
+  const catId = categorySel.value;
+  genBtn.disabled = true;
+  attrSel.innerHTML = '<option value="">-- Chọn tên thuộc tính --</option>';
 
-                // Populate dropdowns for thủ công
-                const colorSelect = document.getElementById('color');
-                const materialSelect = document.getElementById('material');
-                const sizeSelect = document.getElementById('size');
+  fetch(`/auth/products/category/${catId}/options`)
+    .then(res => res.json())
+    .then(json => {
+      json.forEach(opt => {
+        attrSel.innerHTML += `<option value="${opt.id}">${opt.name}</option>`;
+      });
+    })
+    .catch(err => console.error('Fetch attribute names error:', err));
+});
 
-                colorSelect.innerHTML = '<option value="">-- Màu sắc --</option>';
-                materialSelect.innerHTML = '<option value="">-- Chất liệu --</option>';
-                sizeSelect.innerHTML = '<option value="">-- Kích thước --</option>';
+// 2. Khi chọn TÊN thuộc tính → load Giá trị tương ứng
+attrSel.addEventListener('change', () => {
+  const optId = attrSel.value;
+  if (!optId) return;
 
-                data.colors.forEach(item => {
-                    colorSelect.innerHTML += `<option value="${item.value}">${item.value}</option>`;
-                });
-                data.materials.forEach(item => {
-                    materialSelect.innerHTML += `<option value="${item.value}">${item.value}</option>`;
-                });
-                data.sizes.forEach(item => {
-                    sizeSelect.innerHTML += `<option value="${item.value}">${item.value}</option>`;
-                });
-            })
-            .catch(error => {
-                console.error('Lỗi khi lấy thuộc tính:', error);
-            });
-            console.log("Category ID đã chọn:", categoryId);
-    });
+  colorSel.innerHTML = '<option value="">-- Màu sắc --</option>';
+  sizeSel.innerHTML = '<option value="">-- Kích thước --</option>';
+  materialSel.innerHTML = '<option value="">-- Chất liệu --</option>';
+  currentValues = { color: [], size: [], material: [] };
 
-    // Tự động tạo biến thể
-    document.getElementById('generate-variants-btn').addEventListener('click', function () {
-        const colors = allOptions.colors || [];
-        const materials = allOptions.materials || [];
-        const sizes = allOptions.sizes || [];
+  const optText = attrSel.options[attrSel.selectedIndex].text.toLowerCase();
 
-        if (!colors.length || !materials.length || !sizes.length) {
-            alert("Danh mục này chưa có đầy đủ thuộc tính để tạo biến thể.");
-            return;
-        }
+  fetch(`/auth/products/product-options/${optId}/values`)
+  .then(res => res.json())
+  .then(data => {
+    // Reset các select
+    colorSel.innerHTML = '<option value="">-- Màu sắc --</option>';
+    sizeSel.innerHTML = '<option value="">-- Kích thước --</option>';
+    materialSel.innerHTML = '<option value="">-- Chất liệu --</option>';
+    currentValues = { color: [], size: [], material: [] };
 
-        colors.forEach(color => {
-            materials.forEach(material => {
-                sizes.forEach(size => {
-                    addVariant(color.value, material.value, size.value);
-                });
-            });
-        });
-    });
-
-    // Thêm biến thể thủ công
-    function addManualVariant() {
-        const color = document.getElementById('color').value;
-        const material = document.getElementById('material').value;
-        const size = document.getElementById('size').value;
-
-        if (!color || !material || !size) {
-            alert("Vui lòng chọn đầy đủ thuộc tính");
-            return;
-        }
-
-        addVariant(color, material, size);
+    // Thêm giá trị màu sắc
+    if (data.color) {
+      data.color.forEach(v => {
+        colorSel.innerHTML += `<option value="${v}">${v}</option>`;
+        currentValues.color.push(v);
+      });
     }
-
-    // Hàm thêm biến thể chung
-    function addVariant(color, material, size) {
-        const name = `${color} - ${material} - ${size}`;
-        const html = `
-            <div class="card p-3 mb-3 variant-card">
-                <h6>Biến thể ${variantCount + 1}: ${name}</h6>
-                <input type="hidden" name="variants[${variantCount}][name]" value="${name}">
-                <input type="hidden" name="variants[${variantCount}][color]" value="${color}">
-                <input type="hidden" name="variants[${variantCount}][material]" value="${material}">
-                <input type="hidden" name="variants[${variantCount}][size]" value="${size}">
-                <div class="row">
-                    <div class="col-md-3"><input name="variants[${variantCount}][sku]" class="form-control" placeholder="SKU"></div>
-                    <div class="col-md-3"><input name="variants[${variantCount}][price]" class="form-control" placeholder="Giá bán" type="number"></div>
-                    <div class="col-md-3"><input name="variants[${variantCount}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number"></div>
-                    <div class="col-md-3"><input name="variants[${variantCount}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
-                </div>
-                <div class="mt-2">
-                    <label>Ảnh biến thể:</label>
-                    <input type="file" name="variants[${variantCount}][image]" class="form-control">
-                </div>
-                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeVariant(this)">❌ Xoá biến thể</button>
-            </div>
-        `;
-        document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
-        variantCount++;
+    // Thêm giá trị kích thước
+    if (data.size) {
+      data.size.forEach(v => {
+        sizeSel.innerHTML += `<option value="${v}">${v}</option>`;
+        currentValues.size.push(v);
+      });
     }
-
-    function removeVariant(btn) {
-        if (confirm("Bạn có chắc muốn xoá biến thể này không?")) {
-            btn.closest('.variant-card').remove();
-        }
+    // Thêm giá trị chất liệu
+    if (data.material) {
+      data.material.forEach(v => {
+        materialSel.innerHTML += `<option value="${v}">${v}</option>`;
+        currentValues.material.push(v);
+      });
     }
+    genBtn.disabled = false;
+  })
+  .catch(err => console.error('Fetch attribute values error:', err));
+});
+
+// 3. Tạo BIẾN THỂ tự động
+genBtn.addEventListener('click', () => {
+  const cols = currentValues.color.length ? currentValues.color : [''];
+  const mats = currentValues.material.length ? currentValues.material : [''];
+  const sizes = currentValues.size.length ? currentValues.size : [''];
+
+  cols.forEach(c => mats.forEach(m => sizes.forEach(s => addVariant(c, m, s))));
+});
+
+// 4. Tạo BIẾN THỂ thủ công
+function addManualVariant() {
+  const c = colorSel.value, m = materialSel.value, s = sizeSel.value;
+  if (!c && !m && !s) return alert("Phải chọn ít nhất một thuộc tính!");
+  addVariant(c, m, s);
+}
+
+// 5. Hiển thị BIẾN THỂ
+function addVariant(c, m, s) {
+  const name = [c, m, s].filter(x => x).join(' - ') || `Variant ${++variantCount}`;
+  const idx = variantCount++;
+  const html = `
+    <div class="card p-3 mb-3 variant-card">
+      <h6>Variant ${idx + 1}: ${name}</h6>
+      <input type="hidden" name="variants[${idx}][name]" value="${name}">
+      <input type="hidden" name="variants[${idx}][color]" value="${c}">
+      <input type="hidden" name="variants[${idx}][material]" value="${m}">
+      <input type="hidden" name="variants[${idx}][size]" value="${s}">
+      <div class="row">
+        <div class="col-md-3"><input name="variants[${idx}][sku]" class="form-control" placeholder="SKU"></div>
+        <div class="col-md-3"><input name="variants[${idx}][price]" class="form-control" placeholder="Giá bán" type="number"></div>
+        <div class="col-md-3"><input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number"></div>
+        <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
+      </div>
+      <label class="mt-2">Ảnh biến thể:</label>
+      <input type="file" name="variants[${idx}][image]" class="form-control mb-2">
+      <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Xóa</button>
+    </div>`;
+  document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
+}
+
+// 6. Xóa biến thể
+function removeVariant(btn) {
+  if (confirm("Bạn có chắc không?")) btn.closest('.variant-card').remove();
+}
 </script>
+
+
+
 @endsection

@@ -93,6 +93,9 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
         Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
         Route::get('/trashed', [ProductController::class, 'trashed'])->name('trashed');
         Route::get('/{id}/show', [ProductController::class, 'show'])->name('show');
+        Route::get('/category/{id}/options', [ProductController::class, 'getAttributeNamesByCategory']);
+        Route::get('/product-options/{id}/values', [ProductController::class, 'getOptionValuesByAttribute']);
+        
     });
 
 
@@ -207,24 +210,44 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
 });
 
 
+
+
+// 💥 PUBLIC ROUTES – KHÔNG CẦN ĐĂNG NHẬP
+// ==========================
+Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])->name('categories.show');
+
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ClientProductController::class, 'index'])->name('index');
+        Route::get('/{id}', [ClientProductController::class, 'show'])->name('show');
+        Route::get('/category/{id}', [ClientProductController::class, 'category'])->name('category');
+    });
+
+    Route::prefix('blog')->name('blog.')->group(function () {
+        Route::get('/', [PostControllerUser::class, 'index'])->name('index');
+        Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('show');
+    });
+
+    Route::prefix('compare')->name('compare.')->group(function () {
+        Route::get('/', [CompareController::class, 'index'])->name('index');
+        Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
+        Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
+        Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
+    });
+
+    Route::prefix('contact')->name('contact.')->group(function () {
+        Route::get('/', [ContactController::class, 'showForm'])->name('form');
+        Route::post('/', [ContactController::class, 'send'])->name('send');
+    });
+});
+
+
+
 Route::prefix('client')->name('client.')->group(function () {
     Route::middleware(['auth', 'check.status'])->group(function () {
-        // Trang chủ
-        Route::get('/', [HomeController::class, 'index'])->name('client.home');
-
-        Route::get('/', [HomeController::class, 'index'])->name('home'); // ✅ Đúng: sẽ ra client.home
-
-        Route::get('/categories/{id}', [ClientCategoryController::class, 'show'])
-            ->name('categories.show');
-
-
-        Route::prefix('products')->name('products.')->group(function () {
-            Route::get('/', [ClientProductController::class, 'index'])->name('index'); // => client.products.index
-            Route::get('/{id}', [ClientProductController::class, 'show'])->name('show');
-            // routes/web.php
-            Route::get('/category/{id}', [ClientProductController::class, 'category'])->name('category');
-            // => client.products.show
-        });
+       
 
         // Trang giỏ hàng
         Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
@@ -264,29 +287,15 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
             Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
         });
-        // bài viết
-        Route::prefix('blog')->group(function () {
-            Route::get('/', [PostControllerUser::class, 'index'])->name('blog.index');
-            Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('blog.show');
-        });
+       
         Route::middleware('auth')->group(function () {
             Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
             Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
         });
-        // Liên hệ
-        Route::prefix('contact')->group(function () {
-            Route::get('/', [ContactController::class, 'showForm'])->name('contact.form');
-            Route::post('/', [ContactController::class, 'send'])->name('contact.send');
-        });
+       
     });
 
-    // So sánh sản phẩm
-    Route::prefix('compare')->name('compare.')->group(function () {
-        Route::get('/', [CompareController::class, 'index'])->name('index');
-        Route::post('/add/{id}', [CompareController::class, 'add'])->name('add');
-        Route::delete('/remove/{id}', [CompareController::class, 'remove'])->name('remove');
-        Route::post('/clear', [CompareController::class, 'clear'])->name('clear');
-    });
+    
 });
 
 Route::get('/run-scheduler', function () {
