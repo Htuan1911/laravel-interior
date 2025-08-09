@@ -429,6 +429,52 @@ class OrderController extends Controller
         }
     }
 
+    public function reorder($id)
+    {
+        $oldOrder = Order::with('items.variant.product')->findOrFail($id);
+
+        if ($oldOrder->user_id !== auth()->id()) {
+            abort(403, 'Bạn không có quyền mua lại đơn này.');
+        }
+
+        $user = auth()->user();
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+
+        foreach ($oldOrder->items as $item) {
+            if ($item->variant && $item->variant->product) {
+
+                // Kiểm tra tồn kho
+                if ($item->variant->stock_quantity < $item->quantity) {
+                    continue; // bỏ qua nếu không đủ hàng
+                }
+
+                // Tìm sản phẩm đã có trong giỏ
+                $cartItem = CartItem::where('cart_id', $cart->id)
+                    ->where('variant_id', $item->variant_id)
+                    ->first();
+
+                if ($cartItem) {
+                    $cartItem->quantity += $item->quantity;
+                    $cartItem->save();
+                } else {
+                    CartItem::create([
+                        'cart_id'    => $cart->id,
+                        'variant_id' => $item->variant_id,
+                        'quantity'   => $item->quantity,
+                    ]);
+                }
+            }
+        }
+
+        // Cập nhật session giỏ hàng
+        session(['cart_count' => $cart->items->sum('quantity')]);
+
+        return redirect()->route('client.carts.index')
+            ->with('success', 'Sản phẩm đã được thêm lại vào giỏ hàng.');
+    }
+
+
+
     public function history()
     {
         $orders = Order::with(['items.variant.product', 'payment'])

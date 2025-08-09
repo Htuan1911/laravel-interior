@@ -3,6 +3,30 @@
 @section('content-dead')
 
     <style>
+        .product-tab.nav-tabs li {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+
+        .product-tab.nav-tabs li a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            margin: auto;
+        }
+
+        .product-tab.nav-tabs li a img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
         .colors span {
             width: 30px;
             height: 30px;
@@ -57,6 +81,7 @@
         .gray {
             background-color: gray;
         }
+        
     </style>
 
     <div class="main-content">
@@ -260,27 +285,31 @@
                                                             @php
                                                                 $translation = $item->translations->first();
                                                                 $variant = $item->variants->first();
+                                                                // Ảnh chính
+                                                                $mainImage =
+                                                                    $variant->image ?? ($item->image ?? 'default.jpg');
+                                                                // Ảnh hover (nếu có) - bạn có thể tùy chỉnh để lấy ảnh thứ 2 từ gallery
+                                                                $hoverImage =
+                                                                    $variant->hover_image ??
+                                                                    ($item->hover_image ?? $mainImage);
                                                             @endphp
                                                             <div class="item col-md-12">
                                                                 <div class="product-miniature item-one first-item d-flex">
-                                                                    <div class="thumbnail-container border"
-                                                                        style="width: 100%; aspect-ratio: 5 / 4; overflow: hidden; border-radius: 8px;">
-                                                                        <a href="{{ route('client.products.show', $item->id) }}">
-                                                                            <img class="img-fluid"
-                                                                                src="{{ asset('storage/' . ($variant->image ?? ($item->image ?? 'default.jpg'))) }}"
-                                                                                alt="{{ $translation->name ?? 'Product Image' }}"
-                                                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                                                    <div class="thumbnail-container border">
+                                                                        <a
+                                                                            href="{{ route('client.products.show', $item->id) }}">
+                                                                            <img class="img-fluid image-cover"
+                                                                                src="{{ asset('storage/' . $mainImage) }}"
+                                                                                alt="{{ $translation->name ?? 'Product Image' }}">
+                                                                            <img class="img-fluid image-secondary"
+                                                                                src="{{ asset('storage/' . $hoverImage) }}"
+                                                                                alt="{{ $translation->name ?? 'Product Image' }}">
                                                                         </a>
                                                                     </div>
 
+
                                                                     <div class="product-description">
                                                                         <div class="product-groups">
-                                                                            <div class="product-title">
-                                                                                <a
-                                                                                    href="{{ route('client.products.show', $item->id) }}">
-                                                                                    {{ $translation->name ?? 'Nulla et justo augue' }}
-                                                                                </a>
-                                                                            </div>
                                                                             <div class="rating">
                                                                                 <div class="star-content">
                                                                                     @for ($i = 1; $i <= 5; $i++)
@@ -297,44 +326,52 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="product-buttons d-flex justify-content-center">
+
+                                                                        <div
+                                                                            class="product-buttons d-flex justify-content-center">
                                                                             <form action="{{ route('client.carts.add') }}"
                                                                                 method="POST" class="formAddToCart">
                                                                                 @csrf
                                                                                 <input type="hidden" name="variant_id"
                                                                                     value="{{ $variant->id ?? '' }}">
-                                                                                <input type="hidden" name="quantity" value="1">
+                                                                                <input type="hidden" name="quantity"
+                                                                                    value="1">
                                                                                 <button type="submit" class="add-to-cart"
                                                                                     data-button-action="add-to-cart">
                                                                                     <i class="fa fa-shopping-cart"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                             </form>
+
                                                                             @auth
                                                                                 <form
-                                                                                    action="{{ route('client.wishlist.toggle', $product->id) }}"
+                                                                                    action="{{ route('client.wishlist.toggle', $item->id) }}"
                                                                                     method="POST" class="d-inline">
                                                                                     @csrf
-                                                                                    <a class="addToWishlist wishlistProd_{{ $product->id }}"
+                                                                                    <a class="addToWishlist wishlistProd_{{ $item->id }}"
                                                                                         href="#"
                                                                                         onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                                        data-rel="{{ $product->id }}" title="Yêu thích">
-                                                                                        <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
+                                                                                        data-rel="{{ $item->id }}"
+                                                                                        title="Yêu thích">
+                                                                                        <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $item->id) ? ' text-danger' : '' }}"
                                                                                             aria-hidden="true"></i>
                                                                                     </a>
                                                                                 </form>
                                                                             @else
-                                                                                <a class="addToWishlist" href="{{ route('login') }}">
+                                                                                <a class="addToWishlist"
+                                                                                    href="{{ route('login') }}">
                                                                                     <i class="fa-regular fa-heart"
                                                                                         aria-hidden="true"></i>
                                                                                 </a>
                                                                             @endauth
+
                                                                             <a href="{{ route('client.products.show', $item->id) }}"
                                                                                 class="quick-view hidden-sm-down"
                                                                                 data-link-action="quickview"
                                                                                 data-product-id="{{ $item->id }}"
                                                                                 onclick="openQuickView(event, this)">
-                                                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                                <i class="fa fa-eye"
+                                                                                    aria-hidden="true"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -352,6 +389,7 @@
                                             </div>
                                         </div>
 
+
                                     </div>
                                     <div class="col-sm-8 col-lg-9 col-md-9">
                                         <div class="main-product-detail">
@@ -364,38 +402,88 @@
                                                             @php
                                                                 $variant = $product->variants->first();
                                                             @endphp
-                                                            {{-- Ảnh chính --}}
-                                                            <div class="mb-3">
-                                                                <img id="main-image"
-                                                                    src="{{ asset('storage/' . ($variant->image ?? $product->image)) }}"
-                                                                    class="img-fluid rounded w-100"
-                                                                    style="object-fit: contain; max-height: 400px;"
-                                                                    alt="{{ $product->translations[0]->name }}">
+
+                                                            {{-- Khu vực ảnh chính (tab-pane) --}}
+                                                            <div class="js-qv-mask mask tab-content border">
+                                                                {{-- Ảnh của sản phẩm hoặc biến thể đầu tiên --}}
+                                                                @foreach ($product->variants as $key => $v)
+                                                                    <div id="item{{ $key + 1 }}"
+                                                                        class="tab-pane fade {{ $key === 0 ? 'active in show' : '' }}">
+                                                                        <img src="{{ asset('storage/' . ($v->image ?? $product->image)) }}"
+                                                                            alt="{{ $v->variant_name ?? $product->translations[0]->name }}"
+                                                                            class="img-fluid"
+                                                                            style="object-fit: contain; max-height: 400px;">
+                                                                    </div>
+                                                                @endforeach
+
+                                                                {{-- Nút xem phóng to --}}
+                                                                <div class="layer hidden-sm-down" data-toggle="modal"
+                                                                    data-target="#product-modal">
+                                                                    <i class="fa fa-expand"></i>
+                                                                </div>
                                                             </div>
-                                                            {{-- Ảnh biến thể --}}
-                                                            @if ($product->variants->count() > 1)
+
+                                                            {{-- Danh sách thumbnail --}}
+                                                            @if ($product->variants->count() > 0)
                                                                 <ul class="product-tab nav nav-tabs d-flex">
-                                                                    @foreach ($product->variants as $v)
-                                                                        @if ($v->image)
-                                                                            <li class="col">
-                                                                                <a href="javascript:void(0)"
-                                                                                    onclick="document.getElementById('main-image').src = '{{ asset('storage/' . $v->image) }}'">
-                                                                                    <img src="{{ asset('storage/' . $v->image) }}"
-                                                                                        alt="{{ $v->variant_name }}"
-                                                                                        style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;">
-                                                                                </a>
-                                                                            </li>
-                                                                        @endif
+                                                                    @foreach ($product->variants as $key => $v)
+                                                                        <li class="col {{ $key === 0 ? 'active' : '' }}">
+                                                                            <a href="#item{{ $key + 1 }}"
+                                                                                data-toggle="tab"
+                                                                                class="{{ $key === 0 ? 'active show' : '' }}">
+                                                                                <img src="{{ asset('storage/' . ($v->image ?? $product->image)) }}"
+                                                                                    alt="{{ $v->variant_name ?? $product->translations[0]->name }}"
+                                                                                    style="width: 80px; height: 80px; object-fit: cover;">
+                                                                            </a>
+                                                                        </li>
                                                                     @endforeach
                                                                 </ul>
                                                             @endif
-                                                            <div class="layer hidden-sm-down" data-toggle="modal"
-                                                                data-target="#product-modal">
-                                                                <i class="fa fa-expand"></i>
+
+                                                            {{-- Modal xem ảnh lớn --}}
+                                                            <div class="modal fade" id="product-modal" role="dialog">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header"></div>
+                                                                        <div class="modal-body">
+                                                                            <div class="product-detail">
+                                                                                <div class="images-container">
+                                                                                    <div
+                                                                                        class="js-qv-mask mask tab-content">
+                                                                                        @foreach ($product->variants as $key => $v)
+                                                                                            <div id="modal-item{{ $key + 1 }}"
+                                                                                                class="tab-pane fade {{ $key === 0 ? 'active in show' : '' }}">
+                                                                                                <img src="{{ asset('storage/' . ($v->image ?? $product->image)) }}"
+                                                                                                    alt="{{ $v->variant_name ?? $product->translations[0]->name }}"
+                                                                                                    class="img-fluid"
+                                                                                                    style="object-fit: contain; max-height: 500px;">
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                    <ul class="product-tab nav nav-tabs">
+                                                                                        @foreach ($product->variants as $key => $v)
+                                                                                            <li
+                                                                                                class="{{ $key === 0 ? 'active' : '' }}">
+                                                                                                <a href="#modal-item{{ $key + 1 }}"
+                                                                                                    data-toggle="tab"
+                                                                                                    class="{{ $key === 0 ? 'active show' : '' }}">
+                                                                                                    <img src="{{ asset('storage/' . ($v->image ?? $product->image)) }}"
+                                                                                                        alt="{{ $v->variant_name ?? $product->translations[0]->name }}"
+                                                                                                        style="width: 80px; height: 80px; object-fit: cover;">
+                                                                                                </a>
+                                                                                            </li>
+                                                                                        @endforeach
+                                                                                    </ul>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
 
                                                 <div class="product-info col-xs-12 col-md-7 col-sm-7">
                                                     <div class="detail-description">
@@ -555,7 +643,8 @@
                                                             <div class="btn-group">
                                                                 <a href="#"><i
                                                                         class="zmdi zmdi-share"></i><span>Share</span></a>
-                                                                <a href="#" class="email"><i class="fa fa-envelope"
+                                                                <a href="#" class="email"><i
+                                                                        class="fa fa-envelope"
                                                                         aria-hidden="true"></i><span>SEND TO A
                                                                         FRIEND</span></a>
                                                                 <a href="#" class="print"><i
@@ -574,15 +663,15 @@
                                                                 <span>REVIEW :</span>
                                                                 <div class="rating">
                                                                     <div class="star-content">
-                                                                  <span>{{ $averageRating }} / 5</span>
+                                                                        <span>{{ $averageRating }} / 5</span>
                                                                         <div class="star"></div>
-                                                                      
+
                                                                     </div>
                                                                 </div>
                                                             </div>
 
 
-{{--                                                             
+                                                            {{--                                                             
                                                             <div class="read after-has-border">
                                                                 <a href="#review">
                                                                     <i class="fa fa-commenting-o color"
@@ -614,9 +703,10 @@
                                                 <ul class="nav nav-tabs">
                                                     <li class="active"><a data-toggle="tab" href="#description"
                                                             class="active show">Description</a></li>
-                                                    <li><a data-toggle="tab" href="#tag">Product Tags</a></li>
+                                                    {{-- <li><a data-toggle="tab" href="#tag">Product Tags</a></li> --}}
                                                     <li>
-                                                        <a data-toggle="tab" href="#review">Reviews ({{ $reviewCount }})</a>
+                                                        <a data-toggle="tab" href="#review">Reviews
+                                                            ({{ $reviewCount }})</a>
                                                     </li>
                                                 </ul>
                                                 <div class="tab-content">
@@ -642,48 +732,48 @@
                                                             @endforeach
                                                         </p>
                                                     </div>
-                                                    
-                                                    
-                                               
+
+
+
                                                     <div id="review" class="tab-pane fade">
                                                         <div class="tab-pane fade show active" id="reviews">
-    <h5>Đánh giá sản phẩm</h5>
+                                                            <h5>Đánh giá sản phẩm</h5>
 
-    @php
-        $allReviews = collect();
+                                                            @php
+                                                                $allReviews = collect();
 
-        foreach ($product->variants as $variant) {
-            $allReviews = $allReviews->merge($variant->reviews);
-        }
-    @endphp
+                                                                foreach ($product->variants as $variant) {
+                                                                    $allReviews = $allReviews->merge($variant->reviews);
+                                                                }
+                                                            @endphp
 
-    @if ($allReviews->isEmpty())
-        <p>Chưa có đánh giá nào cho sản phẩm này.</p>
-    @else
-        @foreach ($allReviews as $review)
-     <div class="border p-3 mb-3 rounded">
-    <strong>{{ $review->user->name ?? 'Người dùng' }}</strong>
+                                                            @if ($allReviews->isEmpty())
+                                                                <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                                                            @else
+                                                                @foreach ($allReviews as $review)
+                                                                    <div class="border p-3 mb-3 rounded">
+                                                                        <strong>{{ $review->user->name ?? 'Người dùng' }}</strong>
 
-    {{-- ⭐ Hiển thị số sao --}}
-    <div class="text-warning">
-        @for ($i = 1; $i <= 5; $i++)
-            @if ($i <= $review->rating)
-                <i class="bi bi-star-fill"></i>
-            @else
-                <i class="bi bi-star"></i>
-            @endif
-        @endfor
-    </div>
+                                                                        {{-- ⭐ Hiển thị số sao --}}
+                                                                        <div class="text-warning">
+                                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                                @if ($i <= $review->rating)
+                                                                                    <i class="bi bi-star-fill"></i>
+                                                                                @else
+                                                                                    <i class="bi bi-star"></i>
+                                                                                @endif
+                                                                            @endfor
+                                                                        </div>
 
-    {{-- 💬 Hiển thị bình luận --}}
-    <p class="mt-2">{{ $review->comment }}</p>
-</div>
-        @endforeach
-    @endif
-</div>
+                                                                        {{-- 💬 Hiển thị bình luận --}}
+                                                                        <p class="mt-2">{{ $review->comment }}</p>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        </div>
 
                                                     </div>
-                                                  
+
                                                 </div>
                                             </div>
 
@@ -733,7 +823,8 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="product-group-price">
-                                                                                    <div class="product-price-and-shipping">
+                                                                                    <div
+                                                                                        class="product-price-and-shipping">
                                                                                         <span
                                                                                             class="price">{{ number_format($variant->price ?? $item->base_price, 0, ',', '.') }}
                                                                                             đ</span>
@@ -743,13 +834,17 @@
                                                                             <div
                                                                                 class="product-buttons d-flex justify-content-center">
                                                                                 {{-- Nút Thêm vào giỏ hàng --}}
-                                                                                <form action="{{ route('client.carts.add') }}"
+                                                                                <form
+                                                                                    action="{{ route('client.carts.add') }}"
                                                                                     method="POST" class="formAddToCart">
                                                                                     @csrf
-                                                                                    <input type="hidden" name="variant_id"
+                                                                                    <input type="hidden"
+                                                                                        name="variant_id"
                                                                                         value="{{ $variant->id ?? '' }}">
-                                                                                    <input type="hidden" name="quantity" value="1">
-                                                                                    <button type="submit" class="add-to-cart"
+                                                                                    <input type="hidden" name="quantity"
+                                                                                        value="1">
+                                                                                    <button type="submit"
+                                                                                        class="add-to-cart"
                                                                                         data-button-action="add-to-cart">
                                                                                         <i class="fa fa-shopping-cart"
                                                                                             aria-hidden="true"></i>
@@ -783,7 +878,8 @@
                                                                                     data-link-action="quickview"
                                                                                     data-product-id="{{ $item->id }}"
                                                                                     onclick="openQuickView(event, this)">
-                                                                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                                    <i class="fa fa-eye"
+                                                                                        aria-hidden="true"></i>
                                                                                 </a>
                                                                             </div>
                                                                         </div>
@@ -812,13 +908,13 @@
 {{-- Script Xem thêm / Thu gọn và Tăng giảm số lượng --}}
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('toggle-description');
             const shortDesc = document.getElementById('short-description');
             const fullDesc = document.getElementById('full-description');
             let expanded = false;
 
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function() {
                 expanded = !expanded;
                 if (expanded) {
                     shortDesc.style.display = 'none';
@@ -856,13 +952,13 @@
         });
 
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('toggle-description');
             const dots = document.getElementById('dots');
             const moreText = document.getElementById('more');
 
             if (btn) {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     if (moreText.style.display === "none") {
                         moreText.style.display = "inline";
                         dots.style.display = "none";
@@ -891,7 +987,7 @@
         }
 
         // Khi chọn size
-        document.getElementById('sizeSelect').addEventListener('change', function () {
+        document.getElementById('sizeSelect').addEventListener('change', function() {
             selectedSize = this.value;
             updateVariant();
         });

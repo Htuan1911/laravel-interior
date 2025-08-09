@@ -316,7 +316,7 @@ case 'price_desc':
     ])
         ->where('status', 'active')
         ->orderBy('created_at', 'desc')
-        ->take(2)
+        ->take(9)
         ->get();
 
             // ✅ Lấy toàn bộ review từ các variant

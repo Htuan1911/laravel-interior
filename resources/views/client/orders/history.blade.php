@@ -105,6 +105,12 @@
                                 </button>
                             </form>
                         @endif
+
+                        @if (in_array($order->status, ['completed', 'cancelled']))
+                            <a href="{{ route('client.orders.reorder', $order->id) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-cart-plus"></i> Mua lại
+                            </a>
+                        @endif
                     </div>
 
                     <div class="order-body">
@@ -113,106 +119,125 @@
 
                         <ul class="list-unstyled">
                             @foreach ($order->items as $item)
+                                @php
+                                    $variant = $item->variant;
+                                    $product = $variant ? $variant->product : null;
+                                    $productName =
+                                        $product && $product->translations && $product->translations->first()
+                                            ? $product->translations->first()->name
+                                            : '--- Sản phẩm không tồn tại ---';
+
+                                    $userReview = $item
+                                        ->reviews()
+                                        ->where('user_id', auth()->id())
+                                        ->first();
+                                @endphp
+
                                 <li class="mb-4 d-flex">
-                                    <img src="{{ asset('storage/' . ($item->variant->image ?? 'default.jpg')) }}"
-                                        alt="Sản phẩm" width="80" height="80" class="me-3"
+                                    {{-- Hình ảnh sản phẩm --}}
+                                    <img src="{{ asset('storage/' . ($variant->image ?? ($product->image ?? 'default.jpg'))) }}"
+                                        alt="{{ $productName }}" width="80" height="80" class="me-3"
                                         style="object-fit: cover; border-radius: 5px;">
 
                                     <div style="flex-grow: 1;">
-                                        <p class="mb-1">
-                                            <strong>{{ $item->variant->product->name ?? 'Sản phẩm' }}</strong>
-                                        </p>
-                                        <p class="mb-1"><strong>{{ $item->variant_name }}</strong></p>
+                                        {{-- Tên sản phẩm --}}
+                                        <p class="mb-1"><strong>{{ $productName }}</strong></p>
+
+                                        {{-- Biến thể --}}
+                                        @if ($item->variant_name)
+                                            <p class="mb-1 text-muted">Biến thể: {{ $item->variant_name }}</p>
+                                        @endif
+
+                                        {{-- Số lượng + Giá --}}
                                         <p class="mb-1">
                                             SL: {{ $item->quantity }} |
                                             Đơn giá: {{ number_format($item->unit_price, 0, ',', '.') }} đ |
                                             Tổng: {{ number_format($item->total_price, 0, ',', '.') }} đ
                                         </p>
 
-                                        @php
-                                            $userReview = $item
-                                                ->reviews()
-                                                ->where('user_id', auth()->id())
-                                                ->first();
-                                        @endphp
-
-                                        <div class="review-box mt-3">
-                                            @if ($userReview)
-                                                <h6 class="mb-2 text-success">
-                                                    <i class="bi bi-check-circle-fill"></i> Bạn đã đánh giá sản phẩm này
-                                                </h6>
-                                                <p><strong>Số sao:</strong>
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= $userReview->rating)
-                                                            <i class="bi bi-star-fill text-warning"></i>
-                                                        @else
-                                                            <i class="bi bi-star text-secondary"></i>
-                                                        @endif
-                                                    @endfor
-                                                </p>
-                                                <p><strong>Bình luận:</strong> {{ $userReview->comment }}</p>
-                                            @elseif ($order->status === 'completed')
-                                                <h6 class="mb-2">Đánh giá sản phẩm</h6>
-
-                                                <form action="{{ route('client.reviews.store') }}" method="POST"
-                                                    onsubmit="return validateReviewForm({{ $item->id }})">
-                                                    @csrf
-                                                    <input type="hidden" name="order_item_id" value="{{ $item->id }}">
-
-                                                    <div class="mb-2 rating-stars">
-                                                        @for ($i = 5; $i >= 1; $i--)
-                                                            <input type="radio" name="rating_{{ $item->id }}"
-                                                                id="star-{{ $item->id }}-{{ $i }}"
-                                                                value="{{ $i }}">
-                                                            <label for="star-{{ $item->id }}-{{ $i }}"
-                                                                class="star-label">
-                                                                <i class="bi bi-star-fill"></i>
-                                                            </label>
+                                        {{-- Chỉ hiển thị box đánh giá khi có đánh giá hoặc đơn hàng đã hoàn tất --}}
+                                        @if ($userReview || $order->status === 'completed')
+                                            <div class="review-box mt-3">
+                                                @if ($userReview)
+                                                    {{-- Đã đánh giá --}}
+                                                    <h6 class="mb-2 text-success">
+                                                        <i class="bi bi-check-circle-fill"></i> Bạn đã đánh giá sản phẩm này
+                                                    </h6>
+                                                    <p><strong>Số sao:</strong>
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= $userReview->rating)
+                                                                <i class="bi bi-star-fill text-warning"></i>
+                                                            @else
+                                                                <i class="bi bi-star text-secondary"></i>
+                                                            @endif
                                                         @endfor
-                                                    </div>
+                                                    </p>
+                                                    <p><strong>Bình luận:</strong> {{ $userReview->comment }}</p>
+                                                @elseif ($order->status === 'completed')
+                                                    {{-- Form đánh giá --}}
+                                                    <h6 class="mb-2">Đánh giá sản phẩm</h6>
 
-                                                    <input type="hidden" name="rating"
-                                                        id="rating-value-{{ $item->id }}">
+                                                    <form action="{{ route('client.reviews.store') }}" method="POST"
+                                                        onsubmit="return validateReviewForm({{ $item->id }})">
+                                                        @csrf
+                                                        <input type="hidden" name="order_item_id"
+                                                            value="{{ $item->id }}">
 
-                                                    <div class="mb-2">
-                                                        <label for="comment-{{ $item->id }}" class="form-label">Bình
-                                                            luận:</label>
-                                                        <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control" maxlength="500"
-                                                            placeholder="Nhập nhận xét của bạn..." required></textarea>
-                                                    </div>
+                                                        <div class="mb-2 rating-stars">
+                                                            @for ($i = 5; $i >= 1; $i--)
+                                                                <input type="radio" name="rating_{{ $item->id }}"
+                                                                    id="star-{{ $item->id }}-{{ $i }}"
+                                                                    value="{{ $i }}">
+                                                                <label for="star-{{ $item->id }}-{{ $i }}"
+                                                                    class="star-label">
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                </label>
+                                                            @endfor
+                                                        </div>
 
-                                                    <button type="submit" class="btn btn-warning">
-                                                        <i class="bi bi-send"></i> Gửi đánh giá
-                                                    </button>
-                                                </form>
+                                                        <input type="hidden" name="rating"
+                                                            id="rating-value-{{ $item->id }}">
 
-                                                {{-- Gán giá trị rating và kiểm tra khi submit --}}
-                                                <script>
-                                                    document.querySelectorAll('input[name="rating_{{ $item->id }}"]').forEach(function(radio) {
-                                                        radio.addEventListener('change', function() {
-                                                            document.getElementById('rating-value-{{ $item->id }}').value = this.value;
+                                                        <div class="mb-2">
+                                                            <label for="comment-{{ $item->id }}"
+                                                                class="form-label">Bình luận:</label>
+                                                            <textarea name="comment" id="comment-{{ $item->id }}" rows="3" class="form-control" maxlength="500"
+                                                                placeholder="Nhập nhận xét của bạn..." required></textarea>
+                                                        </div>
+
+                                                        <button type="submit" class="btn btn-warning">
+                                                            <i class="bi bi-send"></i> Gửi đánh giá
+                                                        </button>
+                                                    </form>
+
+                                                    {{-- Script xử lý chọn số sao --}}
+                                                    <script>
+                                                        document.querySelectorAll('input[name="rating_{{ $item->id }}"]').forEach(function(radio) {
+                                                            radio.addEventListener('change', function() {
+                                                                document.getElementById('rating-value-{{ $item->id }}').value = this.value;
+                                                            });
                                                         });
-                                                    });
 
-                                                    function validateReviewForm(itemId) {
-                                                        const ratingValue = document.getElementById('rating-value-' + itemId).value;
-                                                        const comment = document.getElementById('comment-' + itemId).value.trim();
+                                                        function validateReviewForm(itemId) {
+                                                            const ratingValue = document.getElementById('rating-value-' + itemId).value;
+                                                            const comment = document.getElementById('comment-' + itemId).value.trim();
 
-                                                        if (!ratingValue) {
-                                                            alert("Vui lòng chọn số sao đánh giá.");
-                                                            return false;
+                                                            if (!ratingValue) {
+                                                                alert("Vui lòng chọn số sao đánh giá.");
+                                                                return false;
+                                                            }
+
+                                                            if (!comment) {
+                                                                alert("Vui lòng nhập bình luận.");
+                                                                return false;
+                                                            }
+
+                                                            return true;
                                                         }
-
-                                                        if (!comment) {
-                                                            alert("Vui lòng nhập bình luận.");
-                                                            return false;
-                                                        }
-
-                                                        return true;
-                                                    }
-                                                </script>
-                                            @endif
-                                        </div>
+                                                    </script>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </div>
                                 </li>
                             @endforeach
