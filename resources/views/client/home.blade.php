@@ -1030,7 +1030,7 @@
                                                     </div>
                                                     <div id="table" class="tab-pane fade">
                                                         <div class="item text-center row">
-                                                            
+
                                                             <div class="col-md-3 col-xs-12">
                                                                 <div
                                                                     class="product-miniature js-product-miniature item-one first-item">
@@ -1102,9 +1102,9 @@
                                                         </div>
                                                     </div>
 
-                                                    
 
-                                                    
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -1220,25 +1220,28 @@
                                                             </div>
                                                             <div class="product-buttons d-flex justify-content-center">
                                                                 @auth
-                                                                    <form action="{{ route('client.carts.add') }}"
-                                                                        method="POST" class="formAddToCart">
-                                                                        @csrf
-                                                                        <input type="hidden" name="variant_id"
-                                                                            value="{{ $variant->id }}">
-                                                                        <a class="add-to-cart" href="#"
-                                                                            onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                            data-button-action="add-to-cart"
-                                                                            title="Thêm vào giỏ">
-                                                                            <i class="fa fa-shopping-cart"
-                                                                                aria-hidden="true"></i>
-                                                                        </a>
-                                                                    </form>
+                                                                    @if ($variant)
+                                                                        <form action="{{ route('client.carts.add') }}"
+                                                                            method="POST" class="formAddToCart">
+                                                                            @csrf
+                                                                            <input type="hidden" name="variant_id"
+                                                                                value="{{ $variant->id }}">
+                                                                            <a class="add-to-cart" href="#"
+                                                                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                                                                data-button-action="add-to-cart"
+                                                                                title="Thêm vào giỏ">
+                                                                                <i class="fa fa-shopping-cart"
+                                                                                    aria-hidden="true"></i>
+                                                                            </a>
+                                                                        </form>
+                                                                    @else
+                                                                        <span>Không có biến thể để thêm giỏ hàng</span>
+                                                                    @endif
                                                                 @else
                                                                     <a class="add-to-cart" href="{{ route('login') }}"
                                                                         title="Đăng nhập để mua hàng"
                                                                         onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">
-                                                                        <i class="fa fa-shopping-cart"
-                                                                            aria-hidden="true"></i>
+                                                                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                                                     </a>
                                                                 @endauth
 
@@ -1251,8 +1254,7 @@
                                                                         <a class="addToWishlist wishlistProd_{{ $product->id }}"
                                                                             href="#"
                                                                             onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                            data-rel="{{ $product->id }}"
-                                                                            title="Yêu thích">
+                                                                            data-rel="{{ $product->id }}" title="Yêu thích">
                                                                             <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                 aria-hidden="true"></i>
                                                                         </a>
@@ -1359,8 +1361,7 @@
                                                                     <a class="add-to-cart" href="{{ route('login') }}"
                                                                         title="Đăng nhập để mua hàng"
                                                                         onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">
-                                                                        <i class="fa fa-shopping-cart"
-                                                                            aria-hidden="true"></i>
+                                                                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                                                     </a>
                                                                 @endauth
 
@@ -1373,8 +1374,7 @@
                                                                         <a class="addToWishlist wishlistProd_{{ $product->id }}"
                                                                             href="#"
                                                                             onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                            data-rel="{{ $product->id }}"
-                                                                            title="Yêu thích">
+                                                                            data-rel="{{ $product->id }}" title="Yêu thích">
                                                                             <i class="fa fa-heart{{ auth()->user()->wishlists->contains('product_id', $product->id) ? ' text-danger' : '' }}"
                                                                                 aria-hidden="true"></i>
                                                                         </a>
