@@ -10,43 +10,6 @@
             <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-dark">← Quay lại danh sách</a>
         </div>
         <div class="card-body">
-            {{-- Tiến trình trạng thái đơn hàng --}}
-            @php
-                $statusSteps = [
-                    'pending' => 'Chờ xác nhận',
-                    'confirmed' => 'Đã xác nhận',
-                    'shipping' => 'Đang giao',
-                    'completed' => 'Hoàn tất',
-                    'cancelled' => 'Đã hủy'
-                ];
-                $statusOrder = array_keys($statusSteps);
-                $currentIndex = array_search($order->status, $statusOrder);
-            @endphp
-
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    @foreach($statusSteps as $key => $label)
-                        <div class="text-center flex-fill">
-                            <div class="rounded-circle 
-                                @if($loop->index <= $currentIndex) bg-success text-white @else bg-light text-muted @endif 
-                                mb-2" style="width: 40px; height: 40px; line-height: 40px;">
-                                {{ $loop->iteration }}
-                            </div>
-                            <small class="@if($loop->index <= $currentIndex) text-success fw-semibold @else text-muted @endif">
-                                {{ $label }}
-                            </small>
-                        </div>
-                    @endforeach
-                </div>
-
-                <div class="progress" style="height: 8px;">
-                    @foreach($statusOrder as $index => $key)
-                        <div class="progress-bar @if($index <= $currentIndex) bg-success @else bg-light @endif" 
-                             style="width: {{ 100 / (count($statusOrder)) }}%">
-                        </div>
-                    @endforeach
-                </div>
-            </div>
 
             {{-- Thông tin khách hàng & đơn hàng --}}
             <div class="row mb-4">
@@ -61,7 +24,9 @@
                     <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
                     <p><strong>Phương thức thanh toán:</strong> {{ $order->payment?->method ?? 'Không rõ' }}</p>
                     <p><strong>Tổng tiền:</strong> 
-                        <span class="text-danger fs-5 fw-bold">{{ number_format($order->total_amount, 0, ',', '.') }} đ</span>
+                        <span class="text-danger fs-5 fw-bold">
+                            {{ number_format($order->total_amount, 0, ',', '.') }} đ
+                        </span>
                     </p>
                 </div>
             </div>
@@ -71,6 +36,13 @@
                 <div class="col-md-6 mb-3">
                     <h6 class="fw-bold">🛒 Trạng thái đơn hàng:</h6>
                     @php
+                        $statusSteps = [
+                            'pending' => 'Chờ xác nhận',
+                            'confirmed' => 'Đã xác nhận',
+                            'shipping' => 'Đang giao',
+                            'completed' => 'Hoàn tất',
+                            'cancelled' => 'Đã hủy'
+                        ];
                         $statusColor = [
                             'pending' => 'warning',
                             'confirmed' => 'info',
@@ -96,6 +68,7 @@
                     @endif
                 </div>
             </div>
+
         </div>
     </div>
 </div>

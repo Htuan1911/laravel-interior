@@ -9,12 +9,14 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Coupon;
+use App\Mail\OrderSuccessMail;
+use App\Mail\OrderCancelledMail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Mail\OrderSuccessMail;
 use Illuminate\Support\Facades\Mail;
+
 
 class OrderController extends Controller
 {
@@ -406,7 +408,7 @@ class OrderController extends Controller
 
         try {
             // Load danh sách item và variant
-            $order->load('items.variant');
+            $order->load(['items.variant', 'user']);
 
             foreach ($order->items as $item) {
                 // Tăng lại tồn kho cho variant
@@ -417,7 +419,14 @@ class OrderController extends Controller
 
             // Cập nhật trạng thái đơn hàng
             $order->status = 'cancelled';
+            $order->cancel_reason = 'Người dùng đã tự hủy đơn'; // có thể thay bằng request input nếu muốn
             $order->save();
+
+            // Gửi email thông báo hủy
+            if (!empty($order->user?->email)) {
+                Mail::to($order->user->email)
+                    ->send(new OrderCancelledMail($order, $order->cancel_reason));
+            }
 
             DB::commit();
 
