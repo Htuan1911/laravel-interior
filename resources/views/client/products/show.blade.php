@@ -81,7 +81,6 @@
         .gray {
             background-color: gray;
         }
-        
     </style>
 
     <div class="main-content">
@@ -404,7 +403,8 @@
                                                             @endphp
 
                                                             {{-- Khu vực ảnh chính (tab-pane) --}}
-                                                            <div class="js-qv-mask mask tab-content border">
+                                                            <div
+                                                                class="js-qv-mask mask tab-content border product-main-image">
                                                                 {{-- Ảnh của sản phẩm hoặc biến thể đầu tiên --}}
                                                                 @foreach ($product->variants as $key => $v)
                                                                     <div id="item{{ $key + 1 }}"
@@ -977,7 +977,7 @@
 
         // Khi chọn màu
         function handleSelection(el) {
-            selectedColor = el.getAttribute('data-color');
+            selectedColor = el.getAttribute('data-color').trim().toLowerCase();
 
             // Tô viền
             document.querySelectorAll('.colors span').forEach(span => span.classList.remove('active'));
@@ -988,19 +988,21 @@
 
         // Khi chọn size
         document.getElementById('sizeSelect').addEventListener('change', function() {
-            selectedSize = this.value;
+            selectedSize = this.value.trim().toLowerCase();
             updateVariant();
         });
 
-        // Hàm tìm variant phù hợp và cập nhật giao diện
         function updateVariant() {
-            const allVariants = document.querySelectorAll('.colors span');
+            if (!selectedColor || !selectedSize) {
+                return; // Chưa chọn đủ
+            }
 
+            const allVariants = document.querySelectorAll('.colors span');
             let matchedVariant = null;
 
             allVariants.forEach(v => {
-                const color = v.getAttribute('data-color');
-                const size = v.getAttribute('data-size');
+                const color = v.getAttribute('data-color').trim().toLowerCase();
+                const size = v.getAttribute('data-size').trim().toLowerCase();
 
                 if (color === selectedColor && size === selectedSize) {
                     matchedVariant = v;
@@ -1012,16 +1014,19 @@
                 const image = matchedVariant.getAttribute('data-image');
                 const variantId = matchedVariant.getAttribute('data-variant-id');
 
-                // Cập nhật ảnh
-                document.getElementById('main-image').src = image;
+                // 1. Đổi ảnh trong tab-pane đang active
+                let activePaneImg = document.querySelector('.product-main-image .tab-pane.active img');
+                if (activePaneImg) {
+                    activePaneImg.src = image;
+                }
 
-                // Cập nhật giá
-                document.getElementById('variant-price').innerText = parseInt(price).toLocaleString('vi-VN') + ' đ';
+                // 2. Cập nhật giá
+                const priceEl = document.getElementById('variant-price');
+                if (priceEl) priceEl.innerText = parseInt(price).toLocaleString('vi-VN') + ' đ';
 
-                // Cập nhật variant_id hidden
+                // 3. Cập nhật hidden input
                 const input = document.getElementById('variant-id');
                 if (input) input.value = variantId;
-
             }
         }
     </script>
