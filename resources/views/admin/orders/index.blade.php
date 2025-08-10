@@ -79,23 +79,29 @@
 
                                         $paymentMethod = $order->payment?->method ?? 'Không rõ';
 
-                                        // Khóa sửa nếu đơn hàng đã xác nhận trở lên và đã thanh toán, hoặc bị huỷ
-                                      $isLocked = (in_array($latestStatus, ['confirmed', 'shipping', 'completed']) &&
-                                                  (in_array($paymentStatus, ['paid', 'success']) || $paymentMethod === 'cod')
-                                                ) || $latestStatus === 'cancelled';
+                                        // Khóa sửa nếu đơn hàng đang giao, đã hoàn tất, hoặc đã hủy
+                                        // Hoặc nếu đã thanh toán (online hoặc COD) và đã xác nhận trở lên
+                                        $isLocked = in_array($latestStatus, ['shipping', 'completed', 'cancelled']) ||
+                                                    (
+                                                        in_array($latestStatus, [ 'shipping', 'completed']) &&
+                                                        (in_array($paymentStatus, ['paid', 'success']) || $paymentMethod === 'cod')
+                                                    );
 
-
+                                        // Chỉ cấm xóa nếu:
+                                        // 1. Đơn đang giao hoặc đã hoàn tất
+                                        // 2. Hoặc đã hủy nhưng đã thanh toán online
+                                        // 3. Hoặc đã thanh toán online (trừ COD)
                                         $disableDelete =
-                                            // Đơn đang giao, hoàn tất hoặc đã hủy thì không được xóa
-                                            in_array(strtolower($order->status), ['shipping', 'completed', 'cancelled'])
-
-                                            // Hoặc đơn đã thanh toán online (trừ COD)
-                                            || (
-                                                in_array(strtolower($order->payment?->status ?? ''), ['paid', 'success']) &&
-                                                strtolower($order->payment?->method ?? '') !== 'cod'
+                                            in_array($latestStatus, ['shipping', 'completed']) ||
+                                            (
+                                                $latestStatus === 'cancelled' &&
+                                                in_array($paymentStatus, ['paid', 'success']) &&
+                                                $paymentMethod !== 'cod'
+                                            ) ||
+                                            (
+                                                in_array($paymentStatus, ['paid', 'success']) &&
+                                                $paymentMethod !== 'cod'
                                             );
-
-
                                     @endphp
 
 

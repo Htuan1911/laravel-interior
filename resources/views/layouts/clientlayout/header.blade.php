@@ -195,7 +195,7 @@
                                 </div>
                                     <div>
                                     <a href="{{ route('client.account.vouchers') }}" title=" vouchers">
-                                        <i class="fa fa-heart"></i>
+                                        <i class="fa fa-ticket"></i>
                                         <span>Vouchers</span>
                                     </a>
                                 </div>
