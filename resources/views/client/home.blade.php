@@ -881,8 +881,8 @@
                                                         Category</div>
                                                     <ul class="nav nav-tabs wibkit row">
                                                         <li class="col-xs-6">
-                                                            <a href="#all" data-toggle="tab" class="active">ALL
-                                                                PRODUCTS</a>
+                                                            <a href="#all" data-toggle="tab" class="active">
+                                                                Tất cả sản phẩm</a>
                                                         </li>
                                                         {{-- <li class="col-xs-6">
                                                             <a href="#table" data-toggle="tab">SIDE TABLE</a>
@@ -1164,8 +1164,8 @@
                                 <div class="section new-arrivals col-lg-6 col-xs-6">
                                     <div class="tab-content">
                                         <div class="title-product">
-                                            <h2>New Arrivals</h2>
-                                            <p>Discover our new products</p>
+                                            <h2>Sản phẩm mới nhất</h2>
+                                            <p>Khám phá sản phẩm mới của chúng tôi</p>
                                         </div>
                                         <div class="category-product owl-carousel owl-theme owl-loaded owl-drag">
                                             @foreach ($latestProducts as $product)
@@ -1283,8 +1283,8 @@
                                 <div class="section best-sellers col-lg-6 col-xs-6">
                                     <div class="tab-content">
                                         <div class="title-product">
-                                            <h2>Best Sellers</h2>
-                                            <p>Discover our best sellers</p>
+                                            <h2>Bán chạy nhất</h2>
+                                            <p>Khám phá sản phẩm bán chạy</p>
                                         </div>
                                         <div class="category-product owl-carousel owl-theme owl-loaded owl-drag">
                                             @foreach ($bestSellers as $product)
