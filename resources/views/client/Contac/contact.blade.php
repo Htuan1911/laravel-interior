@@ -1,7 +1,7 @@
 @extends('layouts.contact')
 
 @section('contact')
-<div class="main-content">
+    <div class="main-content">
         <div id="wrapper-site">
             <div id="content-wrapper">
 
@@ -11,12 +11,12 @@
                         <div class="breadcrumb">
                             <ol>
                                 <li>
-                                    <a href="#">
+                                    <a href="{{ url('/client') }}">
                                         <span>Home</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">
+                                    <a href="">
                                         <span>Contact</span>
                                     </a>
                                 </li>
@@ -27,7 +27,7 @@
                 <div id="main">
                     <div class="page-home">
                         <div class="container">
-                            <h1 class="text-center title-page">Contact Us</h1>
+                            <h1 class="text-center title-page">Liên hệ với chúng tôi</h1>
                             <div class="row-inhert">
                                 <div class="header-contact">
                                     <div class="row">
@@ -41,9 +41,9 @@
                                                 <div class="item-right d-flex">
                                                     <div class="title">Email:</div>
                                                     <div class="contact-content">
-                                                        <a href="mailto:support@domain.com">support@domain.com</a>
+                                                        <a href="mailto:support@domain.com">tuan178804@gamil.com</a>
                                                         <br>
-                                                        <a href="mailto:contact@domain.com">contact@domain.com</a>
+                                                        <a href="mailto:contact@domain.com">contact@noithat.com</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -58,8 +58,8 @@
                                                 <div class="item-right d-flex">
                                                     <div class="title">Address:</div>
                                                     <div class="contact-content">
-                                                        23 Suspendis matti, Visaosang Building
-                                                        <br>District, NY Accums, North American
+                                                        Tang 8, Toa nha Intracom 2, 33 Cau Dien, Phuc Dien, Bac Tu Liem, Ha
+                                                        Noi
                                                     </div>
                                                 </div>
                                             </div>
@@ -74,8 +74,8 @@
                                                 <div class="item-right d-flex">
                                                     <div class="title">Hotline:</div>
                                                     <div class="contact-content">
-                                                        0123-456-78910
-                                                        <br>0987-654-32100
+                                                        0891 234 567
+                                                        <br>0392 846 674
                                                     </div>
                                                 </div>
                                             </div>
@@ -90,12 +90,11 @@
                                     </div>
                                 </div>
                                 <div class="input-contact">
-                                    <p class="text-intro text-center">“Proin gravida nibh vel velit auctor aliquet.
-                                        Aenean sollicudin, lorem quis bibendum
-                                        auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit. Duis sed odio
-                                        sit
-                                        amet nibh vultate cursus a sit amet mauris. Proin gravida nibh vel velit auctor
-                                        aliquet.”
+                                    <p class="text-intro text-center">"Chúng tôi luôn sẵn sàng lắng nghe bạn!"
+                                        Nếu bạn có bất kỳ câu hỏi, góp ý hoặc yêu cầu hỗ trợ, hãy điền thông tin vào form
+                                        liên hệ bên dưới.
+                                        Đội ngũ của chúng tôi sẽ phản hồi sớm nhất có thể để mang đến cho bạn trải nghiệm
+                                        tốt nhất.
                                     </p>
 
                                     <p class="icon text-center">
@@ -107,67 +106,67 @@
                                     <div class="d-flex justify-content-center">
                                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                             <div class="contact-form">
-                                                
-                                            <!-- Hiển thị thông báo thành công -->
-                                            @if (session('success'))
-                                            <div class="alert alert-success">{{ session('success') }}</div>
-                                            @endif
 
-                                            <!-- Hiển thị lỗi validation -->
-                                            @if ($errors->any())
-                                            <div class="alert alert-danger text-start">
-                                                <ul class="mb-0">
-                                                    @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                            @endif
+                                                <!-- Hiển thị thông báo thành công -->
+                                                @if (session('success'))
+                                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                                @endif
 
-                                            <form action="{{ route('client.contact.send') }}" method="post"
-                                                enctype="multipart/form-data">
-                                                @csrf
-                                                <div class="form-fields">
-                                                    <div class="form-group row">
-                                                        <div class="col-md-6">
-                                                            <input
-                                                                class="form-control @error('name') is-invalid @enderror"
-                                                                name="name" placeholder="Your name"
-                                                                value="{{ old('name') }}" required>
-                                                            @error('name')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                <!-- Hiển thị lỗi validation -->
+                                                @if ($errors->any())
+                                                    <div class="alert alert-danger text-start">
+                                                        <ul class="mb-0">
+                                                            @foreach ($errors->all() as $error)
+                                                                <li>{{ $error }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+
+                                                <form action="{{ route('client.contact.send') }}" method="post"
+                                                    enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="form-fields">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <input
+                                                                    class="form-control @error('name') is-invalid @enderror"
+                                                                    name="name" placeholder="Your name"
+                                                                    value="{{ old('name') }}" required>
+                                                                @error('name')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+                                                            <div class="col-md-6 margin-bottom-mobie">
+                                                                <input
+                                                                    class="form-control @error('email') is-invalid @enderror"
+                                                                    name="email" type="email"
+                                                                    value="{{ old('email') }}" placeholder="Your email"
+                                                                    required>
+                                                                @error('email')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-6 margin-bottom-mobie">
-                                                            <input
-                                                                class="form-control @error('email') is-invalid @enderror"
-                                                                name="email" type="email" value="{{ old('email') }}"
-                                                                placeholder="Your email" required>
-                                                            @error('email')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-12">
+                                                                <textarea class="form-control @error('message') is-invalid @enderror" name="message" placeholder="Message"
+                                                                    rows="8" required>{{ old('message') }}</textarea>
+                                                                @error('message')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                  
-                                                    <div class="form-group row">
-                                                        <div class="col-md-12">
-                                                            <textarea
-                                                                class="form-control @error('message') is-invalid @enderror"
-                                                                name="message" placeholder="Message" rows="8"
-                                                                required>{{ old('message') }}</textarea>
-                                                            @error('message')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                                                    <div>
+                                                        <button class="btn" type="submit" name="submitMessage">
+                                                            <img class="img-fl" src="/img/other/contact_email.png"
+                                                                alt="img">
+                                                            Send message
+                                                        </button>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <button class="btn" type="submit" name="submitMessage">
-                                                        <img class="img-fl" src="/img/other/contact_email.png" alt="img">
-                                                        Send message
-                                                    </button>
-                                                </div>
-                                            </form>
+                                                </form>
 
                                             </div>
                                         </div>

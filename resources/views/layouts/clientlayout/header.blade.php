@@ -134,7 +134,7 @@
                 <!-- search-->
                 <div id="search_widget" class="col-sm-6 col-md-5 align-items-center justify-content-end d-flex">
                     <form method="get" action="#">
-                        <input type="text" name="s" value="" placeholder="Search ..."
+                        <input type="text" name="s" value="" placeholder="Tìm kiếm ..."
                             class="ui-autocomplete-input" autocomplete="off">
                         <button type="submit">
                             <i class="fa fa-search"></i>
@@ -306,9 +306,9 @@
                                                     <td colspan="3" class="d-flex justify-content-center">
                                                         <div class="cart-button">
                                                             <a href="{{ route('client.carts.index') }}"
-                                                                title="View Cart">View Cart</a>
-                                                            <a href="{{ route('client.orders.checkout') }}"
-                                                                title="Checkout">Checkout</a>
+                                                                title="View Cart">Xem giỏ hàng</a>
+                                                            <a href="{{ route('client.carts.index') }}"
+                                                                title="Checkout">Thanh toán</a>
                                                         </div>
                                                     </td>
                                                 </tr>

@@ -16,12 +16,12 @@
                     <div class="breadcrumb">
                         <ol>
                             <li>
-                                <a href="#">
+                                <a href="{{ url('/client') }}">
                                     <span>Home</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="{{ route('client.carts.index')}}">
                                     <span>Shopping Cart</span>
                                 </a>
                             </li>

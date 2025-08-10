@@ -298,47 +298,57 @@ class ProductController extends Controller
     {
         $product = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
-            // Lọc review có is_visible = true và load user
             'variants.reviews' => fn($q) => $q->where('is_visible', true)->with('user'),
-
             'category.translations' => fn($q) => $q->where('language_code', 'vi'),
         ])->findOrFail($id);
 
+        // Lấy category_id từ request (nếu có) để giữ filter
+        $categoryId = request('category_id') ?? $product->category_id;
 
-        
-        // Lấy các sản phẩm cùng danh mục
+        // related / newest như trước, có thể áp filter categoryId nếu cần
         $relatedProducts = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
             'variants',
         ])
-            ->where('category_id', $product->category_id)
+            ->where('category_id', $categoryId)
             ->where('id', '!=', $product->id)
             ->where('status', 'active')
             ->take(3)
             ->get();
 
-        // Lấy sản phẩm mới nhất
         $newestProducts = Product::with([
             'translations' => fn($q) => $q->where('language_code', 'vi'),
             'variants',
         ])
             ->where('status', 'active')
+            ->when($categoryId, fn($q) => $q->where('category_id', $categoryId))
             ->orderBy('created_at', 'desc')
             ->take(9)
             ->get();
 
-        // ✅ Lấy toàn bộ review từ các variant
         $allReviews = $product->variants->flatMap->reviews;
-
-        // ✅ Tổng số đánh giá
         $reviewCount = $allReviews->count();
+        $averageRating = $reviewCount > 0 ? round($allReviews->avg('rating'), 1) : 0;
 
-        // ✅ Tính trung bình số sao
-        $averageRating = $reviewCount > 0
-            ? round($allReviews->avg('rating'), 1)
-            : 0;
-        return view('client.products.show', compact('product', 'relatedProducts', 'newestProducts', 'reviewCount', 'averageRating'));
+        // **Thêm: lấy categories (cha + children) để view sử dụng**
+        $categories = Category::with([
+            'translations' => fn($q) => $q->where('language_code', 'vi'),
+            'children.translations' => fn($q) => $q->where('language_code', 'vi'),
+        ])
+            ->whereNull('parent_id')
+            ->get();
+
+        return view('client.products.show', compact(
+            'product',
+            'relatedProducts',
+            'newestProducts',
+            'reviewCount',
+            'averageRating',
+            'categories'
+        ));
     }
+
+
 
 
     // ClientProductController.php
