@@ -15,6 +15,16 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    {{-- Form tìm kiếm đặt trước bảng --}}
+    <form action="{{ route('admin.coupons.index') }}" method="GET" class="mb-3">
+        <div class="input-group" style="max-width: 400px;">
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Nhập mã hoặc số tiền giảm..." 
+                   value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </form>
+
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-hover table-bordered align-middle">
@@ -47,15 +57,11 @@
                                     -
                                 @endif
                             </td>
-                            <td>
-                                {{ $coupon->discount_amount ? number_format($coupon->discount_amount) . 'đ' : '-' }}
-                            </td>
+                            <td>{{ $coupon->discount_amount ? number_format($coupon->discount_amount) . 'đ' : '-' }}</td>
                             <td>{{ number_format($coupon->min_order_amount) }}đ</td>
                             <td>{{ $coupon->max_uses ?? '-' }}</td>
                             <td>{{ $coupon->used_count }}</td>
-                            <td>
-                                {{ $coupon->expires_at ? \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') : '-' }}
-                            </td>
+                            <td>{{ $coupon->expires_at ? \Carbon\Carbon::parse($coupon->expires_at)->format('d/m/Y') : '-' }}</td>
                             <td>
                                 @if (!$coupon->is_active)
                                     <span class="badge bg-secondary">Tạm ngưng</span>
@@ -87,6 +93,9 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Hiển thị phân trang --}}
+            {{ $coupons->withQueryString()->links() }}
         </div>
     </div>
 </div>

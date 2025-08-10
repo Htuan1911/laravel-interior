@@ -9,11 +9,25 @@ use Illuminate\Support\Facades\Validator;
 
 class CouponController extends Controller
 {
-    public function index()
-    {
-        $coupons = Coupon::all();
-        return view('admin.coupons.index', compact('coupons'));
+    public function index(Request $request)
+{
+    $query = Coupon::query();
+
+    // Nếu có từ khóa tìm kiếm
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('code', 'like', "%{$search}%")
+              ->orWhere('discount_percent', 'like', "%{$search}%")
+              ->orWhere('discount_amount', 'like', "%{$search}%");
+        });
     }
+
+    // Lấy danh sách mã giảm giá (có phân trang)
+    $coupons = $query->orderByDesc('id')->paginate(10);
+
+    return view('admin.coupons.index', compact('coupons'));
+}
 
     public function create()
     {
