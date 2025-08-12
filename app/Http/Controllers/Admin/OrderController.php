@@ -17,16 +17,38 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Gọi command tự động cập nhật trạng thái đơn hàng
         Artisan::call('orders:auto-update-status');
 
-        $orders = Order::withTrashed()
+        $query = Order::withTrashed()
             ->with(['user', 'payment', 'statusLogs'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
 
+        // Filter theo ID đơn hàng
+        if ($request->filled('order_id')) {
+            $query->where('id', $request->order_id);
+        }
+
+        // Filter theo tên người dùng (quan hệ user)
+        if ($request->filled('user_name')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->user_name . '%');
+            });
+        }
+
+        // Filter theo số điện thoại
+        if ($request->filled('phone')) {
+            $query->where('shipping_phone', 'like', '%' . $request->phone . '%');
+        }
+
+        // Filter theo trạng thái đơn hàng (status chính trong bảng orders)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->paginate(15);
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -181,7 +203,7 @@ class OrderController extends Controller
         }
 
         // --- Xử lý trạng thái thanh toán ---
-        if ($order->payment && $request->filled('payment_status')) {
+        if ($order->payment && $request->filled('payment_status') && strtolower($order->payment->method) === 'cod') {
             $currentPayment = strtolower($order->payment->status);
             $requested = strtolower($request->payment_status);
 
@@ -195,7 +217,8 @@ class OrderController extends Controller
 
                 // Nếu đổi thành đã thanh toán thì đơn hàng thành completed
                 if (in_array($order->payment->status, ['success', 'paid'])) {
-                    $newStatus = 'completed';
+                    $order->status = 'completed'; // nhớ lưu lại order nữa
+                    $order->save();
                 }
             }
         }
