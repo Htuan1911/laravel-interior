@@ -10,11 +10,38 @@ use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $wishlists = Wishlist::with(['user', 'product.translation'])->get();
-        return view('admin.wishlists.index', compact('wishlists'));
+        $query = Wishlist::with(['user', 'product.translation']);
+
+        // Lọc theo user_id nếu có
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Lọc theo product_id nếu có
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+
+        // Lọc theo từ khóa (tìm trong tên sản phẩm hoặc tên user)
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->whereHas('user', function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })->orWhereHas('product.translation', function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            });
+        }
+
+        $wishlists = $query->paginate(10); // phân trang
+
+        $users = User::all();
+        $products = Product::all();
+
+        return view('admin.wishlists.index', compact('wishlists', 'users', 'products'));
     }
+
 
     public function create()
     {
