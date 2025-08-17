@@ -301,9 +301,4 @@ Route::prefix('client')->name('client.')->group(function () {
     
 });
 
-Route::get('/run-scheduler', function () {
-    Artisan::call('orders:auto-update-status');
-    return response()->json(['status' => 'Đã chạy command']);
-});
-
 require __DIR__ . '/auth.php';

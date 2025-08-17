@@ -88,7 +88,9 @@
                                     };
 
                                     $paymentStatus = strtolower($order->payment?->status ?? 'unpaid');
-                                    $paymentMethod = strtolower($order->payment?->method ?? 'cod');
+                                    $paymentMethodRaw = $order->payment?->method ?? 'cod';
+                                    $paymentMethod = strtolower($paymentMethodRaw); // để check điều kiện
+                                    $paymentMethodDisplay = ucfirst($paymentMethodRaw); // để hiển thị
 
                                     $paymentBadge = match($paymentStatus) {
                                         'paid', 'success' => 'success',
@@ -104,28 +106,24 @@
                                         default           => 'Chưa thanh toán',
                                     };
 
-                                    $paymentMethod = $order->payment?->method ?? 'Không rõ';
+                                    $isLocked = 
+                                                // Đơn đã hoàn tất hoặc bị hủy thì luôn khóa
+                                                in_array($latestStatus, ['completed', 'cancelled']) ||
 
-                                    $isLocked = in_array($latestStatus, ['shipping', 'completed', 'cancelled']) || 
+                                                // Đang giao hàng + đã thanh toán hoặc không phải COD → khóa
                                                 (
-                                                    in_array($latestStatus, ['shipping', 'completed']) &&
+                                                    $latestStatus === 'completed' &&
                                                     (
                                                         in_array($paymentStatus, ['paid', 'success']) ||
-                                                        ($paymentMethod !== 'cod')
+                                                        $paymentMethod !== 'cod'
                                                     )
                                                 );
-
-                                    $disableDelete =
-                                        in_array($latestStatus, ['shipping', 'completed']) ||
-                                        (
-                                            $latestStatus === 'cancelled' &&
-                                            in_array($paymentStatus, ['paid', 'success']) &&
-                                            $paymentMethod !== 'cod'
-                                        ) ||
-                                        (
-                                            in_array($paymentStatus, ['paid', 'success']) &&
-                                            $paymentMethod !== 'cod'
-                                        );
+                                    $disableDelete = $isLocked ||
+                                                    (
+                                                        $latestStatus === 'cancelled' &&
+                                                        in_array($paymentStatus, ['paid', 'success']) &&
+                                                        $paymentMethod !== 'cod'
+                                                    );
                                 @endphp
 
                                 <tr>
@@ -189,12 +187,5 @@
         </div>
     </div>
 </div>
-<script>
-    setInterval(function() {
-        fetch('/run-scheduler')
-            .then(response => response.json())
-            .then(data => console.log('Đã gọi schedule:', data.status));
-    }, 15000);
-</script>
 
 @endsection
