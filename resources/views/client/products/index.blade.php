@@ -29,36 +29,61 @@
 
                                         <!-- category menu -->
                                         <div class="sidebar-block">
-                                            <div class="title-block">Categories</div>
+                                            <div class="title-block">Danh mục</div>
                                             <div class="block-content">
                                                 @foreach ($categories as $category)
                                                     @php
                                                         $translatedName =
                                                             $category->translations->first()->name ?? 'Danh mục';
                                                         $active = request('category_id') == $category->id;
+                                                        $hasChildren =
+                                                            $category->children && $category->children->count() > 0;
                                                     @endphp
 
                                                     <div
                                                         class="cateTitle hasSubCategory level1 {{ $active ? 'open' : '' }}">
-                                                        <span class="arrow collapse-icons" data-toggle="collapse"
-                                                            data-target="#category{{ $category->id }}"
-                                                            aria-expanded="{{ $active ? 'true' : 'false' }}" role="status">
-                                                            <i class="zmdi zmdi-minus"></i>
-                                                            <i class="zmdi zmdi-plus"></i>
-                                                        </span>
+                                                        @if ($hasChildren)
+                                                            <span
+                                                                class="arrow collapse-icons {{ $active ? '' : 'collapsed' }}"
+                                                                data-toggle="collapse"
+                                                                data-target="#category{{ $category->id }}"
+                                                                aria-expanded="{{ $active ? 'true' : 'false' }}"
+                                                                role="status">
+                                                                <i class="zmdi zmdi-minus"></i>
+                                                                <i class="zmdi zmdi-plus"></i>
+                                                            </span>
+                                                        @endif
+
                                                         <a class="cateItem {{ $active ? 'active' : '' }}"
                                                             href="{{ route('client.products.index', ['category_id' => $category->id]) }}">
                                                             {{ $translatedName }}
                                                         </a>
+
+                                                        @if ($hasChildren)
+                                                            <div class="subCategory collapse {{ $active ? 'show' : '' }}"
+                                                                id="category{{ $category->id }}"
+                                                                aria-expanded="{{ $active ? 'true' : 'false' }}"
+                                                                role="status">
+                                                                @foreach ($category->children as $child)
+                                                                    <div class="cateTitle">
+                                                                        <a href="{{ route('client.products.index', ['category_id' => $child->id]) }}"
+                                                                            class="cateItem">
+                                                                            {{ $child->translations->first()->name ?? 'Danh mục con' }}
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
 
 
+
+
                                         <!-- best seller -->
                                         <div class="sidebar-block">
-                                            <div class="title-block">Catalog</div>
                                             <!-- Bộ lọc theo Kích thước -->
                                             <div class="new-item-content">
                                                 <h3 class="title-product">Kích thước</h3>
@@ -89,7 +114,7 @@
 
 
                                             <!-- Bộ lọc theo Chất liệu -->
-                                            <div class="new-item-content">
+                                            {{-- <div class="new-item-content">
                                                 <h3 class="title-product">By Material</h3>
                                                 <ul class="scroll-product">
                                                     @foreach ($materials as $material)
@@ -112,7 +137,7 @@
                                                         </li>
                                                     @endforeach
                                                 </ul>
-                                            </div>
+                                            </div> --}}
 
 
 
@@ -144,7 +169,7 @@
 
 
                                             <!-- Bộ lọc theo Màu sắc -->
-                                            <div class="sidebar-block by-color">
+                                            {{-- <div class="sidebar-block by-color">
                                                 <h3 class="title-product">By Color</h3>
                                                 <div>
                                                     @foreach ($colors as $color)
@@ -164,17 +189,14 @@
                                                         </span>
                                                     @endforeach
                                                 </div>
-                                            </div>
-
-
-
+                                            </div> --}}
                                         </div>
 
                                         <!-- product tag -->
 
                                     </div>
                                     <div class="col-sm-8 col-lg-9 col-md-8 product-container">
-                                        <h1>All products</h1>
+                                        <h1>Tất cả sản phẩm</h1>
                                         <div class="js-product-list-top firt nav-top">
                                             <div class="d-flex justify-content-around row">
                                                 <div class="col col-xs-12">
@@ -188,8 +210,11 @@
                                                         </li>
                                                     </ul>
                                                     <div class="hidden-sm-down total-products">
-                                                        <p>There are 12 products.</p>
+                                                        <p>Có {{ $products->count() }} sản phẩm trong trang này.</p>
                                                     </div>
+
+
+
                                                 </div>
                                                 <div class="col col-xs-12">
                                                     <div
@@ -390,7 +415,6 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-
                                                             @endforeach
 
                                                         </div>
@@ -494,50 +518,54 @@
                                         </div>
 
                                         <!-- pagination -->
+
                                         <div class="pagination">
-                                            <div class="js-product-list-top ">
+                                            <div class="js-product-list-top">
                                                 <div class="d-flex justify-content-around row">
+
                                                     <div class="showing col col-xs-12">
-                                                        <span>SHOWING 1-3 OF 3 ITEM(S)</span>
+                                                        <span>
+                                                            Có {{ $products->lastPage() }} trang
+                                                        </span>
                                                     </div>
+
+
+                                                    <!-- Hiển thị các trang -->
                                                     <div class="page-list col col-xs-12">
                                                         <ul>
+                                                            {{-- Nút Previous --}}
                                                             <li>
-                                                                <a rel="prev" href="#"
-                                                                    class="previous disabled js-search-link">
-                                                                    Previous
-                                                                </a>
-                                                            </li>
-                                                            <li class="current active">
-                                                                <a rel="nofollow" href="#"
-                                                                    class="disabled js-search-link">
-                                                                    1
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a rel="nofollow" href="#"
-                                                                    class="disabled js-search-link">
-                                                                    2
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a rel="nofollow" href="#"
-                                                                    class="disabled js-search-link">
-                                                                    3
+                                                                <a href="{{ $products->previousPageUrl() ?? '#' }}"
+                                                                    class="previous js-search-link {{ $products->onFirstPage() ? 'disabled' : '' }}">
+                                                                    Quay Lại
                                                                 </a>
                                                             </li>
 
+                                                            {{-- Các trang --}}
+                                                            @for ($i = 1; $i <= $products->lastPage(); $i++)
+                                                                <li
+                                                                    class="{{ $i == $products->currentPage() ? 'current active' : '' }}">
+                                                                    <a href="{{ $products->url($i) }}"
+                                                                        class="js-search-link">
+                                                                        {{ $i }}
+                                                                    </a>
+                                                                </li>
+                                                            @endfor
+
+                                                            {{-- Nút Next --}}
                                                             <li>
-                                                                <a rel="next" href="#"
-                                                                    class="next disabled js-search-link">
-                                                                    Next
+                                                                <a href="{{ $products->nextPageUrl() ?? '#' }}"
+                                                                    class="next js-search-link {{ $products->hasMorePages() ? '' : 'disabled' }}">
+                                                                    Tiếp
                                                                 </a>
                                                             </li>
                                                         </ul>
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
 
                                     <!-- end col-md-9-1 -->

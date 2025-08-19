@@ -8,23 +8,15 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-3 col-sm-6">
+                <div class="col-md-4 col-sm-6">
                     <label class="form-label fw-semibold">Từ ngày</label>
                     <input type="date" name="from" class="form-control" value="{{ $from }}">
                 </div>
-                <div class="col-md-3 col-sm-6">
+                <div class="col-md-4 col-sm-6">
                     <label class="form-label fw-semibold">Đến ngày</label>
                     <input type="date" name="to" class="form-control" value="{{ $to }}">
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <label class="form-label fw-semibold">Loại báo cáo</label>
-                    <select name="report_type" class="form-select">
-                        <option value="revenue" {{ request('report_type') == 'revenue' ? 'selected' : '' }}>Doanh thu</option>
-                        <option value="products" {{ request('report_type') == 'products' ? 'selected' : '' }}>Sản phẩm</option>
-                        <option value="inventory" {{ request('report_type') == 'inventory' ? 'selected' : '' }}>Tồn kho</option>
-                    </select>
-                </div>
-                <div class="col-md-3 col-sm-6">
+                <div class="col-md-4 col-sm-6">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fas fa-filter"></i> Lọc dữ liệu
                     </button>
@@ -35,7 +27,7 @@
 
     <!-- Tổng quan doanh thu -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3">
@@ -57,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3">
@@ -71,7 +63,23 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-clock text-danger fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Đơn chưa hoàn thành</h6>
+                        <h4 class="fw-bold mb-0">{{ $pendingOrders ?? 0 }}</h4>
+                        <small class="text-muted">
+                            Từ {{ \Carbon\Carbon::parse($from)->format('d/m/Y') }} đến {{ \Carbon\Carbon::parse($to)->format('d/m/Y') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex align-items-center">
                     <div class="me-3">
@@ -99,35 +107,45 @@
         <!-- Top sản phẩm bán chạy -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
-                <div class="card-header lilies bg-success text-white">
+                <div class="card-header bg-success text-white">
                     <i class="fas fa-fire me-2"></i>Top 5 sản phẩm bán chạy
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Sản phẩm</th>
-                                <th>Biến thể</th>
-                                <th>SKU</th>
-                                <th>Đã bán</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($topSelling as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td>{{ $item->variant_name ?? 'N/A' }}</td>
-                                    <td>{{ $item->sku }}</td>
-                                    <td>{{ $item->total_sold }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có dữ liệu</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                      <thead class="table-light">
+    <tr>
+        <th>Top</th>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Biến thể</th>
+        <th>SKU</th>
+        <th>Đã bán</th>
+    </tr>
+</thead>
+
+                       <tbody>
+@forelse($topSelling as $index => $item)
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>
+            @if($item->variant_image)
+                <img src="{{ asset('storage/' . $item->variant_image) }}" width="60" height="60" style="object-fit:cover;" class="rounded">
+            @else
+                <span class="text-muted">N/A</span>
+            @endif
+        </td>
+        <td>{{ $item->product_name }}</td>
+        <td>{{ $item->variant_name ?? 'N/A' }}</td>
+        <td>{{ $item->sku }}</td>
+        <td>{{ $item->total_sold }}</td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+    </tr>
+@endforelse
+</tbody>
+
                     </table>
                 </div>
             </div>
@@ -137,34 +155,44 @@
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-warning text-dark">
-                    <i class="fas fa-boxes me-2"></i>Tồn kho cao nhưng bán ít
+                    <i class="fas fa-boxes me-2"></i>Top sản phẩm bán ít
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Sản phẩm</th>
-                                <th>Biến thể</th>
-                                <th>Tồn kho</th>
-                                <th>Đã bán</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($lowSoldHighStock as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td>{{ $item->variant_name ?? 'N/A' }}</td>
-                                    <td>{{ $item->stock }}</td>
-                                    <td>{{ $item->total_sold }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có dữ liệu</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                       <thead class="table-light">
+    <tr>
+        <th>Top</th>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Biến thể</th>
+        <th>Còn</th>
+        <th>Đã bán</th>
+    </tr>
+</thead>
+
+                      <tbody>
+@forelse($lowSoldHighStock as $index => $item)
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>
+            @if($item->variant_image)
+                <img src="{{ asset('storage/' . $item->variant_image) }}" width="60" height="60" style="object-fit:cover;" class="rounded">
+            @else
+                <span class="text-muted">N/A</span>
+            @endif
+        </td>
+        <td>{{ $item->product_name }}</td>
+        <td>{{ $item->variant_name ?? 'N/A' }}</td>
+        <td>{{ $item->stock }}</td>
+        <td>{{ $item->total_sold }}</td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+    </tr>
+@endforelse
+</tbody>
+
                     </table>
                 </div>
             </div>
@@ -180,7 +208,7 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th>Top</th>
                                 <th>Sản phẩm</th>
                                 <th>Lượt yêu thích</th>
                             </tr>
@@ -226,6 +254,11 @@
 .table-hover tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
+img.rounded {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
 </style>
 @endsection
 

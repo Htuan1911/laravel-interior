@@ -74,6 +74,13 @@ class ReviewController extends Controller
         $reviews->delete();
         return redirect()->route('admin.reviews.index')->with('success', 'Review deleted successfully.');
     }
+    public function toggleVisibility(Review $review)
+{
+    $review->is_visible = !$review->is_visible;
+    $review->save();
+
+    return redirect()->back()->with('success', 'Cập nhật hiển thị đánh giá thành công.');
+}
 }
 
 

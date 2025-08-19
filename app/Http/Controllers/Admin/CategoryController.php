@@ -11,9 +11,18 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('translations')->get();
+        $keyword = $request->keyword;
+
+        $categories = Category::with(['translations', 'parent.translations'])
+            ->when($keyword, function ($query, $keyword) {
+                $query->whereHas('translations', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%' . $keyword . '%');
+                });
+            })
+            ->paginate(10); // Phân trang 10 danh mục mỗi trang
+
         return view('admin.categories.index', compact('categories'));
     }
 

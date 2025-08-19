@@ -8,7 +8,7 @@
         <h4 class="mb-0">Tạo người dùng mới</h4>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.users.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -26,6 +26,7 @@
                     @enderror
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="password" class="form-label">Mật khẩu</label>
@@ -39,6 +40,7 @@
                     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="phone" class="form-label">Số điện thoại</label>
@@ -62,16 +64,35 @@
                     @enderror
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">Trạng thái</label>
+                    <select name="status" id="status" class="form-select" required>
+                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
+                    </select>
+                    @error('status')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="avatar" class="form-label">Ảnh đại diện</label>
+                    <input type="file" name="avatar" id="avatar" class="form-control">
+                    @error('avatar')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
             <div class="mb-3">
-                <label for="status" class="form-label">Trạng thái</label>
-                <select name="status" id="status" class="form-select" required>
-                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
-                </select>
-                @error('status')
+                <label for="address" class="form-label">Địa chỉ</label>
+                <input type="text" name="address" id="address" class="form-control" value="{{ old('address') }}">
+                @error('address')
                     <div class="text-danger small">{{ $message }}</div>
                 @enderror
             </div>
+
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">Hủy</a>
                 <button type="submit" class="btn btn-success">Tạo người dùng</button>

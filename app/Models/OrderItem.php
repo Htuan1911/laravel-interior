@@ -31,8 +31,7 @@ class OrderItem extends Model
         return $this->belongsTo(\App\Models\ProductVariant::class);
     }
     public function order()
-{
-    return $this->belongsTo(\App\Models\Order::class, 'order_id');
-}
-
+    {
+        return $this->belongsTo(\App\Models\Order::class, 'order_id');
+    }
 }

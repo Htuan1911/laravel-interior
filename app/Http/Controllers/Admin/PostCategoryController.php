@@ -20,15 +20,17 @@ public function index()
 
 
     public function create()
+
     {
-        return view('admin.post_categories.create');
+        $categories = DB::table('post_categories')->select('id', 'name')->get();
+       return view('admin.post_categories.create', compact('categories'));
     }
 
 public function store(Request $request)
 {
-    // Validate từng trường thủ công
+    // Validate với kiểm tra trùng name và slug
     $request->validate([
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:255|unique:post_categories,name',
         'slug' => 'nullable|string|max:255|unique:post_categories,slug',
     ]);
 
@@ -64,9 +66,11 @@ public function store(Request $request)
 
       public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        // Validate với kiểm tra trùng name và slug
+    $request->validate([
+        'name' => 'required|string|max:255|unique:post_categories,name',
+        'slug' => 'nullable|string|max:255|unique:post_categories,slug',
+    ]);
 
         $name = $request->input('name');
         $slug = Str::slug($name);

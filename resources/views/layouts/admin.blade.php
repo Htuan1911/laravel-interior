@@ -41,6 +41,7 @@
 
     @yield('js') <!-- Thêm JavaScript riêng nếu cần -->
     @yield('scripts')
+    @stack('scripts')
 
 </body>
 </html>
