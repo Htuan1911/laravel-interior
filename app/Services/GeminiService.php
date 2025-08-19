@@ -18,8 +18,7 @@ class GeminiService
 
     public function compareProducts(array $products): string
     {
-        $content = "Bạn là chuyên gia phân tích sản phẩm nội thất.
-        sản phẩm sau dựa trên các thông số kỹ thuật. Hãy phân tích ưu nhược điểm từng sản phẩm và đưa ra lời khuyên ngắn gọn khoảng 2-3 câu nên mua sản phẩm nào phù hợp nhất cho khách hàng phổ thông, nên mua sản phẩm này vì điều gì. Không đề cập đến ID sản phẩm trong câu trả lời. \n\n"
+        $content = "Bạn là một chuyên gia phân tích sản phẩm nội thất. Hãy dựa trên các thông số kỹ thuật để so sánh chi tiết từng sản phẩm, chỉ ra rõ ưu điểm và hạn chế của mỗi sản phẩm. Sau đó, đưa ra lời khuyên ngắn gọn (khoảng 2-3 câu) về sản phẩm nào phù hợp nhất cho khách hàng phổ thông. Hãy giải thích lý do nên chọn sản phẩm đó dựa trên các lợi ích nổi bật và sự khác biệt so với sản phẩm còn lại. Không đề cập đến ID sản phẩm trong câu trả lời."
         . json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
         try {
