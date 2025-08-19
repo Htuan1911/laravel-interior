@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\AdminCartController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
 
+use App\Http\Controllers\Auth\PasswordController;
+
 
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
@@ -277,6 +279,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     // Tài khoản người dùng
     Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+        Route::post('/change-password', [PasswordController::class, 'update'])->name('change_password');
         Route::get('/info', [AccountController::class, 'info'])->name('info');
         Route::post('/info', [AccountController::class, 'updateInfo'])->name('update');
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
