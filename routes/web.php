@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\AdminCartController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostCategoryController;
+use App\Http\Controllers\ChatbotController;
 
 
 use App\Http\Controllers\Auth\PasswordController;
@@ -101,7 +102,7 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
         Route::get('/{id}/show', [ProductController::class, 'show'])->name('show');
         Route::get('/category/{id}/options', [ProductController::class, 'getAttributeNamesByCategory']);
         Route::get('/product-options/{id}/values', [ProductController::class, 'getOptionValuesByAttribute']);
-        
+
     });
 
 
@@ -253,7 +254,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
     Route::get('/orders/shipping', [ClientOrderController::class, 'shippingForm'])->name('orders.shipping');
     Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
-    
+
     Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
 
 
@@ -271,6 +272,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
+ });
 
     Route::prefix('blog')->name('blog.')->group(function () {
         Route::get('/', [PostControllerUser::class, 'index'])->name('index');
@@ -295,7 +297,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
 Route::prefix('client')->name('client.')->group(function () {
     Route::middleware(['auth', 'check.status'])->group(function () {
-       
+
 
         // Trang giỏ hàng
         Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
@@ -338,15 +340,15 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/store', [ClientReviewController::class, 'store'])->name('store'); // Gửi đánh giá
             Route::get('/product/{id}', [ClientReviewController::class, 'listByProduct'])->name('product'); // Hiển thị đánh giá theo sản phẩm (tùy chọn)
         });
-       
+
         Route::middleware('auth')->group(function () {
             Route::get('/wishlist', [WishlistControllers::class, 'index'])->name('wishlist.index');
             Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
         });
-       
+
     });
 
-    
-});
 
+});
+Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 require __DIR__ . '/auth.php';
