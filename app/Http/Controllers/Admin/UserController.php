@@ -12,11 +12,26 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     // Lấy danh sách người dùng
-    public function index()
-    {
-        $users = User::whereNull('deleted_at')->with('role')->paginate(10);
-        return view('admin.users.index', compact('users'));
-    }
+   // Lấy danh sách người dùng + tìm kiếm
+public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $users = User::whereNull('deleted_at')
+        ->with('role')
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        })
+        ->paginate(10)
+        ->appends(['search' => $search]); // Giữ lại search khi phân trang
+
+    return view('admin.users.index', compact('users', 'search'));
+}
+
 
     // Hiển thị form tạo mới
     public function create()
@@ -118,4 +133,5 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Xoá người dùng thành công');
     }
+
 }

@@ -3015,4 +3015,224 @@
 </div>
 </div>
 </div>
+<style>
+    /* Icon chat tròn */
+    #chat-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: #fff;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 60px;
+        cursor: pointer;
+        font-size: 28px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+    #chat-icon:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #0056b3, #004494);
+    }
+
+    /* Hộp chat */
+    #chat-box {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 360px;
+        height: 520px;
+        background: #fff;
+        display: none;
+        flex-direction: column;
+        z-index: 9999;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(20px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* Header chat */
+    #chat-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 12px 15px;
+        font-weight: bold;
+        font-size: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    #chat-header button {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* Nội dung chat */
+    #chat-messages {
+        flex: 1;
+        padding: 12px;
+        overflow-y: auto;
+        font-size: 14px;
+        background: #f5f7fb;
+        scroll-behavior: smooth;
+    }
+    .message {
+        margin-bottom: 12px;
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 16px;
+        clear: both;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+    .message.user {
+        background: #007bff;
+        color: white;
+        float: right;
+        border-bottom-right-radius: 5px;
+    }
+    .message.bot {
+        background: #e8ebf1;
+        float: left;
+        border-bottom-left-radius: 5px;
+    }
+
+    /* Ảnh trong tin nhắn */
+    .message img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 6px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    .message img:hover {
+        transform: scale(1.02);
+    }
+
+    /* Input chat */
+    #chat-input {
+        display: flex;
+        border-top: 1px solid #ddd;
+        background: white;
+    }
+    #chat-input input {
+        flex: 1;
+        border: none;
+        padding: 12px;
+        outline: none;
+        font-size: 14px;
+    }
+    #chat-input button {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        padding: 0 18px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease;
+    }
+    #chat-input button:hover {
+        background: #0056b3;
+    }
+</style>
+
+<!-- Icon chat -->
+<div id="chat-icon">💬</div>
+
+<!-- Hộp chat -->
+<div id="chat-box">
+    <div id="chat-header">
+        💬 Chatbot Style House
+        <button id="close-chat">&times;</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="message" placeholder="Nhập tin nhắn...">
+        <button id="send-btn">Gửi</button>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const chatMessages = document.getElementById('chat-messages');
+
+    document.getElementById('chat-icon').addEventListener('click', () => {
+        chatBox.style.display = 'flex';
+    });
+    document.getElementById('close-chat').addEventListener('click', () => {
+        chatBox.style.display = 'none';
+    });
+
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    document.getElementById('message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+        let msg = document.getElementById('message').value.trim();
+        if (!msg) return;
+
+        appendMessage('user', msg);
+        document.getElementById('message').value = '';
+
+        // Tin nhắn đang gõ
+        let loadingId = appendMessage('bot', '<i>Đang trả lời...</i>');
+
+        fetch('{{ route('chatbot.send') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({message: msg})
+        })
+        .then(res => res.json())
+        .then(data => {
+            updateMessage(loadingId, formatBotReply(data.reply), 'bot');
+        })
+        .catch(() => {
+            updateMessage(loadingId, '⚠️ Lỗi kết nối!', 'bot');
+        });
+    }
+
+    function appendMessage(sender, text) {
+        let id = 'msg-' + Date.now();
+        chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return id;
+    }
+
+    function updateMessage(id, newText, sender) {
+        let el = document.getElementById(id);
+        if (el) {
+            el.className = 'message ' + sender;
+            el.innerHTML = newText;
+        }
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Format tin nhắn bot: Tự chuyển link ảnh thành thẻ <img>
+    function formatBotReply(text) {
+        let urlPattern = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlPattern, url => {
+            if (url.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+                return `<br><img src="${url}" alt="Hình ảnh sản phẩm">`;
+            }
+            return `<a href="${url}" target="_blank">${url}</a>`;
+        });
+    }
+</script>
+
 @endsection
