@@ -90,8 +90,10 @@
             </div>
             <div class="text-end">
                 <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                
             </div>
         </form>
+        
         {{-- Thông báo đổi mật khẩu --}}
         @if(session('status') == 'password-updated')
             <div class="alert alert-success mt-3">Mật khẩu đã được cập nhật thành công!</div>
