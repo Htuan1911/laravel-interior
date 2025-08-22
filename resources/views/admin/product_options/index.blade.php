@@ -12,19 +12,19 @@
 @endif
 <style>
     .color-circle {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid #ccc;
-    margin-left: 4px;
-    vertical-align: middle;
-}
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+        margin-left: 4px;
+        vertical-align: middle;
+    }
 
-.table td {
-    white-space: nowrap; /* Ngăn xuống dòng */
-}
-
+    .table td {
+        white-space: nowrap;
+        /* Ngăn xuống dòng */
+    }
 </style>
 
 <div class="container-fluid">
@@ -39,6 +39,18 @@
             </a>
         </div>
     </div>
+    <form action="{{ route('admin.product_options.index') }}" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" value="{{ request('search') }}" class="form-control"
+                placeholder="Tìm theo tên hoặc danh mục...">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark">
+                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </form>
+
 
     <div class="card shadow-sm">
         <div class="card-body">
@@ -64,21 +76,24 @@
                             <td>{{ $option->name }}</td>
                             <td>{{ $option->category_name ?? 'Không xác định' }}</td>
                             <td class="text-center">
-                                @if ($option->status)
-                                <span class="badge bg-success">Hiển thị</span>
-                                @else
-                                <span class="badge bg-secondary">Ẩn</span>
-                                @endif
+                                <span class="badge {{ $option->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ $option->status === 'active' ? 'Hiển thị' : 'Ẩn' }}
+                                </span>
                             </td>
                             <td>
-                                {!! $option->values_display ?: '<span class="text-muted fst-italic">Chưa có giá trị</span>' !!}
+                                {!! $option->values_display ?: '<span class="text-muted fst-italic">Chưa có giá
+                                    trị</span>' !!}
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.product_options.edit', $option->id) }}" class="btn btn-sm btn-warning" title="Sửa">
+                                    <a href="{{ route('admin.product_options.edit', $option->id) }}"
+                                        class="btn btn-sm btn-warning" title="Sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.product_options.destroy', $option->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xoá thuộc tính này không?');" style="display:inline-block;">
+                                    <form action="{{ route('admin.product_options.destroy', $option->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Bạn có chắc muốn xoá thuộc tính này không?');"
+                                        style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" title="Xoá">
