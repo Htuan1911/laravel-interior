@@ -1,75 +1,73 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h2>Thêm bài viết mới</h2>
+<div class="container mt-5">
+    <h2>Thêm danh mục bài viết</h2>
 
-    <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
+    {{-- Hiển thị lỗi nếu có --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Lỗi!</strong> Vui lòng kiểm tra lại dữ liệu nhập vào.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- Form thêm danh mục --}}
+    <form action="{{ route('admin.post_categories.store') }}" method="POST">
         @csrf
 
-        <div class="mb-3">
-            <label>Tiêu đề</label>
-            <input type="text" name="title" id="title" class="form-control" required>
+        {{-- Tên danh mục --}}
+        <div class="form-group mb-3">
+            <label for="name">Tên danh mục <span class="text-danger">*</span></label>
+            <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
         </div>
 
-        <div class="mb-3">
-            <label>Slug</label>
-            <input type="text" name="slug" id="slug" class="form-control">
+        {{-- Slug --}}
+        <div class="form-group mb-3">
+            <label for="slug">Slug (nếu bỏ trống sẽ tự tạo)</label>
+            <input type="text" id="slug" name="slug" class="form-control" value="{{ old('slug') }}">
         </div>
 
-        <div class="mb-3">
-            <label>Nội dung</label>
-            <textarea name="content" class="form-control" rows="5"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label>Hình ảnh (thumbnail)</label>
-            <input type="file" name="thumbnail" class="form-control">
-        </div>
-
-        <div class="mb-3">
-            <label>Danh mục</label>
-            <select name="category_id" class="form-control">
-                @foreach ($categories as $cat)
-                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Trạng thái</label>
-            <select name="status" class="form-control">
-                <option value="draft">Nháp</option>
-                <option value="published">Xuất bản</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Lưu</button>
+        {{-- Nút submit --}}
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+        <a href="{{ route('admin.post_categories.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>
 
 {{-- ✅ JS tạo slug tự động --}}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const titleInput = document.getElementById("title");
+        const nameInput = document.getElementById("name");
         const slugInput = document.getElementById("slug");
 
         function generateSlug(text) {
             return text.toLowerCase()
-                .normalize('NFD')                    // Tách dấu
-                .replace(/[\u0300-\u036f]/g, '')     // Xoá dấu
-                .replace(/[^a-z0-9 -]/g, '')         // Xoá ký tự đặc biệt
-                .replace(/\s+/g, '-')                // Thay khoảng trắng bằng -
-                .replace(/-+/g, '-')                 // Xoá dấu - lặp
-                .replace(/^-+|-+$/g, '');            // Xoá - ở đầu/cuối
+                .normalize('NFD')                    // Tách dấu tiếng Việt
+                .replace(/[\u0300-\u036f]/g, '')     // Xóa dấu
+                .replace(/[^a-z0-9\s-]/g, '')        // Loại ký tự đặc biệt
+                .trim()
+                .replace(/\s+/g, '-')                // Khoảng trắng -> dấu gạch ngang
+                .replace(/-+/g, '-');                // Nhiều dấu '-' thành một
         }
 
-        titleInput.addEventListener("input", function () {
-            // Chỉ tạo slug nếu người dùng chưa nhập tay
-            if (!slugInput.value.trim()) {
-                slugInput.value = generateSlug(titleInput.value);
+        nameInput.addEventListener("input", function () {
+            // Nếu slug đang trống hoặc đã được tự động tạo trước đó thì cập nhật lại
+            if (!slugInput.dataset.userTyped || !slugInput.value.trim()) {
+                const slug = generateSlug(nameInput.value);
+                slugInput.value = slug;
+                slugInput.dataset.userTyped = "false"; // Gắn cờ là auto
             }
+        });
+
+        slugInput.addEventListener("input", function () {
+            // Nếu user tự nhập slug, không ghi đè
+            slugInput.dataset.userTyped = "true";
         });
     });
 </script>
+
 @endsection

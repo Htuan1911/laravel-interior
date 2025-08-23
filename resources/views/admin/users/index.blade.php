@@ -4,14 +4,35 @@
 
 @section('content')
 <div class="container-fluid mt-4">
-    <div class="card shadow rounded-4">
-        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient bg-info text-white py-3 d-flex flex-wrap justify-content-between align-items-center">
+            <h4 class="mb-2 mb-md-0">
                 <i class="fas fa-users me-2"></i> Danh sách người dùng
             </h4>
-            <a href="{{ route('admin.users.create') }}" class="btn btn-light btn-sm">
+            <a href="{{ route('admin.users.create') }}" class="btn btn-light btn-sm shadow-sm">
                 <i class="fas fa-user-plus me-1"></i> Thêm người dùng
             </a>
+        </div>
+
+        {{-- Form tìm kiếm --}}
+        <div class="p-3 border-bottom bg-light">
+            <form action="{{ route('admin.users.index') }}" method="GET" class="row g-2 align-items-center">
+                <div class="col-sm-4">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           placeholder="Tìm theo tên, email, SĐT"
+                           class="form-control shadow-sm border-0 rounded-pill px-3">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                        <i class="fas fa-search me-1"></i> Tìm kiếm
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary rounded-pill px-4 shadow-sm">
+                        <i class="fas fa-redo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
         </div>
 
         <div class="card-body">
@@ -20,7 +41,8 @@
                     <table class="table table-bordered table-hover align-middle text-center">
                         <thead class="table-dark">
                             <tr>
-                                <th>#</th>
+                                <th>ID</th>
+                                <th>Ảnh</th> <!-- Cột ảnh -->
                                 <th>Họ tên</th>
                                 <th>Email</th>
                                 <th>SĐT</th>
@@ -33,6 +55,17 @@
                             @foreach ($users as $user)
                                 <tr>
                                     <td>{{ $user->id }}</td>
+                                    <td>
+                                        @if ($user->avatar)
+                                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar"
+                                                 width="50" height="50"
+                                                 class="rounded-circle object-fit-cover">
+                                        @else
+                                            <img src="{{ asset('images/default-avatar.png') }}" alt="no-avatar"
+                                                 width="50" height="50"
+                                                 class="rounded-circle object-fit-cover">
+                                        @endif
+                                    </td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->phone }}</td>

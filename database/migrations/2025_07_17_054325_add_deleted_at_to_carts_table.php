@@ -9,18 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::table('carts', function (Blueprint $table) {
-        $table->softDeletes();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('carts', function (Blueprint $table) {
+            if (!Schema::hasColumn('carts', 'deleted_at')) {
+                $table->softDeletes();
+            }
+        });
+    }
 
-public function down()
-{
-    Schema::table('carts', function (Blueprint $table) {
-        $table->dropColumn('deleted_at');
-    });
-}
-
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('carts', function (Blueprint $table) {
+            if (Schema::hasColumn('carts', 'deleted_at')) {
+                $table->dropColumn('deleted_at');
+            }
+        });
+    }
 };

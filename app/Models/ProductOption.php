@@ -16,5 +16,11 @@ class ProductOption extends Model
 // {
 //     return $this->belongsTo(Category::class);
 // }
+public function values()
+{
+    return $this->hasMany(ProductOptionValue::class);
 
+  
+
+}
 }

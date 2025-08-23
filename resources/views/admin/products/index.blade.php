@@ -19,6 +19,18 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        <form action="{{ route('admin.products.index') }}" method="GET" class="mb-3 row">
+            <div class="col-md-4">
+                <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
+                    placeholder="Tìm theo tên sản phẩm...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark">
+                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+
         <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark">
                 <tr>
@@ -148,10 +160,15 @@
                                         onclick="return confirm('Xoá mềm sản phẩm này?')">Xoá</button>
                                 </form>
                             @endif
+                            <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-sm btn-info">
+                                Xem
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        <div class="d-flex justify-content-center mt-3">
+            {{ $products->links() }}
+        </div>
     </div>
 @endsection

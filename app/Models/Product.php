@@ -48,4 +48,14 @@ class Product extends Model
 // }
 
 
+    public function translation()
+    {
+        return $this->hasOne(ProductTranslation::class)
+            ->where('language_code', app()->getLocale());
+    }
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
+
 }

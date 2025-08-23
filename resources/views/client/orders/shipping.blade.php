@@ -36,11 +36,13 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label>Tỉnh / Thành phố</label>
-                            <input type="text" name="province" class="form-control">
+                            <input type="province" name="shipping_province" class="form-control"
+                                value="{{ auth()->user()->province ?? '' }}">
                         </div>
                         <div class="col-md-6">
                             <label>Quận / Huyện</label>
-                            <input type="text" name="district" class="form-control">
+                            <input type="district" name="shipping_district" class="form-control"
+                                value="{{ auth()->user()->district ?? '' }}">
                         </div>
                     </div>
 
@@ -98,6 +100,16 @@
                         @endforeach
 
                         <hr>
+                        <div class="mb-3">
+                            <label for="coupon-code" class="form-label"><strong>Mã giảm giá:</strong></label>
+                            <div class="input-group">
+                                <input type="text" id="coupon-code" class="form-control" placeholder="Nhập mã giảm giá">
+                                <button type="button" id="apply-coupon" class="btn btn-outline-secondary">Áp dụng</button>
+                            </div>
+                            <div id="coupon-message" class="text-success mt-1" style="display: none;"></div>
+                        </div>
+
+                        <hr>
                         <p><strong>Tạm tính:</strong> {{ number_format($subtotal, 0, ',', '.') }} đ</p>
                         <p><strong>Phí ship:</strong>
                             <span id="shipping-fee">0</span> đ
@@ -135,5 +147,26 @@
 
         // Gọi lần đầu để hiển thị đúng
         updateShippingFee();
+
+        document.getElementById('apply-coupon').addEventListener('click', function() {
+            const code = document.getElementById('coupon-code').value.trim();
+            const subtotal = {{ $subtotal }};
+
+            fetch(`/client/check-coupon?code=${code}&subtotal=${subtotal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('coupon-message').style.display = 'block';
+                        document.getElementById('coupon-message').innerText = data.message;
+
+                        document.getElementById('shipping-fee').innerText = data.shipping_fee.toLocaleString(
+                            'vi-VN');
+                        document.getElementById('total-amount').innerText = data.total.toLocaleString('vi-VN');
+                    } else {
+                        document.getElementById('coupon-message').style.display = 'block';
+                        document.getElementById('coupon-message').innerText = data.message;
+                    }
+                });
+        });
     </script>
 @endpush

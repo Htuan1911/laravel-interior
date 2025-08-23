@@ -16,12 +16,12 @@
                     <div class="breadcrumb">
                         <ol>
                             <li>
-                                <a href="#">
+                                <a href="{{ url('/client') }}">
                                     <span>Home</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="{{ route('client.carts.index') }}">
                                     <span>Shopping Cart</span>
                                 </a>
                             </li>
@@ -35,7 +35,7 @@
                         <section id="main">
                             <div class="cart-grid row">
                                 <div class="col-md-9 col-xs-12 check-info">
-                                    <h1 class="title-page">Shopping Cart</h1>
+                                    <h1 class="title-page">Giỏ Hàng</h1>
                                     <div class="cart-container">
                                         <div class="cart-overview js-cart">
                                             <ul class="cart-items">
@@ -174,20 +174,6 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <form id="checkout-form" action="{{ route('client.orders.shipping') }}" method="GET"
-                                        class="d-inline">
-                                        <div class="mb-2">
-                                            <label><input type="radio" name="payment_method" value="cod" checked> Thanh
-                                                toán khi nhận hàng</label><br>
-                                            <label><input type="radio" name="payment_method" value="online"> Thanh toán
-                                                online</label>
-                                        </div>
-
-                                        <button type="submit" class="continue btn btn-primary pull-xs-right">
-                                            Continue
-                                        </button>
-                                    </form>
-
 
                                 </div>
                                 @php
@@ -233,6 +219,44 @@
                                                 <span class="value">{{ number_format($total, 0, ',', '.') }} đ</span>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <form id="checkout-form" action="{{ route('client.orders.shipping') }}"
+                                            method="GET" class="d-inline-block p-3 border rounded"
+                                            style="max-width: 400px; background-color: #f9f9f9;">
+                                            <div class="mb-2">
+                                                <label class="form-label fw-semibold mb-2">Phương thức thanh toán:</label>
+
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input" type="radio" name="payment_method"
+                                                        id="cod" value="cod" checked>
+                                                    <label class="form-check-label" for="cod">
+                                                        Thanh toán khi nhận hàng
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input" type="radio" name="payment_method"
+                                                        id="momo" value="momo">
+                                                    <label class="form-check-label" for="momo">
+                                                        Thanh toán MoMo
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="radio" name="payment_method"
+                                                        id="vnpay" value="vnpay">
+                                                    <label class="form-check-label" for="vnpay">
+                                                        Thanh toán VNPAY
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                Tiếp tục
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

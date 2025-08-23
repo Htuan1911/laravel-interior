@@ -15,6 +15,21 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        {{-- Form tìm kiếm --}}
+        <form action="{{ route('admin.categories.index') }}" method="GET" class="mb-3">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
+                        placeholder="Tìm theo tên danh mục...">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </form>
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <table class="table table-hover table-bordered align-middle">
@@ -35,7 +50,8 @@
                                     @foreach ($category->translations as $translation)
                                         <span class="d-block">
                                             <strong>{{ $translation->name }}</strong>
-                                            <small class="text-muted">({{ strtoupper($translation->language_code) }})</small>
+                                            <small
+                                                class="text-muted">({{ strtoupper($translation->language_code) }})</small>
                                         </span>
                                     @endforeach
                                 </td>
@@ -52,11 +68,11 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('admin.categories.edit', $category->id) }}"
-                                           class="btn btn-sm btn-warning">
+                                            class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a href="{{ route('admin.categories.show', $category->id) }}"
-                                           class="btn btn-sm btn-info text-white">
+                                            class="btn btn-sm btn-info text-white">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </div>
@@ -70,6 +86,10 @@
                         @endif
                     </tbody>
                 </table>
+
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $categories->appends(request()->query())->links() }}
+                </div>
             </div>
         </div>
     </div>

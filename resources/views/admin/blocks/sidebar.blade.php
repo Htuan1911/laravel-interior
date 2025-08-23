@@ -70,12 +70,12 @@
         </li>
 
         {{-- Quản lý thanh toán --}}
-        <li class="nav-item mb-2">
+        {{-- <li class="nav-item mb-2">
             <a href="{{ route('admin.payments.index') }}"
                class="nav-link text-white {{ request()->routeIs('admin.payments.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-wallet me-2"></i> Thanh toán
             </a>
-        </li>
+        </li> --}}
 
         {{-- Quản lý đánh giá --}}
         <li class="nav-item mb-2">

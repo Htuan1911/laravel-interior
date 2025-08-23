@@ -19,12 +19,10 @@ class Order extends Model
         'status',
     ];
 
-   public function user()
-{
-    return $this->belongsTo(\App\Models\User::class);
-}
-
-
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
@@ -38,5 +36,26 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+    public function statusLogs()
+    {
+        return $this->hasMany(OrderStatusLog::class);
+    }
+    public function latestStatus()
+    {
+        return $this->statusLogs()->latest('changed_at')->first()?->new_status ?? $this->status;
+    }
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            'pending' => 'Chờ xử lý',
+            'confirmed' => 'Đã xác nhận',
+            'shipping'  => 'Đang giao hàng',
+            'completed' => 'Hoàn tất',
+            'cancelled' => 'Đã hủy',
+            'paid' => 'đã thanh toán',
+            'refunded' => 'Đã hoàn tiền',
+            default => 'Không xác định',
+        };
     }
 }

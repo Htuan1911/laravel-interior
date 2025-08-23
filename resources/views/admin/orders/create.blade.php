@@ -53,7 +53,7 @@
                 {{-- Số điện thoại --}}
                 <div class="mb-3">
                     <label for="shipping_phone" class="form-label">Số điện thoại</label>
-                    <input type="text" class="form-control" name="shipping_phone" id="shipping_phone" required>
+                    <input type="number" class="form-control" name="shipping_phone" id="shipping_phone" required>
                 </div>
 
                 {{-- Địa chỉ --}}
@@ -73,8 +73,9 @@
                     <label for="status" class="form-label">Trạng thái</label>
                     <select name="status" id="status" class="form-select" required>
                         <option value="pending">Chờ xử lý</option>
-                        <option value="paid">Đã thanh toán</option>
-                        <option value="shipped">Đã giao</option>
+                        <option value="confirmed">Đã thanh toán</option>
+                        <option value="shipping">Đang giao</option>
+                        <option value="completed">Hoàn tất</option>
                         <option value="cancelled">Đã hủy</option>
                     </select>
                 </div>
