@@ -352,31 +352,19 @@
                                                                             <div
                                                                                 class="product-buttons d-flex justify-content-center">
                                                                                 {{-- Add to Cart Button --}}
-                                                                                @auth
-                                                                                    <form
-                                                                                        action="{{ route('client.carts.add') }}"
-                                                                                        method="POST" class="formAddToCart">
-                                                                                        @csrf
-                                                                                        <input type="hidden"
-                                                                                            name="variant_id"
-                                                                                            value="{{ $variant->id }}">
-                                                                                        <a class="add-to-cart" href="#"
-                                                                                            onclick="event.preventDefault(); this.closest('form').submit();"
-                                                                                            data-button-action="add-to-cart"
-                                                                                            title="Thêm vào giỏ">
-                                                                                            <i class="fa fa-shopping-cart"
-                                                                                                aria-hidden="true"></i>
-                                                                                        </a>
-                                                                                    </form>
-                                                                                @else
-                                                                                    <a class="add-to-cart"
-                                                                                        href="{{ route('login') }}"
-                                                                                        title="Đăng nhập để mua hàng"
-                                                                                        onclick="return confirm('Bạn cần đăng nhập để thêm vào giỏ hàng!');">
-                                                                                        <i class="fa fa-shopping-cart"
-                                                                                            aria-hidden="true"></i>
-                                                                                    </a>
-                                                                                @endauth
+                                                                                <form action="{{ route('client.carts.add') }}"
+                                                                                method="POST" class="formAddToCart">
+                                                                                @csrf
+                                                                                <input type="hidden" name="variant_id"
+                                                                                    value="{{ $variant->id ?? '' }}">
+                                                                                <input type="hidden" name="quantity"
+                                                                                    value="1">
+                                                                                <button type="submit" class="add-to-cart"
+                                                                                    data-button-action="add-to-cart">
+                                                                                    <i class="fa fa-shopping-cart"
+                                                                                        aria-hidden="true"></i>
+                                                                                </button>
+                                                                            </form>
 
                                                                                 {{-- Wishlist Button --}}
 

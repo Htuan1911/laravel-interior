@@ -600,10 +600,10 @@
                                             <div class="review">
                                                 <ul class="nav nav-tabs">
                                                     <li class="active"><a data-toggle="tab" href="#description"
-                                                            class="active show">Description</a></li>
+                                                            class="active show">Mô tả</a></li>
                                                     {{-- <li><a data-toggle="tab" href="#tag">Product Tags</a></li> --}}
                                                     <li>
-                                                        <a data-toggle="tab" href="#review">Reviews
+                                                        <a data-toggle="tab" href="#review">Đánh giá
                                                             ({{ $reviewCount }})</a>
                                                     </li>
                                                 </ul>
