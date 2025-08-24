@@ -897,7 +897,7 @@
                                                             <a href="#all" data-toggle="tab" class="active">ALL
                                                                 PRODUCTS</a>
                                                         </li>
-                                                        <li class="col-xs-6">
+                                                        {{-- <li class="col-xs-6">
                                                             <a href="#table" data-toggle="tab">SIDE TABLE</a>
                                                         </li>
                                                         <li class="col-xs-6">
@@ -905,7 +905,7 @@
                                                         </li>
                                                         <li class="col-xs-6">
                                                             <a href="#cushion" data-toggle="tab">CUSHION</a>
-                                                        </li>
+                                                        </li> --}}
                                                     </ul>
 
 
@@ -1070,14 +1070,14 @@
 
 
                                                         </div>
-                                                        <div class="content-showmore text-center has-showmore">
+                                                        {{-- <div class="content-showmore text-center has-showmore">
                                                             <button type="button" class="btn btn-default novShowMore"
                                                                 name="novShowMore" data-loading="Loading..."
                                                                 data-loadmore="Load More Products">
                                                                 <span>Load More Products</span>
                                                             </button>
                                                             <input type="hidden" value="0" class="count_showmore">
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                     <div id="table" class="tab-pane fade">
                                                         <div class="item text-center row">
