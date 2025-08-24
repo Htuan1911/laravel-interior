@@ -9,12 +9,18 @@ use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProductOption;
+
 
 
 class ProductOptionController extends Controller
 {
+
     public function index(Request $request)
     {
+        $name = $request->input('name');          // từ khóa tìm theo tên option
+        $categoryId = $request->input('category_id'); // lọc theo danh mục
+
         $query = DB::table('product_options')
             ->leftJoin('categories', 'product_options.category_id', '=', 'categories.id')
             ->leftJoin('category_translations', function ($join) {
@@ -24,28 +30,39 @@ class ProductOptionController extends Controller
             ->whereNull('product_options.deleted_at')
             ->select('product_options.*', 'category_translations.name as category_name');
 
-        // lọc theo tên
-        if ($request->filled('name')) {
-            $query->where('product_options.name', 'like', '%' . $request->name . '%');
+        // Lọc theo tên
+        if (!empty($name)) {
+            $query->where('product_options.name', 'LIKE', "%{$name}%");
         }
 
-        // lọc theo danh mục
-        if ($request->filled('category_id')) {
-            $query->where('product_options.category_id', $request->category_id);
+        // Lọc theo danh mục
+        if (!empty($categoryId)) {
+            $query->where('product_options.category_id', $categoryId);
         }
 
-        // phân trang 10 bản ghi / trang
-        $options = $query->orderByDesc('product_options.id')
-            ->paginate(10)
-            ->withQueryString();
+        $options = $query->orderByDesc('product_options.id')->paginate(10)->withQueryString();
 
         foreach ($options as $option) {
-            $option->values = DB::table('product_option_values')
+            $values = DB::table('product_option_values')
                 ->where('product_option_id', $option->id)
+                ->select('value', 'color_code')
                 ->get();
+
+            $option->values = $values;
+
+            // Tạo chuỗi hiển thị
+            $displayArr = [];
+            foreach ($values as $val) {
+                if ($option->type === 'color' && $val->color_code) {
+                    $displayArr[] = "<span style='color: {$val->color_code}'>●</span> " . e($val->value);
+                } else {
+                    $displayArr[] = e($val->value);
+                }
+            }
+            $option->values_display = implode(', ', $displayArr);
         }
 
-        // Lấy danh mục để hiển thị trong select box filter
+        // Lấy danh mục để hiển thị trong filter
         $categories = DB::table('categories')
             ->leftJoin('category_translations', function ($join) {
                 $join->on('categories.id', '=', 'category_translations.category_id')
@@ -54,7 +71,7 @@ class ProductOptionController extends Controller
             ->select('categories.id', 'category_translations.name')
             ->get();
 
-        return view('admin.product_options.index', compact('options', 'categories'));
+        return view('admin.product_options.index', compact('options', 'name', 'categoryId', 'categories'));
     }
 
 
@@ -71,93 +88,130 @@ class ProductOptionController extends Controller
         return view('admin.product_options.create', compact('categories'));
     }
 
+
     public function store(Request $request)
     {
-        // Validate dữ liệu chung
+        // Validate đầu vào
         $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:100',
+
                 function ($attribute, $value, $fail) use ($request) {
+                    // Kiểm tra xem tên thuộc tính với category đã tồn tại chưa (bất kể type nào)
                     $exists = DB::table('product_options')
                         ->where('category_id', $request->category_id)
-                        ->where('type', $request->type)
+                        ->where('status', 'active')
+                        ->whereNull('deleted_at')
                         ->whereRaw('LOWER(TRIM(name)) = ?', [Str::lower(trim($value))])
                         ->exists();
 
                     if ($exists) {
-                        $fail('Tên thuộc tính đã tồn tại trong danh mục với cùng loại.');
+                        $fail("Tên thuộc tính đã tồn tại trong danh mục.");
+                        return;
                     }
                 },
             ],
-            'type' => 'required|in:color,size,material',
-            'status' => 'required|boolean',
+            'status' => 'required|in:active,inactive',
             'category_id' => 'required|exists:categories,id',
-            'values' => 'required|array|min:1',
-            'values.*' => 'nullable|string|max:100',
-            'color_codes' => 'array',
-            'color_codes.*' => 'nullable|string|max:20',
         ]);
 
-        $values = $request->input('values', []);
-        $colorCodes = $request->input('color_codes', []);
-
-        $unique = [];
-        $combinations = [];
-
-        foreach ($values as $index => $value) {
-            $value = trim($value);
-            $color = $request->type === 'color' ? ($colorCodes[$index] ?? null) : null;
-
-            if (empty($value) && $request->type !== 'color') {
-                return back()->withErrors(['values.' . $index => 'Giá trị không được để trống'])->withInput();
-            }
-
-            if (empty($value) && empty($color)) {
-                return back()->withErrors(['values.' . $index => 'Phải nhập giá trị hoặc chọn màu.'])->withInput();
-            }
-
-            $comboKey = strtolower($value . '|' . $color);
-            if (in_array($comboKey, $combinations)) {
-                return back()->withErrors(['values.' . $index => 'Giá trị bị trùng trong form.'])->withInput();
-            }
-
-            $combinations[] = $comboKey;
-
-            // Kiểm tra tồn tại trong DB
-            $exists = DB::table('product_option_values')
-                ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
-                ->where('product_options.category_id', $request->category_id)
-                ->where('product_options.type', $request->type)
-                ->when($value, fn($q) => $q->whereRaw('LOWER(TRIM(product_option_values.value)) = ?', [Str::lower($value)]))
-                ->when($color, fn($q) => $q->where('product_option_values.color_code', $color))
-                ->exists();
-
-            if ($exists) {
-                return back()->withErrors(['values.' . $index => 'Giá trị đã tồn tại trong DB.'])->withInput();
-            }
-        }
+        $attributes = $request->input('attributes', []);
+        $hasAnyAttribute = false;
+        $errors = [];
 
         DB::beginTransaction();
         try {
-            $optionId = DB::table('product_options')->insertGetId([
-                'name' => $request->name,
-                'type' => $request->type,
+            // Bước 1: Tạo hoặc lấy product_option duy nhất theo name + category_id
+            $productOptionId = DB::table('product_options')->insertGetId([
+                'name' => trim($request->name),
+                'type' => 'group', // Bạn có thể đặt 'group' hoặc để trống nếu không cần
                 'status' => $request->status,
                 'category_id' => $request->category_id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            foreach ($values as $index => $value) {
-                DB::table('product_option_values')->insert([
-                    'product_option_id' => $optionId,
-                    'value' => trim($value) ?: null,
-                    'color_code' => $request->type === 'color' ? ($colorCodes[$index] ?? null) : null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            // Bước 2: Xử lý từng loại thuộc tính color, size, material
+            foreach (['color', 'size', 'material'] as $type) {
+                $values = $attributes[$type]['values'] ?? null;
+                if (!$values || !is_array($values) || empty(array_filter($values))) {
+                    continue;
+                }
+
+                $hasAnyAttribute = true;
+                $colorCodes = $attributes[$type]['color_codes'] ?? [];
+                $combinations = [];
+
+                foreach ($values as $index => $val) {
+                    $value = trim($val);
+                    $color = $type === 'color' ? ($colorCodes[$index] ?? null) : null;
+
+                    if (empty($value) && $type !== 'color') {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị không được để trống';
+                        continue;
+                    }
+
+                    if (empty($value) && empty($color)) {
+                        $errors["attributes.$type.values.$index"] = 'Phải nhập giá trị hoặc chọn màu.';
+                        continue;
+                    }
+
+                    $comboKey = strtolower($value . '|' . $color);
+                    if (in_array($comboKey, $combinations)) {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị bị trùng trong form.';
+                        continue;
+                    }
+                    $combinations[] = $comboKey;
+
+                    // Kiểm tra tồn tại giá trị trong DB cho product_option_values
+                    $exists = DB::table('product_option_values')
+                        ->where('product_option_id', $productOptionId)
+                        ->whereRaw('LOWER(TRIM(value)) = ?', [Str::lower($value)])
+                        ->when($color, fn($q) => $q->where('color_code', $color))
+                        ->exists();
+
+                    if ($exists) {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị đã tồn tại trong cơ sở dữ liệu.';
+                        continue;
+                    }
+                }
+
+                if (!empty($errors)) {
+                    continue;
+                }
+
+                // Insert product_option_values cho từng giá trị của loại thuộc tính hiện tại
+                foreach ($values as $index => $val) {
+                    $value = trim($val);
+                    $color = $type === 'color' ? ($colorCodes[$index] ?? null) : null;
+
+                    if (empty($value) && empty($color)) {
+                        continue;
+                    }
+
+                    DB::table('product_option_values')->insert([
+                        'product_option_id' => $productOptionId,
+                        'type' => $type,
+                        'value' => $value ?: null,
+                        'color_code' => $color,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            if (!empty($errors)) {
+                DB::rollBack();
+                return back()->withErrors($errors)->withInput();
+            }
+
+            if (!$hasAnyAttribute) {
+                DB::rollBack();
+                return back()->withErrors([
+                    'attributes' => 'Bạn phải nhập ít nhất một loại thuộc tính.'
+                ])->withInput();
             }
 
             DB::commit();
@@ -168,121 +222,166 @@ class ProductOptionController extends Controller
         }
     }
 
-
     public function edit($id)
-    {
-        $option = DB::table('product_options')->where('id', $id)->first();
 
+    {
+
+        // 1. Lấy product_option theo id
+        $option = DB::table('product_options')->where('id', $id)->first();
         if (!$option) {
             return back()->with('error', 'Không tìm thấy thuộc tính.');
         }
 
-        // ✅ Truyền biến riêng $optionValues cho view
+        // 2. Lấy tất cả product_option_values cho option này
         $optionValues = DB::table('product_option_values')
             ->where('product_option_id', $option->id)
             ->get();
 
+        // 3. Lấy danh mục (ví dụ như bạn đã làm)
         $categories = DB::table('categories')
             ->leftJoin('category_translations', 'categories.id', '=', 'category_translations.category_id')
             ->where('category_translations.language_code', 'vi')
             ->select('categories.id', 'category_translations.name')
+            ->orderBy('category_translations.name')
             ->get();
 
-        return view('admin.product_options.edit', compact('option', 'optionValues', 'categories'));
+        // 4. Truyền dữ liệu sang view
+        return view('admin.product_options.edit', [
+            'option' => $option,
+            'optionValues' => $optionValues,
+            'categories' => $categories,
+        ]);
     }
-
-
     public function update(Request $request, $id)
     {
+        // Lấy product_option hiện tại
+        $productOption = DB::table('product_options')->where('id', $id)->first();
+        if (!$productOption) {
+            return redirect()->back()->with('error', 'Thuộc tính không tồn tại.');
+        }
+
+        // Validate đầu vào
         $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:100',
                 function ($attribute, $value, $fail) use ($request, $id) {
+                    // Kiểm tra xem tên thuộc tính với category đã tồn tại chưa (bất kể type nào), ngoại trừ bản ghi hiện tại
                     $exists = DB::table('product_options')
-                        ->where('id', '!=', $id)
                         ->where('category_id', $request->category_id)
-                        ->where('type', $request->type)
+                        ->where('status', 'active')
+                        ->whereNull('deleted_at')
                         ->whereRaw('LOWER(TRIM(name)) = ?', [Str::lower(trim($value))])
+                        ->where('id', '<>', $id)
                         ->exists();
 
                     if ($exists) {
-                        $fail('Tên thuộc tính đã tồn tại trong danh mục với cùng loại.');
+                        $fail("Tên thuộc tính đã tồn tại trong danh mục.");
                     }
                 },
             ],
-            'type' => 'required|in:color,material,size',
-            'status' => 'required|boolean',
-            'category_id' => 'required|integer|exists:categories,id',
-            'values' => 'required|array|min:1',
-            'values.*' => 'nullable|string|max:100',
-            'color_codes' => 'array',
+            'status' => 'required|in:active,inactive',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $values = $request->input('values', []);
-        $colorCodes = $request->input('color_codes', []);
-
-        $uniqueCheck = [];
-        foreach ($values as $index => $value) {
-            $val = trim($value ?? '');
-            $colorCode = $request->type === 'color' ? trim($colorCodes[$index] ?? '') : null;
-
-            if ($request->type === 'color' && !$val && !$colorCode) {
-                return back()->withErrors(['values.' . $index => 'Cần nhập giá trị hoặc chọn mã màu.'])->withInput();
-            }
-
-            if ($request->type !== 'color' && !$val) {
-                return back()->withErrors(['values.' . $index => 'Giá trị không được để trống.'])->withInput();
-            }
-
-            $key = strtolower($val . '|' . ($colorCode ?? ''));
-            if (in_array($key, $uniqueCheck)) {
-                return back()->withErrors(['values.' . $index => 'Giá trị bị trùng trong danh sách.'])->withInput();
-            }
-
-            $existsInDB = DB::table('product_option_values')
-                ->join('product_options', 'product_option_values.product_option_id', '=', 'product_options.id')
-                ->where('product_options.category_id', $request->category_id)
-                ->where('product_options.type', $request->type)
-                ->where('product_option_values.product_option_id', '!=', $id)
-                ->whereRaw('LOWER(TRIM(product_option_values.value)) = ?', [Str::lower($val)])
-                ->when($request->type === 'color', function ($query) use ($colorCode) {
-                    return $query->where('product_option_values.color_code', $colorCode);
-                })
-                ->exists();
-
-            if ($existsInDB) {
-                return back()->withErrors(['values.' . $index => 'Giá trị đã tồn tại trong thuộc tính khác.'])->withInput();
-            }
-
-            $uniqueCheck[] = $key;
-        }
+        $attributes = $request->input('attributes', []);
+        $hasAnyAttribute = false;
+        $errors = [];
 
         DB::beginTransaction();
-
         try {
-            // Update option
+            // Cập nhật thông tin product_option
             DB::table('product_options')->where('id', $id)->update([
-                'name' => $request->name,
-                'type' => $request->type,
+                'name' => trim($request->name),
+                'type' => 'group', // Nếu muốn có thể lấy từ request hoặc giữ nguyên
                 'status' => $request->status,
                 'category_id' => $request->category_id,
                 'updated_at' => now(),
             ]);
 
-            // Delete old values
+            // Xóa hết các giá trị thuộc tính cũ để cập nhật lại
             DB::table('product_option_values')->where('product_option_id', $id)->delete();
 
-            // Insert new values
-            foreach ($values as $index => $value) {
-                DB::table('product_option_values')->insert([
-                    'product_option_id' => $id,
-                    'value' => $value ?: null,
-                    'color_code' => $request->type === 'color' ? ($colorCodes[$index] ?? null) : null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            // Xử lý từng loại thuộc tính color, size, material
+            foreach (['color', 'size', 'material'] as $type) {
+                $values = $attributes[$type]['values'] ?? null;
+                if (!$values || !is_array($values) || empty(array_filter($values))) {
+                    continue;
+                }
+
+                $hasAnyAttribute = true;
+                $colorCodes = $attributes[$type]['color_codes'] ?? [];
+                $combinations = [];
+
+                foreach ($values as $index => $val) {
+                    $value = trim($val);
+                    $color = $type === 'color' ? ($colorCodes[$index] ?? null) : null;
+
+                    if (empty($value) && $type !== 'color') {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị không được để trống';
+                        continue;
+                    }
+
+                    if (empty($value) && empty($color)) {
+                        $errors["attributes.$type.values.$index"] = 'Phải nhập giá trị hoặc chọn màu.';
+                        continue;
+                    }
+
+                    $comboKey = strtolower($value . '|' . $color);
+                    if (in_array($comboKey, $combinations)) {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị bị trùng trong form.';
+                        continue;
+                    }
+                    $combinations[] = $comboKey;
+
+                    // Kiểm tra tồn tại giá trị trong DB cho product_option_values (ngoại trừ product_option_id hiện tại)
+                    $exists = DB::table('product_option_values')
+                        ->where('product_option_id', $id)
+                        ->whereRaw('LOWER(TRIM(value)) = ?', [Str::lower($value)])
+                        ->when($color, fn($q) => $q->where('color_code', $color))
+                        ->exists();
+
+                    if ($exists) {
+                        $errors["attributes.$type.values.$index"] = 'Giá trị đã tồn tại trong cơ sở dữ liệu.';
+                        continue;
+                    }
+                }
+
+                if (!empty($errors)) {
+                    continue;
+                }
+
+                // Insert lại product_option_values cho từng giá trị của loại thuộc tính hiện tại
+                foreach ($values as $index => $val) {
+                    $value = trim($val);
+                    $color = $type === 'color' ? ($colorCodes[$index] ?? null) : null;
+
+                    if (empty($value) && empty($color)) {
+                        continue;
+                    }
+
+                    DB::table('product_option_values')->insert([
+                        'product_option_id' => $id,
+                        'type' => $type,
+                        'value' => $value ?: null,
+                        'color_code' => $color,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            if (!empty($errors)) {
+                DB::rollBack();
+                return back()->withErrors($errors)->withInput();
+            }
+
+            if (!$hasAnyAttribute) {
+                DB::rollBack();
+                return back()->withErrors([
+                    'attributes' => 'Bạn phải nhập ít nhất một loại thuộc tính.'
+                ])->withInput();
             }
 
             DB::commit();
@@ -299,50 +398,26 @@ class ProductOptionController extends Controller
 
     public function destroy($id)
     {
-        $option = DB::table('product_options')->where('id', $id)->first();
+        $option = ProductOption::findOrFail($id);
 
-        if (!$option) {
-            return redirect()->back()->with('error', 'Không tìm thấy thuộc tính.');
-        }
-
-        $column = $option->type; // 'color', 'size', 'material'
-        Log::debug("Cột kiểm tra: $column");
-
-        $values = DB::table('product_option_values')
-            ->where('product_option_id', $id)
-            ->pluck('value')
-            ->map(fn($v) => Str::lower(trim($v)))
-            ->filter();
-
-        Log::debug("Giá trị kiểm tra:", $values->toArray());
-
-        if ($values->isEmpty()) {
-            DB::table('product_options')->where('id', $id)->update(['deleted_at' => now()]);
-            return redirect()->route('admin.product_options.index')->with('success', 'Đã xóa thuộc tính (không có giá trị).');
-        }
-
-        $isUsed = false;
-        foreach ($values as $val) {
-            $exists = DB::table('product_variants')
-                ->whereRaw("LOWER(TRIM($column)) = ?", [$val])
-                ->exists();
-
-            Log::debug("Đang kiểm tra giá trị: $val | Tồn tại: " . ($exists ? 'true' : 'false'));
-
-            if ($exists) {
-                $isUsed = true;
-                break;
-            }
-        }
+        // Kiểm tra xem có sản phẩm nào đang dùng thuộc tính chính này không
+        $isUsed = DB::table('products')
+            ->where('attribute_id', $id)
+            ->whereNull('deleted_at')
+            ->exists();
 
         if ($isUsed) {
             return redirect()->route('admin.product_options.index')
-                ->with('error', 'Không thể xoá: Thuộc tính đang được sử dụng trong sản phẩm.');
+                ->with('error', 'Không thể xóa: Thuộc tính chính đang được sử dụng trong sản phẩm.');
         }
+        // Xóa giá trị con
+        DB::table('product_option_values')->where('product_option_id', $id)->delete();
 
-        DB::table('product_options')->where('id', $id)->update(['deleted_at' => now()]);
+        // Xóa chính nó
+        $option->delete();
 
-        return redirect()->route('admin.product_options.index')->with('success', 'Xóa thuộc tính thành công.');
+        return redirect()->route('admin.product_options.index')
+            ->with('success', 'Xóa thuộc tính thành công.');
     }
 
 

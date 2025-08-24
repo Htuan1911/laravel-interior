@@ -70,7 +70,7 @@
                 $colorCodes = old("attributes.$type.color_codes") ??
                 ($type === 'color'
                 ? $optionValues->where('type', $type)->pluck('color_code')->toArray()
-                : []);
+: []);
                 @endphp
 
                 @forelse ($values as $i => $val)
@@ -130,8 +130,7 @@
 
                 const div = document.createElement('div');
                 div.classList.add('d-flex', 'mb-2', 'align-items-center');
-
-                let html = `
+let html = `
                     <input type="text" name="attributes[${type}][values][]" class="form-control me-2" placeholder="Giá trị ${type}...">
                 `;
 

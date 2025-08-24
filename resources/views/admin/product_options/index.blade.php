@@ -10,6 +10,22 @@
     @if (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
+    <style>
+        .color-circle {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .table td {
+            white-space: nowrap;
+            /* Ngăn xuống dòng */
+        }
+    </style>
 
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,31 +39,33 @@
                 </a>
             </div>
         </div>
-
-        <form method="GET" action="{{ route('admin.product_options.index') }}" class="row g-2">
-            <div class="col-md-4">
-                <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
-                    placeholder="Tìm theo tên thuộc tính...">
-            </div>
-            <div class="col-md-3">
-                <select name="category_id" class="form-select">
-                    <option value="">-- Tất cả danh mục --</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary w-100"><i class="fas fa-search"></i> Tìm kiếm</button>
-            </div>
-            <div class="col-md-2">
-                <a href="{{ route('admin.product_options.index') }}" class="btn btn-secondary w-100">
-                    <i class="fas fa-sync"></i> Reset
-                </a>
-            </div>
-        </form>
+        <div class="mb-3">
+            <form method="GET" action="{{ route('admin.product_options.index') }}" class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
+                        placeholder="Tìm theo tên thuộc tính...">
+                </div>
+                <div class="col-md-3">
+                    <select name="category_id" class="form-select">
+                        <option value="">-- Tất cả danh mục --</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}"
+                                {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100"><i class="fas fa-search"></i> Tìm kiếm</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ route('admin.product_options.index') }}" class="btn btn-secondary w-100">
+                        <i class="fas fa-sync"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
 
 
 
@@ -62,7 +80,6 @@
                                 <tr>
                                     <th style="width: 50px;">#</th>
                                     <th>Tên thuộc tính</th>
-                                    <th>Loại</th>
                                     <th>Danh mục</th>
                                     <th>Trạng thái</th>
                                     <th>Giá trị</th>
@@ -74,31 +91,17 @@
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <td>{{ $option->name }}</td>
-                                        <td>{{ ucfirst($option->type) }}</td>
                                         <td>{{ $option->category_name ?? 'Không xác định' }}</td>
                                         <td class="text-center">
-                                            @if ($option->status)
-                                                <span class="badge bg-success">Hiển thị</span>
-                                            @else
-                                                <span class="badge bg-secondary">Ẩn</span>
-                                            @endif
+                                            <span
+                                                class="badge {{ $option->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                                {{ $option->status === 'active' ? 'Hiển thị' : 'Ẩn' }}
+                                            </span>
                                         </td>
                                         <td>
-                                            @if ($option->values->isEmpty())
-                                                <span class="text-muted fst-italic">Chưa có giá trị</span>
-                                            @else
-                                                <ul class="mb-0 list-unstyled">
-                                                    @foreach ($option->values as $value)
-                                                        <li>
-                                                            {{ $value->value }}
-                                                            @if ($option->type === 'color' && $value->color_code)
-                                                                <span class="ms-2 d-inline-block rounded border"
-                                                                    style="width:14px;height:14px;background-color:{{ $value->color_code }}"></span>
-                                                            @endif
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
+                                            {!! $option->values_display ?:
+                                                '<span class="text-muted fst-italic">Chưa có giá
+                                                                                                                                                                                                                    trị</span>' !!}
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
@@ -108,7 +111,8 @@
                                                 </a>
                                                 <form action="{{ route('admin.product_options.destroy', $option->id) }}"
                                                     method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc muốn xoá thuộc tính này không?');">
+                                                    onsubmit="return confirm('Bạn có chắc muốn xoá thuộc tính này không?');"
+                                                    style="display:inline-block;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" title="Xoá">
@@ -121,9 +125,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="mt-3">
-                            {{ $options->links() }}
-                        </div>
                     </div>
                 @endif
             </div>

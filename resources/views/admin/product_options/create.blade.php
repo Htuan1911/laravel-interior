@@ -66,7 +66,7 @@
                 <div class="d-flex mb-2 align-items-center">
                     <input type="text" name="attributes[{{ $type }}][values][]" class="form-control me-2 @error("
                         attributes.$type.values.$i") is-invalid @enderror" value="{{ $val }}"
-                        placeholder="Giá trị {{ $type }}...">
+placeholder="Giá trị {{ $type }}...">
 
                     @if ($type === 'color')
                     <input type="color" name="attributes[{{ $type }}][color_codes][]"
@@ -126,7 +126,7 @@
 
                 if (type === 'color') {
                     html += `
-                        <input type="color" name="attributes[${type}][color_codes][]" class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
+<input type="color" name="attributes[${type}][color_codes][]" class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
                     `;
                 }
 
