@@ -24,6 +24,16 @@
                 <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
                     placeholder="Tìm theo tên sản phẩm...">
             </div>
+            <div class="col-md-3">
+                <select name="category_id" class="form-control">
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-dark">
                     <i class="fas fa-search me-1"></i> Tìm kiếm

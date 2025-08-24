@@ -14,6 +14,24 @@
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+        <form action="{{ route('admin.posts.index') }}" method="GET" class="mb-3 row">
+            <div class="col-md-4">
+                <select name="category_id" class="form-control">
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark">
+                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
 
         <div class="card shadow-sm">
             <div class="card-body">
