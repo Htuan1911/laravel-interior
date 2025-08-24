@@ -7,6 +7,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+<<<<<<< HEAD
     @if (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
@@ -129,7 +130,113 @@
                         </div>
                     </div>
                 @endif
+=======
+@if(session('error'))
+<div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+<style>
+    .color-circle {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+        margin-left: 4px;
+        vertical-align: middle;
+    }
+
+    .table td {
+        white-space: nowrap;
+        /* Ngăn xuống dòng */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Danh sách thuộc tính sản phẩm</h1>
+        <div>
+            <a href="{{ route('admin.product_options.create') }}" class="btn btn-primary me-2">
+                <i class="fas fa-plus-circle me-1"></i> Thêm thuộc tính
+            </a>
+            <a href="{{ route('admin.product_options.trashed') }}" class="btn btn-outline-dark">
+                <i class="fas fa-trash-alt me-1"></i> Đã xoá
+            </a>
+        </div>
+    </div>
+    <form action="{{ route('admin.product_options.index') }}" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" value="{{ request('search') }}" class="form-control"
+                placeholder="Tìm theo tên hoặc danh mục...">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark">
+                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if ($options->isEmpty())
+            <div class="alert alert-info mb-0">Chưa có thuộc tính nào được tạo.</div>
+            @else
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Tên thuộc tính</th>
+                            <th>Danh mục</th>
+                            <th>Trạng thái</th>
+                            <th>Giá trị</th>
+                            <th style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($options as $index => $option)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $option->name }}</td>
+                            <td>{{ $option->category_name ?? 'Không xác định' }}</td>
+                            <td class="text-center">
+                                <span class="badge {{ $option->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ $option->status === 'active' ? 'Hiển thị' : 'Ẩn' }}
+                                </span>
+                            </td>
+                            <td>
+                                {!! $option->values_display ?: '<span class="text-muted fst-italic">Chưa có giá
+                                    trị</span>' !!}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('admin.product_options.edit', $option->id) }}"
+                                        class="btn btn-sm btn-warning" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.product_options.destroy', $option->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Bạn có chắc muốn xoá thuộc tính này không?');"
+                                        style="display:inline-block;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Xoá">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+>>>>>>> 2aac968869a82345f1f4a7342f6f353dde110e3f
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 @endsection
+=======
+</div>
+@endsection
+>>>>>>> 2aac968869a82345f1f4a7342f6f353dde110e3f

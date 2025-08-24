@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if($errors->any())
+    @if($errors->any() && !session('status'))
         <div class="alert alert-danger">
             <ul class="mb-0">
                 @foreach($errors->all() as $error)
@@ -18,6 +18,7 @@
         </div>
     @endif
 
+    {{-- Form cập nhật thông tin cá nhân --}}
     <form method="POST" action="{{ route('client.account.update') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -51,11 +52,6 @@
                         <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
                     </div>
 
-                    <!-- <div class="col-md-6 mb-3">
-                        <label for="birthday" class="form-label">Ngày sinh</label>
-                        <input type="date" name="birthday" class="form-control" value="{{ old('birthday', $user->birthday) }}">
-                    </div> -->
-
                     <div class="col-md-6 mb-3">
                         <label for="province" class="form-label">Tỉnh/Thành phố</label>
                         <input type="text" name="province" class="form-control" value="{{ old('province', $user->province) }}">
@@ -65,13 +61,50 @@
                         <label for="district" class="form-label">Quận/Huyện</label>
                         <input type="text" name="district" class="form-control" value="{{ old('district', $user->district) }}">
                     </div>
-                </div>
+</div>
             </div>
         </div>
-
         <div class="text-end mt-3">
             <button type="submit" class="btn btn-primary">Cập nhật</button>
         </div>
     </form>
+
+    {{-- Form đổi mật khẩu --}}
+    <div class="mt-5">
+        <h4>Đổi mật khẩu</h4>
+ <form method="POST" action="{{ route('client.account.change_password') }}">
+    @csrf
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="current_password" class="form-label">Mật khẩu hiện tại</label>
+                    <input type="password" name="current_password" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="password" class="form-label">Mật khẩu mới</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="password_confirmation" class="form-label">Xác nhận mật khẩu mới</label>
+                    <input type="password" name="password_confirmation" class="form-control" required>
+                </div>
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                
+            </div>
+        </form>
+        
+        {{-- Thông báo đổi mật khẩu --}}
+        @if(session('status') == 'password-updated')
+            <div class="alert alert-success mt-3">Mật khẩu đã được cập nhật thành công!</div>
+        @endif
+        @error('current_password', 'updatePassword')
+            <div class="alert alert-danger mt-2">{{ $message }}</div>
+        @enderror
+        @error('password', 'updatePassword')
+            <div class="alert alert-danger mt-2">{{ $message }}</div>
+        @enderror
+    </div>
+
 </div>
 @endsection

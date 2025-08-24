@@ -5,10 +5,10 @@
     <h2 class="fw-bold mb-4">➕ Thêm Thuộc Tính Sản Phẩm</h2>
 
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <form action="{{ route('admin.product_options.store') }}" method="POST">
@@ -17,10 +17,10 @@
         {{-- Tên thuộc tính --}}
         <div class="mb-3">
             <label for="name" class="form-label">Tên thuộc tính</label>
-            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                   name="name" value="{{ old('name') }}">
+            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name"
+                value="{{ old('name') }}">
             @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -30,14 +30,13 @@
             <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror">
                 <option value="">-- Chọn danh mục --</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}"
-                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
+                <option value="{{ $category->id }}" {{ old('category_id')==$category->id ? 'selected' : '' }}>
+                    {{ $category->name }}
+                </option>
                 @endforeach
             </select>
             @error('category_id')
-                <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
@@ -45,64 +44,63 @@
         <div class="mb-3">
             <label for="status" class="form-label">Trạng thái</label>
             <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
-                <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Hiển thị</option>
-                <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Ẩn</option>
+                <option value="active" {{ old('status', 'active' )=='active' ? 'selected' : '' }}>Hiển thị</option>
+                <option value="inactive" {{ old('status')=='inactive' ? 'selected' : '' }}>Ẩn</option>
             </select>
             @error('status')
-                <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Các thuộc tính --}}
         @foreach (['color', 'size', 'material'] as $type)
-            <div class="mb-4">
-                <label class="form-label fw-bold text-uppercase">{{ ucfirst($type) }}</label>
-                <div id="wrapper-{{ $type }}">
-                    @php
-                        $values = old("attributes.$type.values", []);
-                        $colorCodes = old("attributes.$type.color_codes", []);
-                    @endphp
+        <div class="mb-4">
+            <label class="form-label fw-bold text-uppercase">{{ ucfirst($type) }}</label>
+            <div id="wrapper-{{ $type }}">
+                @php
+                $values = old("attributes.$type.values", []);
+                $colorCodes = old("attributes.$type.color_codes", []);
+                @endphp
 
-                    @forelse ($values as $i => $val)
-                        <div class="d-flex mb-2 align-items-center">
-                            <input type="text"
-                                name="attributes[{{ $type }}][values][]"
-                                class="form-control me-2 @error("attributes.$type.values.$i") is-invalid @enderror"
-                                value="{{ $val }}"
-                                placeholder="Giá trị {{ $type }}...">
+                @forelse ($values as $i => $val)
+                <div class="d-flex mb-2 align-items-center">
+                    <input type="text" name="attributes[{{ $type }}][values][]" class="form-control me-2 @error("
+                        attributes.$type.values.$i") is-invalid @enderror" value="{{ $val }}"
+                        placeholder="Giá trị {{ $type }}...">
 
-                            @if ($type === 'color')
-                                <input type="color"
-                                    name="attributes[{{ $type }}][color_codes][]"
-                                    class="form-control form-control-color me-2 @error("attributes.$type.color_codes.$i") is-invalid @enderror"
-                                    value="{{ $colorCodes[$i] ?? '#000000' }}"
-                                    style="width: 60px;">
-                            @endif
+                    @if ($type === 'color')
+                    <input type="color" name="attributes[{{ $type }}][color_codes][]"
+                        class="form-control form-control-color me-2 @error(" attributes.$type.color_codes.$i")
+                        is-invalid @enderror" value="{{ $colorCodes[$i] ?? '#000000' }}" style="width: 60px;">
+                    @endif
 
-                            <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
+                    <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
 
-                            {{-- Hiển thị lỗi cụ thể --}}
-                            @error("attributes.$type.values.$i")
-                                <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
-                            @enderror
-                            @if ($type === 'color')
-                                @error("attributes.$type.color_codes.$i")
-                                    <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
-                                @enderror
-                            @endif
-                        </div>
-                    @empty
-                        <div class="d-flex mb-2 align-items-center">
-                            <input type="text" name="attributes[{{ $type }}][values][]" class="form-control me-2" placeholder="Giá trị {{ $type }}...">
-                            @if ($type === 'color')
-                                <input type="color" name="attributes[{{ $type }}][color_codes][]" class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
-                            @endif
-                            <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
-                        </div>
-                    @endforelse
+                    {{-- Hiển thị lỗi cụ thể --}}
+                    @error("attributes.$type.values.$i")
+                    <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
+                    @enderror
+                    @if ($type === 'color')
+                    @error("attributes.$type.color_codes.$i")
+                    <div class="invalid-feedback d-block ms-2">{{ $message }}</div>
+                    @enderror
+                    @endif
                 </div>
-                <button type="button" class="btn btn-secondary btn-sm mt-2 add-value" data-type="{{ $type }}">➕ Thêm giá trị {{ $type }}</button>
+                @empty
+                <div class="d-flex mb-2 align-items-center">
+                    <input type="text" name="attributes[{{ $type }}][values][]" class="form-control me-2"
+                        placeholder="Giá trị {{ $type }}...">
+                    @if ($type === 'color')
+                    <input type="color" name="attributes[{{ $type }}][color_codes][]"
+                        class="form-control form-control-color me-2" value="#000000" style="width: 60px;">
+                    @endif
+                    <button type="button" class="btn btn-danger btn-sm remove-row ms-2">🗑</button>
+                </div>
+                @endforelse
             </div>
+            <button type="button" class="btn btn-secondary btn-sm mt-2 add-value" data-type="{{ $type }}">➕ Thêm giá trị
+                {{ $type }}</button>
+        </div>
         @endforeach
 
         <button type="submit" class="btn btn-primary">💾 Lưu</button>

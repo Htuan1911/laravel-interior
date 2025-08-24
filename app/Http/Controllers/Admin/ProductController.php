@@ -212,6 +212,7 @@ class ProductController extends Controller
     // Tạo sản phẩm
     $productId = DB::table('products')->insertGetId([
         'category_id' => $request->category_id,
+        'attribute_id' => $request->attribute_id,
         'base_price' => 0,
         'status' => 'active',
         'dimensions' => $dimensions,
@@ -267,6 +268,7 @@ public function getAttributeNamesByCategory($categoryId)
 {
     $attributeNames = DB::table('product_options')
         ->where('category_id', $categoryId)
+        ->where('status', 'active')
         ->select('id', 'name') // hoặc thêm type nếu cần
         ->get();
 
@@ -405,6 +407,7 @@ public function update(Request $request, $id)
 
     DB::table('products')->where('id', $id)->update([
         'category_id' => $request->category_id,
+         'attribute_id' => $request->attribute_id,
         'dimensions' => $request->dimensions,
         'warranty_months' => $request->warranty_months,
         'image' => $mainImagePath,
