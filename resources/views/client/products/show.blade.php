@@ -81,6 +81,16 @@
         .gray {
             background-color: gray;
         }
+
+        .wood-color {
+            background-color: #deb887;
+            /* màu gỗ sáng tự nhiên (BurlyWood) */
+        }
+
+        .navy {
+            background-color: navy;
+            /* hoặc #000080 */
+        }
     </style>
 
     <div class="main-content">
@@ -258,8 +268,7 @@
                                                                                 data-link-action="quickview"
                                                                                 data-product-id="{{ $item->id }}"
                                                                                 onclick="openQuickView(event, this)">
-                                                                                <i class="fa fa-eye"
-                                                                                    aria-hidden="true"></i>
+                                                                                <i class="fa fa-eye" aria-hidden="true"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
