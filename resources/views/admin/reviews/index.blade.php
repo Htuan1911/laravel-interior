@@ -6,6 +6,21 @@
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="h3">Danh sách đánh giá</h1>
+
+ <form method="GET" action="{{ route('admin.reviews.index') }}" class="d-flex">
+        <select name="rating" class="form-select me-2" onchange="this.form.submit()">
+            <option value="">-- Lọc theo số sao --</option>
+            <option value="1" {{ request('rating') == 1 ? 'selected' : '' }}>1 sao</option>
+            <option value="2" {{ request('rating') == 2 ? 'selected' : '' }}>2 sao</option>
+            <option value="3" {{ request('rating') == 3 ? 'selected' : '' }}>3 sao</option>
+            <option value="4" {{ request('rating') == 4 ? 'selected' : '' }}>4 sao</option>
+            <option value="5" {{ request('rating') == 5 ? 'selected' : '' }}>5 sao</option>
+        </select>
+        @if(request('rating'))
+            <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary">Xóa lọc</a>
+        @endif
+    </form>
+
             {{-- <a href="{{ route('admin.reviews.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-1"></i> Thêm đánh giá
             </a> --}}
@@ -35,12 +50,16 @@
                             <tr>
                                 <td>{{ $review->id }}</td>
                                 <td>{{ $review->user->name ?? 'Không rõ' }}</td>
-                                <td>{{ $review->orderItem->variant_name ?? 'Không rõ' }}</td>
+                                <td>
+                                    {{ optional($review->orderItem->variant->product->translations
+                                    ->where('language_code', app()->getLocale())
+                                    ->first())->name ?? 'Không rõ' }}
+                                </td>
                                 <td>
                                     <span class="badge bg-warning text-dark">{{ $review->rating }}/5</span>
                                 </td>
                                 <td>{{ Str::limit(strip_tags($review->comment), 50) }}</td>
-                                <td>{{ $review->created_at->format('d/m/Y H:i') }}</td>
+<td>{{ $review->created_at->format('d/m/Y H:i') }}</td>
                                 <td>{{ $review->updated_at->format('d/m/Y H:i') }}</td>
                                 <td>
     <div class="btn-group mb-1" role="group">

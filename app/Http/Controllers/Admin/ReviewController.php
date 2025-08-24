@@ -9,15 +9,22 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function index()
-   
-    {
-        $reviews = Review::with(['user', 'orderItem'])
-                         ->orderByDesc('created_at')
-                         ->paginate(20);
+   public function index(Request $request)
+{
+    $query = Review::with([
+        'user',
+        'orderItem.variant.product.translations'
+    ]);
 
-        return view('admin.reviews.index', compact('reviews'));
+    // Nếu có lọc theo số sao
+    if ($request->has('rating') && in_array($request->rating, [1,2,3,4,5])) {
+        $query->where('rating', $request->rating);
     }
+
+    $reviews = $query->orderByDesc('created_at')->paginate(20);
+
+    return view('admin.reviews.index', compact('reviews'));
+}
 
     public function create()
     {
