@@ -1,6 +1,18 @@
 @extends('layouts.show')
 
 @section('content-dead')
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
 
     <style>
         .product-tab.nav-tabs li {

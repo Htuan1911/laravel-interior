@@ -101,7 +101,7 @@
                                         <td>
                                             {!! $option->values_display ?:
                                                 '<span class="text-muted fst-italic">Chưa có giá
-                                                                                                                                                                                                                    trị</span>' !!}
+                                                                                                                                                                                                                                                                trị</span>' !!}
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
@@ -125,6 +125,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="mt-3">
+                            {{ $options->links('pagination::bootstrap-5') }}
+                        </div>
                     </div>
                 @endif
             </div>

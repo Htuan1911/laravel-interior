@@ -40,7 +40,7 @@ class ProductOptionController extends Controller
             $query->where('product_options.category_id', $categoryId);
         }
 
-        $options = $query->orderByDesc('product_options.id')->paginate(10)->withQueryString();
+        $options = $query->paginate(10)->withQueryString();
 
         foreach ($options as $option) {
             $values = DB::table('product_option_values')

@@ -1,6 +1,18 @@
 @extends('layouts.client')
 
 @section('contentproduct')
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="main-content">
         <div id="wrapper-site">
             <div id="content-wrapper" class="full-width">
@@ -352,19 +364,22 @@
                                                                             <div
                                                                                 class="product-buttons d-flex justify-content-center">
                                                                                 {{-- Add to Cart Button --}}
-                                                                                <form action="{{ route('client.carts.add') }}"
-                                                                                method="POST" class="formAddToCart">
-                                                                                @csrf
-                                                                                <input type="hidden" name="variant_id"
-                                                                                    value="{{ $variant->id ?? '' }}">
-                                                                                <input type="hidden" name="quantity"
-                                                                                    value="1">
-                                                                                <button type="submit" class="add-to-cart"
-                                                                                    data-button-action="add-to-cart">
-                                                                                    <i class="fa fa-shopping-cart"
-                                                                                        aria-hidden="true"></i>
-                                                                                </button>
-                                                                            </form>
+                                                                                <form
+                                                                                    action="{{ route('client.carts.add') }}"
+                                                                                    method="POST" class="formAddToCart">
+                                                                                    @csrf
+                                                                                    <input type="hidden"
+                                                                                        name="variant_id"
+                                                                                        value="{{ $variant->id ?? '' }}">
+                                                                                    <input type="hidden" name="quantity"
+                                                                                        value="1">
+                                                                                    <button type="submit"
+                                                                                        class="add-to-cart"
+                                                                                        data-button-action="add-to-cart">
+                                                                                        <i class="fa fa-shopping-cart"
+                                                                                            aria-hidden="true"></i>
+                                                                                    </button>
+                                                                                </form>
 
                                                                                 {{-- Wishlist Button --}}
 
