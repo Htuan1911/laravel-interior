@@ -17,7 +17,8 @@ class GeminiService
     }
 
     public function compareProducts(array $products): string
-    {
+    {   
+        sleep(1); // Thêm độ trễ 1 giây để tránh lỗi 429
         $content = "Bạn là một chuyên gia phân tích sản phẩm nội thất. Hãy dựa trên các thông số kỹ thuật để so sánh chi tiết từng sản phẩm, chỉ ra rõ ưu điểm và hạn chế của mỗi sản phẩm. Sau đó, đưa ra lời khuyên ngắn gọn (khoảng 2-3 câu) về sản phẩm nào phù hợp nhất cho khách hàng phổ thông. Hãy giải thích lý do nên chọn sản phẩm đó dựa trên các lợi ích nổi bật và sự khác biệt so với sản phẩm còn lại. Không đề cập đến ID sản phẩm trong câu trả lời."
         . json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 

@@ -146,6 +146,9 @@
             <a href="{{ url('/') }}" class="btn btn-dark ms-2">
                 <i class="bi bi-arrow-left"></i> Về trang chủ
             </a>
+            <a href="{{ url('/client/products') }}" class="btn btn-success">
+                <i class="fa fa-balance-scale"></i> Thêm sản phẩm so sánh
+            </a>
         </div>
     @endif
 </div>
