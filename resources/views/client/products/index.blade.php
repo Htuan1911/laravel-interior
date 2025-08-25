@@ -217,9 +217,7 @@
                                                             <a href="#grid" data-toggle="tab"
                                                                 class="active show fa fa-th-large"></a>
                                                         </li>
-                                                        <li>
-                                                            <a href="#list" data-toggle="tab" class="fa fa-list-ul"></a>
-                                                        </li>
+                                                        
                                                     </ul>
                                                     <div class="hidden-sm-down total-products">
                                                         <p>Có {{ $products->count() }} sản phẩm trong trang này.</p>
