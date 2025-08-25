@@ -75,7 +75,18 @@
                         <div>
                             <strong>Mã đơn:</strong> {{ $order->id }} |
                             <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-                            <strong>Trạng thái:</strong> {{ $order->status_label }} |
+                            <strong>Trạng thái đơn hàng:</strong> {{ $order->status_label }} |
+                            <strong>Trạng thái thanh toán:</strong>
+                            @if (optional($order->payment)->status === 'paid')
+                                <span class="text-success">Đã thanh toán</span>
+                            @elseif(optional($order->payment)->status === 'pending')
+                                <span class="text-danger">Chưa thanh toán</span>
+                            @elseif(optional($order->payment)->status === 'failed')
+                                <span class="text-danger">Thanh toán thất bại</span>
+                            @else
+                                <span class="text-muted">Không xác định</span>
+                            @endif
+                            |
                             <strong>Phương thức:</strong>
                             @switch(optional($order->payment)->method)
                                 @case('cod')

@@ -163,14 +163,14 @@
                                                     </a>
                                                 @endunless
 
-                                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Xóa đơn hàng này?')" class="d-inline-block">
+                                                {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Xóa đơn hàng này?')" class="d-inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" title="Xóa"
                                                         {{ $disableDelete ? 'disabled' : '' }}>
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                             @endif
                                         </div>
                                     </td>
