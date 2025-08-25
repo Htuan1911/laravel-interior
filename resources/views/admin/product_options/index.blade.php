@@ -42,7 +42,7 @@
         <div class="mb-3">
             <form method="GET" action="{{ route('admin.product_options.index') }}" class="row g-2">
                 <div class="col-md-4">
-                    <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
+                    <input type="text" name="name" value="{{ request('name') }}" class="form-control"
                         placeholder="Tìm theo tên thuộc tính...">
                 </div>
                 <div class="col-md-3">
