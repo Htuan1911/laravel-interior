@@ -952,14 +952,14 @@
                                                                                         {{ $product->name }}
                                                                                     </a>
                                                                                 </div>
-                                                                                <div class="rating">
+                                                                                {{-- <div class="rating">
                                                                                     <div class="star-content">
                                                                                         @for ($i = 1; $i <= 5; $i++)
                                                                                             <div class="star">
                                                                                             </div>
                                                                                         @endfor
                                                                                     </div>
-                                                                                </div>
+                                                                                </div> --}}
                                                                                 <div class="product-group-price">
                                                                                     <div
                                                                                         class="product-price-and-shipping">
@@ -2865,14 +2865,14 @@
                                                                         {{ $product->name }}
                                                                     </a>
                                                                 </div>
-                                                                <div class="rating">
+                                                                {{-- <div class="rating">
                                                                     <div class="star-content">
                                                                         @for ($i = 1; $i <= 5; $i++)
                                                                             <div class="star">
                                                                             </div>
                                                                         @endfor
                                                                     </div>
-                                                                </div>
+                                                                </div> --}}
                                                                 <div class="product-group-price">
                                                                     <div class="product-price-and-shipping">
                                                                         <span class="price">
@@ -2993,7 +2993,7 @@
                                                                     </a>
                                                                 </div>
 
-                                                                <div class="rating">
+                                                                {{-- <div class="rating">
                                                                     <div class="star-content">
                                                                         <div class="star"></div>
                                                                         <div class="star"></div>
@@ -3001,7 +3001,7 @@
                                                                         <div class="star"></div>
                                                                         <div class="star"></div>
                                                                     </div>
-                                                                </div>
+                                                                </div> --}}
 
                                                                 <div class="product-group-price">
                                                                     <div class="product-price-and-shipping">
