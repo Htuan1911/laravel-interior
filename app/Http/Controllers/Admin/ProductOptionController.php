@@ -419,6 +419,7 @@ class ProductOptionController extends Controller
         return redirect()->route('admin.product_options.index')
             ->with('success', 'Xóa thuộc tính thành công.');
     }
+    
 
 
 
