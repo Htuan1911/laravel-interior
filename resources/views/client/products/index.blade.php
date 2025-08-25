@@ -329,14 +329,14 @@
 
                                                                                 {{-- Rating - có thể customize dựa trên dữ liệu
                                                                         thực --}}
-                                                                                <div class="rating">
+                                                                                {{-- <div class="rating">
                                                                                     <div class="star-content">
                                                                                         @for ($i = 1; $i <= 5; $i++)
                                                                                             <div class="star">
                                                                                             </div>
                                                                                         @endfor
                                                                                     </div>
-                                                                                </div>
+                                                                                </div> --}}
 
                                                                                 <div class="product-group-price">
                                                                                     <div
