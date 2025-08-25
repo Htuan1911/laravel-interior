@@ -17,22 +17,28 @@
         {{-- Form tìm kiếm --}}
         <div class="p-3 border-bottom bg-light">
             <form action="{{ route('admin.users.index') }}" method="GET" class="row g-2 align-items-center">
-                <div class="col-sm-4">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Tìm theo tên, email, SĐT"
-                           class="form-control shadow-sm border-0 rounded-pill px-3">
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
-                        <i class="fas fa-search me-1"></i> Tìm kiếm
-                    </button>
-                </div>
-                <div class="col-auto">
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary rounded-pill px-4 shadow-sm">
-                        <i class="fas fa-redo me-1"></i> Reset
-                    </a>
-                </div>
-            </form>
+           <form method="GET" class="row g-2 mb-4 align-items-center">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control shadow-sm border-0 rounded-pill px-3"
+               placeholder="Tìm theo tên hoặc email"
+               value="{{ request('search') }}">
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="fas fa-search me-1"></i> Lọc
+        </button>
+    </div>
+
+    @if(request('search'))
+        <div class="col-auto">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary rounded-pill px-4 shadow-sm">
+                <i class="fas fa-redo me-1"></i> Quay lại
+            </a>
+        </div>
+    @endif
+</form>
+
         </div>
 
         <div class="card-body">
@@ -116,9 +122,11 @@
                     </table>
                 </div>
 
-                <div class="mt-3">
-                    {{ $users->links() }}
-                </div>
+        <div class="mt-3 d-flex justify-content-center">
+    {{ $users->links('pagination::bootstrap-5') }}
+</div>
+
+
             @else
                 <div class="alert alert-info mb-0">Chưa có người dùng nào.</div>
             @endif
