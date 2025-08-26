@@ -42,6 +42,13 @@
                 <input type="number" name="warranty_months" class="form-control"
                     value="{{ old('warranty_months', $product->warranty_months) }}">
             </div>
+            <div class="col-md-3">
+    <label for="status">Trạng thái *</label>
+    <select name="status" class="form-select" required>
+        <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Đang hiển thị</option>
+        <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Tạm ẩn</option>
+    </select>
+</div>
         </div>
 
         <!-- Chọn thuộc tính -->
