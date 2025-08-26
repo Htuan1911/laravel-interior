@@ -36,6 +36,13 @@
         <label>Bảo hành (tháng)</label>
         <input type="number" name="warranty_months" class="form-control" value="12">
       </div>
+      <div class="col-md-3">
+  <label for="status">Trạng thái *</label>
+  <select name="status" class="form-select" required>
+    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Đang hiển thị</option>
+    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tạm ẩn</option>
+  </select>
+</div>
       <!-- Chọn tên thuộc tính -->
       <div class="row mb-3">
         <div class="col-md-4">
