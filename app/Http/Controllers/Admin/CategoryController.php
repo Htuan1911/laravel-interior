@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\CategoryTranslation;
+use App\Models\Language;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class CategoryController extends Controller
+{
+    public function index(Request $request)
+    {
+        $keyword = $request->keyword;
+
+        $categories = Category::with(['translations', 'parent.translations'])
+            ->when($keyword, function ($query, $keyword) {
+                $query->whereHas('translations', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%' . $keyword . '%');
+                });
+            })
+            ->paginate(10); // Phân trang 10 danh mục mỗi trang
+
+        return view('admin.categories.index', compact('categories'));
+    }
+
+    public function create()
+    {
+        $languages = Language::all();
+        $parentCategories = Category::with('translations')->get(); // lấy tất cả danh mục, có bản dịch
+        return view('admin.categories.create', compact('languages', 'parentCategories'));
+    }
+
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'translations.*.name' => 'required|string|max:255',
+            'translations.*.language_code' => 'required|exists:languages,code',
+            'status' => 'required|in:active,inactive',
+            'parent_id' => 'nullable|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $category = Category::create([
+            'parent_id' => $request->parent_id,
+            'status' => $request->status,
+        ]);
+
+        foreach ($request->translations as $translation) {
+            CategoryTranslation::create([
+                'category_id' => $category->id,
+                'language_code' => $translation['language_code'],
+                'name' => $translation['name'],
+                'description' => $translation['description'],
+            ]);
+        }
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
+    }
+
+    public function edit($id)
+    {
+        $category = Category::with('translations')->findOrFail($id);
+        $languages = Language::all();
+        $parentCategories = Category::with('translations')->where('id', '!=', $id)->get();
+        return view('admin.categories.edit', compact('category', 'languages', 'parentCategories'));
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'translations.*.name' => 'required|string|max:255',
+            'translations.*.language_code' => 'required|exists:languages,code',
+            'status' => 'required|in:active,inactive',
+            'parent_id' => 'nullable|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $category = Category::findOrFail($id);
+        $category->update([
+            'parent_id' => $request->parent_id,
+            'status' => $request->status,
+        ]);
+
+        // Xử lý status sản phẩm liên quan
+        if ($request->status === 'inactive') {
+            // Ẩn các sản phẩm và đánh dấu là bị ẩn bởi danh mục
+            $category->products()->update([
+                'status' => 'inactive',
+                'auto_hidden_by_category' => true,
+            ]);
+        } else {
+            // Bật lại các sản phẩm *chỉ nếu* bị ẩn bởi danh mục (không bật sản phẩm bị ẩn thủ công)
+            $category->products()
+                ->where('auto_hidden_by_category', true)
+                ->update([
+                    'status' => 'active',
+                    'auto_hidden_by_category' => false,
+                ]);
+        }
+
+        // Cập nhật bản dịch
+        CategoryTranslation::where('category_id', $id)->delete();
+        foreach ($request->translations as $translation) {
+            CategoryTranslation::create([
+                'category_id' => $category->id,
+                'language_code' => $translation['language_code'],
+                'name' => $translation['name'],
+                'description' => $translation['description'],
+            ]);
+        }
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
+    }
+
+    public function show($id)
+    {
+        $category = Category::with('translations')->findOrFail($id);
+        return view('admin.categories.show', compact('category'));
+    }
+
+
+    public function destroy($id)
+    {
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
+}
