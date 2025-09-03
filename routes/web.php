@@ -80,6 +80,8 @@ Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
         Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
         Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [ProductOptionController::class, 'forceDelete'])->name('force_delete');
+        Route::get('/{id}/show', [ProductOptionController::class, 'show'])->name('show');
+        
     });
 
 
