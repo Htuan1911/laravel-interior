@@ -105,7 +105,7 @@
                                                class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('admin.users.destroy', $user) }}"
+                                            {{-- <form action="{{ route('admin.users.destroy', $user) }}"
                                                   method="POST" class="d-inline-block"
                                                   onsubmit="return confirm('Bạn chắc chắn muốn xóa?')">
                                                 @csrf
@@ -113,7 +113,7 @@
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </div>
                                     </td>
                                 </tr>
