@@ -3,6 +3,15 @@
 @section('content')
 <div class="container">
     <h2>Thêm bài viết mới</h2>
+    @if ($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
 
     <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

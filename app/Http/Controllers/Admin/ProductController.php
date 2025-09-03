@@ -124,7 +124,7 @@ class ProductController extends Controller
             'name' => 'required|string',
             'category_id' => 'required|integer',
             'warranty_months' => 'nullable|integer',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'status' => 'required|in:active,inactive',
             'material' => 'nullable|string',
             'dimensions' => 'nullable|string',
@@ -139,7 +139,7 @@ class ProductController extends Controller
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
-            'variants.*.image' => 'nullable|image|max:2048',
+            'variants.*.image' => 'required|image|max:2048',
         ]);
 
 
@@ -403,7 +403,7 @@ class ProductController extends Controller
             'name' => 'required|string',
             'category_id' => 'required|integer',
             'warranty_months' => 'nullable|integer',
-            'description' => 'nullable|string',
+           'description' => 'required|string',
             'status' => 'required|in:active,inactive',
             'material' => 'nullable|string',
             'dimensions' => 'nullable|string',
@@ -418,7 +418,7 @@ class ProductController extends Controller
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
-            'variants.*.image' => 'nullable|image|max:2048',
+           'variants.*.image' => 'required|image|max:2048',
         ]);
 
         // Cập nhật ảnh sản phẩm

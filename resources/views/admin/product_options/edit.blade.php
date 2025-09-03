@@ -62,6 +62,10 @@
         @foreach (['color', 'size', 'material'] as $type)
         <div class="mb-4">
             <label class="form-label fw-bold text-uppercase">{{ ucfirst($type) }}</label>
+            {{-- Hiển thị lỗi tổng quát nếu chưa nhập giá trị --}}
+            @error("attributes.$type.values")
+            <div class="text-danger mb-2">{{ $message }}</div>
+            @enderror
             <div id="wrapper-{{ $type }}">
                 @php
                 $values = old("attributes.$type.values") ??
@@ -70,7 +74,7 @@
                 $colorCodes = old("attributes.$type.color_codes") ??
                 ($type === 'color'
                 ? $optionValues->where('type', $type)->pluck('color_code')->toArray()
-: []);
+                : []);
                 @endphp
 
                 @forelse ($values as $i => $val)

@@ -39,7 +39,7 @@ class ProductOptionController extends Controller
         if (!empty($categoryId)) {
             $query->where('product_options.category_id', $categoryId);
         }
-
+        $query->orderBy('product_options.created_at', 'desc');
         $options = $query->paginate(10)->withQueryString();
 
         foreach ($options as $option) {
@@ -52,13 +52,13 @@ class ProductOptionController extends Controller
 
             // Tạo chuỗi hiển thị
             $displayArr = [];
-            foreach ($values as $val) {
-                if ($option->type === 'color' && $val->color_code) {
-                    $displayArr[] = "<span style='color: {$val->color_code}'>●</span> " . e($val->value);
-                } else {
-                    $displayArr[] = e($val->value);
-                }
-            }
+           foreach ($values as $val) {
+    if (!empty($val->color_code)) {
+        $displayArr[] = "<span class='color-circle' style='background: {$val->color_code}'></span> " . e($val->value);
+    } else {
+        $displayArr[] = e($val->value);
+    }
+}
             $option->values_display = implode(', ', $displayArr);
         }
 
@@ -121,6 +121,24 @@ class ProductOptionController extends Controller
         $hasAnyAttribute = false;
         $errors = [];
 
+         // BẮT BUỘC CẢ 3 PHẢI CÓ ÍT NHẤT 1 GIÁ TRỊ
+    $missingTypes = [];
+    foreach (['color', 'size', 'material'] as $type) {
+        $values = $attributes[$type]['values'] ?? null;
+        $filtered = array_filter((array) $values, fn($v) => trim($v) !== '');
+        if (count($filtered) === 0) {
+            $missingTypes[] = $type;
+        }
+    }
+
+    if (!empty($missingTypes)) {
+        foreach ($missingTypes as $type) {
+            $errors["attributes.$type.values"] = "Bạn phải nhập ít nhất một giá trị cho '$type'.";
+        }
+        return back()->withErrors($errors)->withInput();
+    }
+
+
         DB::beginTransaction();
         try {
             // Bước 1: Tạo hoặc lấy product_option duy nhất theo name + category_id
@@ -132,6 +150,7 @@ class ProductOptionController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            
 
             // Bước 2: Xử lý từng loại thuộc tính color, size, material
             foreach (['color', 'size', 'material'] as $type) {
@@ -288,6 +307,24 @@ class ProductOptionController extends Controller
         $attributes = $request->input('attributes', []);
         $hasAnyAttribute = false;
         $errors = [];
+
+         // BẮT BUỘC CẢ 3 PHẢI CÓ ÍT NHẤT 1 GIÁ TRỊ
+    $missingTypes = [];
+    foreach (['color', 'size', 'material'] as $type) {
+        $values = $attributes[$type]['values'] ?? null;
+        $filtered = array_filter((array) $values, fn($v) => trim($v) !== '');
+        if (count($filtered) === 0) {
+            $missingTypes[] = $type;
+        }
+    }
+
+    if (!empty($missingTypes)) {
+        foreach ($missingTypes as $type) {
+            $errors["attributes.$type.values"] = "Bạn phải nhập ít nhất một giá trị cho '$type'.";
+        }
+        return back()->withErrors($errors)->withInput();
+    }
+
 
         DB::beginTransaction();
         try {
@@ -519,4 +556,35 @@ class ProductOptionController extends Controller
 
         return redirect()->route('admin.product_options.trashed')->with('success', 'Đã xóa vĩnh viễn thuộc tính.');
     }
+
+    public function show($id)
+{
+    // Lấy product_option theo id
+    $option = DB::table('product_options')->where('id', $id)->first();
+    if (!$option) {
+        return redirect()->back()->with('error', 'Không tìm thấy thuộc tính.');
+    }
+
+    // Lấy tất cả product_option_values cho option này
+    $optionValues = DB::table('product_option_values')
+        ->where('product_option_id', $option->id)
+        ->get();
+
+    // Lấy danh mục để hiển thị tên danh mục hoặc thông tin liên quan
+    $category = DB::table('categories')
+        ->leftJoin('category_translations', function ($join) {
+            $join->on('categories.id', '=', 'category_translations.category_id')
+                 ->where('category_translations.language_code', 'vi');
+        })
+        ->where('categories.id', $option->category_id)
+        ->select('categories.id', 'category_translations.name')
+        ->first();
+
+    return view('admin.product_options.show', [
+        'option' => $option,
+        'optionValues' => $optionValues,
+        'category' => $category,
+    ]);
+}
+
 }

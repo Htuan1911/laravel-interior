@@ -37,12 +37,12 @@
         <input type="number" name="warranty_months" class="form-control" value="12">
       </div>
       <div class="col-md-3">
-  <label for="status">Trạng thái *</label>
-  <select name="status" class="form-select" required>
-    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Đang hiển thị</option>
-    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tạm ẩn</option>
-  </select>
-</div>
+        <label for="status">Trạng thái *</label>
+        <select name="status" class="form-select" required>
+          <option value="active" {{ old('status')=='active' ? 'selected' : '' }}>Đang hiển thị</option>
+          <option value="inactive" {{ old('status')=='inactive' ? 'selected' : '' }}>Tạm ẩn</option>
+        </select>
+      </div>
       <!-- Chọn tên thuộc tính -->
       <div class="row mb-3">
         <div class="col-md-4">
@@ -57,6 +57,9 @@
     <div class="mb-3">
       <label>Mô tả chi tiết</label>
       <textarea name="description" class="form-control" rows="4"></textarea>
+      @error('description')
+      <small class="text-danger">{{ $message }}</small>
+      @enderror
     </div>
 
     <div class="mb-3">
@@ -243,7 +246,7 @@ function addVariant(c, m, s) {
         <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
       </div>
       <label class="mt-2">Ảnh biến thể:</label>
-      <input type="file" name="variants[${idx}][image]" class="form-control mb-2">
+      <input type="file" name="variants[${idx}][image]" class="form-control mb-2" required> >
       <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this, '${key}')">Xóa</button>
     </div>`;
   document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
