@@ -53,7 +53,7 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 
 
 // Khu vực quản trị
-Route::prefix('auth', 'admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
     // Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/', [RevenueController::class, 'index'])->name('dashboard');
 
@@ -207,12 +207,6 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('forceDelete');
-
-        // Cart items
-        Route::delete('/items/{id}', [CartItemController::class, 'destroy'])->name('items.destroy');
-        Route::get('/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('items.trashed');
-        Route::post('/items/{id}/restore', [CartItemController::class, 'restore'])->name('items.restore');
-        Route::delete('/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('items.forceDelete');
     });
 });
 
