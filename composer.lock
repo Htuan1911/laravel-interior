@@ -4,11 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
+
     "content-hash": "3e4b2525717283e308dfbfa5be3f4f8e",
-=======
     "content-hash": "88970a0117c062eed55fa8728fc43833",
->>>>>>> c9dcbb0 (Push dự án Laravel lên GitHub)
     "packages": [
         {
             "name": "brick/math",
@@ -5971,7 +5969,7 @@
             "time": "2025-04-30T06:54:44+00:00"
         },
         {
-<<<<<<< HEAD
+
             "name": "laravel/breeze",
             "version": "v2.3.6",
             "source": {
@@ -6033,8 +6031,6 @@
             "time": "2025-03-06T14:02:32+00:00"
         },
         {
-=======
->>>>>>> c9dcbb0 (Push dự án Laravel lên GitHub)
             "name": "laravel/pail",
             "version": "v1.2.3",
             "source": {

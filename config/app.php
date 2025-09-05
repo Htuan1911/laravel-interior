@@ -78,11 +78,9 @@ return [
     |
     */
 
-<<<<<<< HEAD
     'locale' => env('APP_LOCALE', 'vi'),
-=======
+
     'locale' => env('APP_LOCALE', 'en'),
->>>>>>> c9dcbb0 (Push dự án Laravel lên GitHub)
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

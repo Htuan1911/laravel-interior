@@ -3153,244 +3153,275 @@
         </div>
     </div>
     <style>
-        /* Icon chat tròn */
-        #chat-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: #fff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 60px;
-            cursor: pointer;
-            font-size: 28px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
+/* Icon chat tròn */
+#chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+    font-size: 28px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
 
-        #chat-icon:hover {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #0056b3, #004494);
-        }
+#chat-icon:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #0056b3, #004494);
+}
 
-        /* Hộp chat */
-        #chat-box {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 360px;
-            height: 520px;
-            background: #fff;
-            display: none;
-            flex-direction: column;
-            z-index: 9999;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-            animation: fadeIn 0.3s ease;
-        }
+/* Hộp chat */
+#chat-box {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 360px;
+    height: 520px;
+    background: #fff;
+    display: none;
+    flex-direction: column;
+    z-index: 9999;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease;
+    transition: transform 0.2s ease-in-out, opacity 0.3s ease;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+/* Khi đang kéo (dragging) */
+#chat-box.dragging {
+    opacity: 0.9;
+    cursor: move;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* Hiệu ứng fade */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-        /* Header chat */
-        #chat-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            padding: 12px 15px;
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        #chat-header button {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
+/* Header chat */
+#chat-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px 15px;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move; /* để user biết có thể kéo */
+}
 
-        /* Nội dung chat */
-        #chat-messages {
-            flex: 1;
-            padding: 12px;
-            overflow-y: auto;
-            font-size: 14px;
-            background: #f5f7fb;
-            scroll-behavior: smooth;
-        }
+#chat-header button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
 
-        .message {
-            margin-bottom: 12px;
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 16px;
-            clear: both;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
+/* Nội dung chat */
+#chat-messages {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    font-size: 14px;
+    background: #f5f7fb;
+    scroll-behavior: smooth;
+}
 
-        .message.user {
-            background: #007bff;
-            color: white;
-            float: right;
-            border-bottom-right-radius: 5px;
-        }
+.message {
+    margin-bottom: 12px;
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    clear: both;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
 
-        .message.bot {
-            background: #e8ebf1;
-            float: left;
-            border-bottom-left-radius: 5px;
-        }
+.message.user {
+    background: #007bff;
+    color: white;
+    float: right;
+    border-bottom-right-radius: 5px;
+}
 
-        /* Ảnh trong tin nhắn */
-        .message img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 6px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+.message.bot {
+    background: #e8ebf1;
+    float: left;
+    border-bottom-left-radius: 5px;
+}
 
-        .message img:hover {
-            transform: scale(1.02);
-        }
+/* Ảnh trong tin nhắn */
+.message img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
 
-        /* Input chat */
-        #chat-input {
-            display: flex;
-            border-top: 1px solid #ddd;
-            background: white;
-        }
+.message img:hover {
+    transform: scale(1.02);
+}
 
-        #chat-input input {
-            flex: 1;
-            border: none;
-            padding: 12px;
-            outline: none;
-            font-size: 14px;
-        }
+/* Input chat */
+#chat-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+    background: white;
+}
 
-        #chat-input button {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            padding: 0 18px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s ease;
-        }
+#chat-input input {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    outline: none;
+    font-size: 14px;
+}
 
-        #chat-input button:hover {
-            background: #0056b3;
-        }
-        #chat-modes {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #f5f7fb;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
+#chat-input button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0 18px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
 
-        /* Nút chế độ */
-        .mode-btn {
-            padding: 10px 14px;
-            text-align: left;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
+#chat-input button:hover {
+    background: #0056b3;
+}
 
-        /* Hover */
-        .mode-btn:hover {
-            background: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
+/* Menu chế độ chat */
+#chat-modes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f5f7fb;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
 
-        /* Chế độ đang chọn */
-        .mode-btn.active {
-            background: #0056b3;
-            color: #fff;
-            border-color: #004494;
-        }
-        #quick-questions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px;
-            padding: 10px;
-            background: #f9f9fb;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
-        .d-none {
-            display: none !important;
-        }
+/* Nút chế độ */
+.mode-btn {
+    padding: 10px 14px;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
 
-        /* Quick question buttons */
-        .quick-btn {
-            flex: 1 1 calc(50% - 10px);
-            padding: 8px 10px;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+/* Hover */
+.mode-btn:hover {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
 
-        .quick-btn:hover {
-            background: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
-        #quick-questions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
-        }
+/* Chế độ đang chọn */
+.mode-btn.active {
+    background: #0056b3;
+    color: #fff;
+    border-color: #004494;
+}
 
-        .quick-btn {
-            padding: 10px 14px;
-            border: 1px solid #007bff;
-            border-radius: 8px;
-            background: #fff;
-            color: #007bff;
-            font-size: 14px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+#quick-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9f9fb;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: auto;
+    clear: both;
+    float: none;
+    width: 100%;
+}
 
-        .quick-btn:hover {
-            background: #007bff;
-            color: #fff;
-        }
+#quick-questions .quick-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid #0d6efd;
+    border-radius: 8px;
+    background: #fff;
+    color: #0d6efd;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+#quick-questions .quick-btn:hover {
+    background: #0d6efd;
+    color: #fff;
+}
+
+/* Ẩn nhanh */
+.d-none {
+    display: none !important;
+}
+/* Nút quay lại */
+#back-to-modes {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+#back-to-modes .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid #0d6efd;
+    border-radius: 8px;
+    background: #fff;
+    color: #0d6efd;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#back-to-modes .back-btn:hover {
+    background: #0d6efd;
+    color: #fff;
+}
+
+
+
     </style>
 
 <!-- Icon chat -->
@@ -3403,19 +3434,16 @@
         <button id="close-chat">&times;</button>
     </div>
     <div id="chat-messages">
-        <!-- Menu chọn chế độ hiển thị ngay trong khung -->
+        <!-- Menu chọn chế độ -->
         <div id="chat-modes">
-            <button class="mode-btn" data-mode="recommend">
-                🛒 Gợi ý sản phẩm
-            </button>
-            <button class="mode-btn" data-mode="ai">
-                🤖 Chat AI
-            </button>
-            <button class="mode-btn" data-mode="faq">
-                ❓ Câu hỏi nhanh
-            </button>
+            <button class="mode-btn" data-mode="recommend">🛒 Gợi ý sản phẩm</button>
+            <button class="mode-btn" data-mode="ai">🤖 Chat AI</button>
+            <button class="mode-btn" data-mode="faq">❓ Câu hỏi nhanh</button>
         </div>
-
+        <div id="back-to-modes" class="d-none">
+            <button class="back-btn">⬅ Quay lại</button>
+        </div>
+        <!-- Các câu hỏi nhanh -->
         <div id="quick-questions" class="d-none">
             <button class="quick-btn" data-question="Vận chuyển">🚚 Vận chuyển</button>
             <button class="quick-btn" data-question="Đổi trả">🔄 Đổi trả</button>
@@ -3424,23 +3452,53 @@
             <button class="quick-btn" data-question="Kích thước sản phẩm">📐 Kích thước sản phẩm</button>
         </div>
     </div>
+
     <div id="chat-input">
         <input type="text" id="message" placeholder="Nhập tin nhắn...">
         <button id="send-btn">Gửi</button>
     </div>
 </div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     // ===== Khai báo biến =====
     const chatIcon = document.getElementById('chat-icon');
     const chatBox = document.getElementById('chat-box');
     const closeChat = document.getElementById('close-chat');
+    const chatHeader = document.getElementById("chat-header");
+
+    const chatModes = document.getElementById("chat-modes");
+    const backToModes = document.getElementById("back-to-modes");
     const chatMessages = document.getElementById('chat-messages');
+    const quickQuestions = document.getElementById('quick-questions');
+
     let currentMode = null;
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    // ===== Kéo thả =====
+    chatHeader.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - chatBox.getBoundingClientRect().left;
+        offsetY = e.clientY - chatBox.getBoundingClientRect().top;
+        chatBox.style.transition = "none";
+    });
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            chatBox.style.left = `${e.clientX - offsetX}px`;
+            chatBox.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        chatBox.style.transition = "";
+    });
 
     // ===== Bật / Tắt Chatbox =====
-    chatIcon.addEventListener('click', () => {
-        chatBox.style.display = 'flex';
+    chatIcon.addEventListener("click", () => {
+        chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") 
+            ? "flex" 
+            : "none";
     });
 
     closeChat.addEventListener('click', () => {
@@ -3450,7 +3508,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== Hàm thêm tin nhắn =====
     function appendMessage(sender, text) {
         let id = 'msg-' + Date.now();
-        chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
+        chatMessages.insertAdjacentHTML("beforeend", `<div id="${id}" class="message ${sender}">${text}</div>`);
         chatMessages.scrollTop = chatMessages.scrollHeight;
         return id;
     }
@@ -3475,78 +3533,86 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ===== Xử lý chọn chế độ =====
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
             currentMode = btn.dataset.mode;
 
+            // Reset màn hình
+            chatModes.classList.add("d-none");
+            backToModes.classList.remove("d-none");
+            quickQuestions.classList.add("d-none");
+            chatMessages.querySelectorAll(".message").forEach(m => m.remove());
+
             if (currentMode === "faq") {
-                document.getElementById('quick-questions').classList.remove('d-none');
                 appendMessage('bot', '❓ Chọn một câu hỏi thường gặp bên dưới để xem câu trả lời.');
+                quickQuestions.classList.remove('d-none');
             } else {
-                document.getElementById('quick-questions').classList.add('d-none');
                 appendMessage('bot', `✅ Bạn đã chọn chế độ: <b>${btn.innerText}</b>.`);
             }
         });
     });
 
-    document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('quick-btn')) {
-        let question = e.target.dataset.question;
-        currentMode = "faq"; // ✅ đảm bảo đang ở chế độ FAQ
-        appendMessage('user', question);
-
-        let loadingId = appendMessage('bot', '<i>Đang tìm câu trả lời...</i>');
-
-        // ---- Trả lời mặc định (cứng trong JS) ----
-        let defaultAnswer = "";
-        switch (question) {
-            case "Vận chuyển":
-                defaultAnswer = "🚚 Chúng tôi giao hàng toàn quốc, thời gian 2-5 ngày tùy khu vực.";
-                break;
-            case "Đổi trả":
-                defaultAnswer = "🔄 Bạn có thể đổi trả sản phẩm trong 7 ngày nếu có lỗi từ nhà sản xuất.";
-                break;
-            case "Thanh toán":
-                defaultAnswer = "💳 Hỗ trợ thanh toán COD và chuyển khoản ngân hàng.";
-                break;
-            case "Khuyến mãi":
-                defaultAnswer = "🎁 Hiện tại có chương trình giảm 20% cho đơn hàng trên 2 triệu.";
-                break;
-            case "Kích thước sản phẩm":
-                defaultAnswer = "📐 Kích thước chi tiết được ghi trong phần mô tả từng sản phẩm.";
-                break;
-            default:
-                defaultAnswer = "❓ Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.";
-        }
-
-        // ---- Thử gọi API, nếu lỗi thì fallback về defaultAnswer ----
-        fetch("{{ route('chatbot.quick') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ question })
-        })
-        .then(res => res.json())
-        .then(data => {
-            let answer = data.answer || defaultAnswer;
-            updateMessage(loadingId, formatBotReply(answer), 'bot');
-        })
-        .catch(() => {
-            updateMessage(loadingId, defaultAnswer, 'bot');
-        });
-    }
-});
-
-    // ===== Gửi tin nhắn thủ công =====
-    document.getElementById('send-btn').addEventListener('click', sendMessage);
-    document.getElementById('message').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') sendMessage();
+    // Nút quay lại
+    document.querySelector(".back-btn").addEventListener("click", () => {
+        chatModes.classList.remove("d-none");
+        backToModes.classList.add("d-none");
+        quickQuestions.classList.add("d-none");
+        chatMessages.querySelectorAll(".message").forEach(m => m.remove());
+        currentMode = null;
     });
 
+    // ===== Khi click vào câu hỏi nhanh =====
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('quick-btn')) {
+            let question = e.target.dataset.question;
+            appendMessage('user', question);
+
+            let loadingId = appendMessage('bot', '<i>Đang tìm câu trả lời...</i>');
+
+            let defaultAnswer = "";
+            switch (question) {
+                case "Vận chuyển":
+                    defaultAnswer = "🚚 Chúng tôi giao hàng toàn quốc, 2-5 ngày tùy khu vực.";
+                    break;
+                case "Đổi trả":
+                    defaultAnswer = "🔄 Đổi trả sản phẩm trong 7 ngày nếu lỗi từ nhà sản xuất.";
+                    break;
+                case "Thanh toán":
+                    defaultAnswer = "💳 Hỗ trợ COD và chuyển khoản ngân hàng.";
+                    break;
+                case "Khuyến mãi":
+                    defaultAnswer = "🎁 Giảm 10% cho đơn hàng đầu tiên trên 2 triệu.";
+                    break;
+                case "Kích thước sản phẩm":
+                    defaultAnswer = "📐 Kích thước chi tiết có trong mô tả sản phẩm.";
+                    break;
+                default:
+                    defaultAnswer = "❓ Xin lỗi, chưa có câu trả lời cho câu hỏi này.";
+            }
+
+            fetch("{{ route('chatbot.quick') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ question })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let answer = data.answer || defaultAnswer;
+                updateMessage(loadingId, answer, 'bot');
+            })
+            .catch(() => {
+                updateMessage(loadingId, defaultAnswer, 'bot');
+            });
+        }
+    });
+
+    // ===== Gửi tin nhắn =====
     function sendMessage() {
         let msg = document.getElementById('message').value.trim();
         if (!msg || !currentMode) {
@@ -3585,7 +3651,13 @@ document.addEventListener("DOMContentLoaded", function () {
             updateMessage(loadingId, '⚠️ Lỗi kết nối!', 'bot');
         });
     }
+
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    document.getElementById('message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
 });
+
 </script>
 
 @endsection

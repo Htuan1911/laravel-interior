@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductOptionController;
@@ -363,9 +363,9 @@ Route::get('/chatbot/predefined', [ChatbotController::class, 'predefined'])->nam
 Route::post('/chatbot/quick', [ChatbotController::class, 'quick'])->name('chatbot.quick');
 
 require __DIR__ . '/auth.php';
-=======
+
 
 Route::get('/', function () {
     return view('welcome');
 });
->>>>>>> c9dcbb0 (Push dự án Laravel lên GitHub)
+
