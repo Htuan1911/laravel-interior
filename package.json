@@ -15,11 +15,16 @@
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.4.31",
+<<<<<<< HEAD
         "tailwindcss": "^4.0.0",
         "vite": "^6.2.4"
     },
     "dependencies": {
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1"
+=======
+        "tailwindcss": "^3.1.0",
+        "vite": "^6.2.4"
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     }
 }

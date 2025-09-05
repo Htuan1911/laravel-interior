@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 
+=======
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductOptionController;
@@ -54,7 +57,11 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
 
 
 // Khu vực quản trị
+<<<<<<< HEAD
 Route::prefix('auth', 'admin')->name('admin.')->group(function () {
+=======
+Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     // Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/', [RevenueController::class, 'index'])->name('dashboard');
 
@@ -81,6 +88,11 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
         Route::get('/trashed', [ProductOptionController::class, 'trashed'])->name('trashed');
         Route::post('/{id}/restore', [ProductOptionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [ProductOptionController::class, 'forceDelete'])->name('force_delete');
+<<<<<<< HEAD
+=======
+        Route::get('/{id}/show', [ProductOptionController::class, 'show'])->name('show');
+        
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     });
 
 
@@ -208,12 +220,15 @@ Route::prefix('auth', 'admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('forceDelete');
+<<<<<<< HEAD
 
         // Cart items
         Route::delete('/items/{id}', [CartItemController::class, 'destroy'])->name('items.destroy');
         Route::get('/{cartId}/items/trashed', [CartItemController::class, 'trashed'])->name('items.trashed');
         Route::post('/items/{id}/restore', [CartItemController::class, 'restore'])->name('items.restore');
         Route::delete('/items/{id}/force-delete', [CartItemController::class, 'forceDelete'])->name('items.forceDelete');
+=======
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     });
 });
 
@@ -351,6 +366,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
 
 });
+<<<<<<< HEAD
 // Gợi ý sản phẩm (Gemini + DB)
 Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 
@@ -369,3 +385,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+=======
+Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
+require __DIR__ . '/auth.php';
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008

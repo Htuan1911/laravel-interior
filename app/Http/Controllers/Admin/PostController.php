@@ -59,11 +59,31 @@ class PostController extends Controller
         // Bước 1: Validate dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
+<<<<<<< HEAD
             'content'     => 'nullable|string',
             'category_id' => 'required|exists:post_categories,id',
             'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status'      => 'nullable|in:draft,published',
         ]);
+=======
+            'slug'        => 'required|string|max:255|unique:posts,slug',
+            'content'     => 'required|string',
+            'category_id' => 'required|exists:post_categories,id',
+            'thumbnail'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'status'      => 'nullable|in:draft,published',
+        ]);
+          //  Kiểm tra tiêu đề trùng trong cùng danh mục
+        $validator->after(function ($validator) use ($request) {
+        $exists = DB::table('posts')
+            ->where('category_id', $request->category_id)
+            ->whereRaw('LOWER(title) = ?', [strtolower($request->title)])
+            ->exists();
+
+        if ($exists) {
+            $validator->errors()->add('title', 'Tiêu đề đã tồn tại trong danh mục này.');
+        }
+    });
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
 
         // Nếu có lỗi thì quay lại với thông báo lỗi
         if ($validator->fails()) {
@@ -116,6 +136,7 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title'       => 'required|max:255',
+<<<<<<< HEAD
             'content'     => 'nullable',
             'category_id' => 'required|exists:post_categories,id',
             'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -126,11 +147,40 @@ class PostController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+=======
+             'slug'        => 'required|string|max:255|unique:posts,slug',
+             'content'     => 'required|string',
+            'category_id' => 'required|exists:post_categories,id',
+            'thumbnail'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'status'      => 'nullable|in:draft,published',
+        ]);
+            // Kiểm tra trùng tiêu đề trong danh mục (trừ ID hiện tại)
+    $validator->after(function ($validator) use ($request, $id) {
+        $exists = DB::table('posts')
+            ->where('title', $request->title)
+            ->where('category_id', $request->category_id)
+            ->where('id', '<>', $id) // Loại trừ chính nó
+            ->exists();
+
+        if ($exists) {
+            $validator->errors()->add('title', 'Tiêu đề đã tồn tại trong danh mục này.');
+        }
+    });
+        // Nếu có lỗi thì quay lại với thông báo lỗi
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+       // Tìm bài viết theo ID
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         $post = DB::table('posts')->where('id', $id)->first();
         if (!$post) {
             return redirect()->route('admin.posts.index')->with('error', 'Bài viết không tồn tại.');
         }
+<<<<<<< HEAD
 
+=======
+       // Xử lý ảnh thumbnail (nếu có)
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         $thumbnail = $post->thumbnail;
 
         if ($request->hasFile('thumbnail')) {
@@ -139,7 +189,11 @@ class PostController extends Controller
             $file->move(public_path('uploads/posts'), $fileName);
             $thumbnail = 'uploads/posts/' . $fileName;
         }
+<<<<<<< HEAD
 
+=======
+       // Cập nhật dữ liệu vào cơ sở dữ liệu
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         DB::table('posts')->where('id', $id)->update([
             'title'       => $request->title,
             'slug'        => Str::slug($request->title),

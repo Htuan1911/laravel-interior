@@ -80,8 +80,11 @@ return [
 
     'locale' => env('APP_LOCALE', 'vi'),
 
+<<<<<<< HEAD
     'locale' => env('APP_LOCALE', 'en'),
 
+=======
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),

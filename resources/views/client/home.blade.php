@@ -3393,33 +3393,6 @@
 .d-none {
     display: none !important;
 }
-/* Nút quay lại */
-#back-to-modes {
-    display: flex;
-    justify-content: center;
-    margin: 10px 0;
-}
-
-#back-to-modes .back-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid #0d6efd;
-    border-radius: 8px;
-    background: #fff;
-    color: #0d6efd;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#back-to-modes .back-btn:hover {
-    background: #0d6efd;
-    color: #fff;
-}
-
 
 
     </style>
@@ -3465,23 +3438,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const chatIcon = document.getElementById('chat-icon');
     const chatBox = document.getElementById('chat-box');
     const closeChat = document.getElementById('close-chat');
-    const chatHeader = document.getElementById("chat-header");
-
-    const chatModes = document.getElementById("chat-modes");
     const backToModes = document.getElementById("back-to-modes");
     const chatMessages = document.getElementById('chat-messages');
+    const chatHeader = document.getElementById("chat-header");
     const quickQuestions = document.getElementById('quick-questions');
 
     let currentMode = null;
     let isDragging = false;
     let offsetX, offsetY;
 
-    // ===== Kéo thả =====
+    chatModes.classList.add("d-none");
+    backToModes.classList.remove("d-none");
+
     chatHeader.addEventListener("mousedown", (e) => {
         isDragging = true;
         offsetX = e.clientX - chatBox.getBoundingClientRect().left;
         offsetY = e.clientY - chatBox.getBoundingClientRect().top;
-        chatBox.style.transition = "none";
+        chatBox.style.transition = "none"; // tránh giật khi kéo
     });
     document.addEventListener("mousemove", (e) => {
         if (isDragging) {
@@ -3491,14 +3464,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     document.addEventListener("mouseup", () => {
         isDragging = false;
-        chatBox.style.transition = "";
+        chatBox.style.transition = ""; // reset lại transition
     });
+
 
     // ===== Bật / Tắt Chatbox =====
     chatIcon.addEventListener("click", () => {
-        chatBox.style.display = (chatBox.style.display === "none" || chatBox.style.display === "") 
-            ? "flex" 
-            : "none";
+        if (chatBox.style.display === "none" || chatBox.style.display === "") {
+            chatBox.style.display = "flex";   // mở
+        } else {
+            chatBox.style.display = "none";   // đóng
+        }
     });
 
     closeChat.addEventListener('click', () => {
@@ -3508,7 +3484,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ===== Hàm thêm tin nhắn =====
     function appendMessage(sender, text) {
         let id = 'msg-' + Date.now();
-        chatMessages.insertAdjacentHTML("beforeend", `<div id="${id}" class="message ${sender}">${text}</div>`);
+        chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
         chatMessages.scrollTop = chatMessages.scrollHeight;
         return id;
     }
@@ -3534,35 +3510,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ===== Xử lý chọn chế độ =====
     document.querySelectorAll(".mode-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
 
-            currentMode = btn.dataset.mode;
+        currentMode = btn.dataset.mode;
 
-            // Reset màn hình
-            chatModes.classList.add("d-none");
-            backToModes.classList.remove("d-none");
-            quickQuestions.classList.add("d-none");
-            chatMessages.querySelectorAll(".message").forEach(m => m.remove());
+        // Xóa tin nhắn cũ
+        chatMessages.innerHTML = "";
 
-            if (currentMode === "faq") {
-                appendMessage('bot', '❓ Chọn một câu hỏi thường gặp bên dưới để xem câu trả lời.');
-                quickQuestions.classList.remove('d-none');
-            } else {
-                appendMessage('bot', `✅ Bạn đã chọn chế độ: <b>${btn.innerText}</b>.`);
-            }
-        });
+        if (currentMode === "faq") {
+            // FAQ: hiển thị gợi ý + danh sách câu hỏi nhanh
+            appendMessage('bot', '❓ Chọn một câu hỏi thường gặp bên dưới để xem câu trả lời.');
+            quickQuestions.classList.remove('d-none');
+            chatMessages.appendChild(quickQuestions);
+        } else {
+            // Các mode khác (Chat AI, Liên hệ…): ẩn quick questions
+            quickQuestions.classList.add('d-none');
+            appendMessage('bot', `✅ Bạn đã chọn chế độ: <b>${btn.innerText}</b>.`);
+        }
     });
+});
 
-    // Nút quay lại
-    document.querySelector(".back-btn").addEventListener("click", () => {
-        chatModes.classList.remove("d-none");
-        backToModes.classList.add("d-none");
-        quickQuestions.classList.add("d-none");
-        chatMessages.querySelectorAll(".message").forEach(m => m.remove());
-        currentMode = null;
-    });
+document.querySelector(".back-btn").addEventListener("click", () => {
+    // Reset lại view
+    chatModes.classList.remove("d-none");
+    backToModes.classList.add("d-none");
+    quickQuestions.classList.add("d-none");
+    messagesContent.innerHTML = "";
+    currentMode = null;
+});
 
     // ===== Khi click vào câu hỏi nhanh =====
     document.addEventListener('click', function (e) {
@@ -3572,6 +3549,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let loadingId = appendMessage('bot', '<i>Đang tìm câu trả lời...</i>');
 
+            // Trả lời mặc định (cứng trong JS)
             let defaultAnswer = "";
             switch (question) {
                 case "Vận chuyển":
@@ -3593,6 +3571,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     defaultAnswer = "❓ Xin lỗi, chưa có câu trả lời cho câu hỏi này.";
             }
 
+            // Thử gọi API, nếu lỗi thì fallback về defaultAnswer
             fetch("{{ route('chatbot.quick') }}", {
                 method: 'POST',
                 headers: {
@@ -3612,7 +3591,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ===== Gửi tin nhắn =====
+    function appendMessage(sender, text) {
+    let id = 'msg-' + Date.now();
+    chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return id;
+    }
+
+    // ===== Gửi tin nhắn thủ công =====
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    document.getElementById('message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+
     function sendMessage() {
         let msg = document.getElementById('message').value.trim();
         if (!msg || !currentMode) {
@@ -3651,13 +3642,7 @@ document.addEventListener("DOMContentLoaded", function () {
             updateMessage(loadingId, '⚠️ Lỗi kết nối!', 'bot');
         });
     }
-
-    document.getElementById('send-btn').addEventListener('click', sendMessage);
-    document.getElementById('message').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') sendMessage();
-    });
 });
-
 </script>
 
 @endsection

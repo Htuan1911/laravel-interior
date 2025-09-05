@@ -123,6 +123,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'category_id' => 'required|integer',
+<<<<<<< HEAD
             'warranty_months' => 'nullable|integer',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',
@@ -130,6 +131,15 @@ class ProductController extends Controller
             'dimensions' => 'nullable|string',
             'style' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
+=======
+            'warranty_months' => 'required|integer',
+            'description' => 'required|string',
+            'status' => 'required|in:active,inactive',
+            'material' => 'required|string',
+            'dimensions' => 'required|string',
+            'style' => 'required|string',
+            'image' => 'required|image|max:2048',
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
             'variants' => 'required|array|min:1',
             'variants.*.name' => 'required|string',
             'variants.*.sku' => 'required|string',  // Bắt buộc nhập
@@ -139,7 +149,11 @@ class ProductController extends Controller
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
+<<<<<<< HEAD
             'variants.*.image' => 'nullable|image|max:2048',
+=======
+            'variants.*.image' => 'required|image|max:2048',
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         ]);
 
 
@@ -402,6 +416,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'category_id' => 'required|integer',
+<<<<<<< HEAD
             'warranty_months' => 'nullable|integer',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',
@@ -409,6 +424,15 @@ class ProductController extends Controller
             'dimensions' => 'nullable|string',
             'style' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
+=======
+            'warranty_months' => 'required|integer',
+           'description' => 'required|string',
+            'status' => 'required|in:active,inactive',
+            'material' => 'required|string',
+            'dimensions' => 'required|string',
+            'style' => 'required|string',
+            'image' => 'required|image|max:2048',
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
             'variants' => 'required|array|min:1',
             'variants.*.name' => 'required|string',
             'variants.*.sku' => 'required|string',  // Bắt buộc nhập
@@ -418,7 +442,11 @@ class ProductController extends Controller
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
+<<<<<<< HEAD
             'variants.*.image' => 'nullable|image|max:2048',
+=======
+           'variants.*.image' => 'required|image|max:2048',
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         ]);
 
         // Cập nhật ảnh sản phẩm

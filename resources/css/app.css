@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 @tailwind base;
 @tailwind components;
@@ -14,3 +15,8 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+=======
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008

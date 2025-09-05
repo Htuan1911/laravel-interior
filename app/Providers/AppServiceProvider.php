@@ -7,12 +7,17 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
+<<<<<<< HEAD
 
 class AppServiceProvider extends ServiceProvider 
 {
     /**
      * Register any application services.
      */
+=======
+class AppServiceProvider extends ServiceProvider
+{
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     public function register(): void
     {
         //
@@ -37,5 +42,9 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('cart', $cart);
         });
+<<<<<<< HEAD
 }
+=======
+    }
+>>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
 }
