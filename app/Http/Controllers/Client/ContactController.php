@@ -27,11 +27,7 @@ class ContactController extends Controller
             'email' => $data['email'],
             'user_message' => $data['message'],
         ], function ($message) use ($data) {
-<<<<<<< HEAD
-            $message->to('phamngocan2k5@gmail.com', 'Admin')
-=======
             $message->to('tuandhph51200@gmail.com', 'Admin')
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
                     ->subject('Tin nhắn liên hệ từ website')
                     ->replyTo($data['email']);
         });

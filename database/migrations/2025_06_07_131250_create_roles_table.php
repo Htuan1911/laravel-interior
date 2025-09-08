@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name', 50)->unique();
               $table->timestamps();
-<<<<<<< HEAD
-
-=======
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
         });
     }
 

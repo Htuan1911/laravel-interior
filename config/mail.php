@@ -110,14 +110,6 @@ return [
     |
     */
 
-<<<<<<< HEAD
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-
-        'name' => env('APP_NAME', 'Example'),
-
-        'name' => env('MAIL_FROM_NAME', 'Example'),
-=======
     // 'from' => [
     //     'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
     //     'name' => env('APP_NAME', 'Example'),
@@ -126,7 +118,6 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS'),
         'name' => env('MAIL_FROM_NAME', 'Laravel'),
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
     ],
 
 ];
