@@ -45,7 +45,10 @@
         <input type="text" name="product_name" class="form-control"
                placeholder="Nhập tên sản phẩm..."
                value="{{ request('product_name') }}">
-               <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+            
+               <button type="submit" class="btn btn-primary me-2" title="Tìm kiếm">
+    <i class="fas fa-search"></i>
+</button>
     </div>
 
     {{-- Hàng 2: Lọc theo ngày, tháng, năm --}}
@@ -76,7 +79,7 @@
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">Lọc</button>
         @if(request()->hasAny(['rating','product_id','product_name','date','month','year']))
-            <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary">Xóa lọc</a>
+            <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary">Quay lại danh sách </a>
         @endif
     </div>
 </form>
@@ -103,7 +106,7 @@
                             <th>Đánh giá</th>
                             <th>Bình luận</th>
                             <th>Ngày tạo</th>
-                            <th>Ngày cập nhật</th>
+                            {{-- <th>Ngày cập nhật</th> --}}
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -122,7 +125,7 @@
                                 </td>
                                 <td>{{ Str::limit(strip_tags($review->comment), 50) }}</td>
 <td>{{ $review->created_at->format('d/m/Y H:i') }}</td>
-                                <td>{{ $review->updated_at->format('d/m/Y H:i') }}</td>
+                                {{-- <td>{{ $review->updated_at->format('d/m/Y H:i') }}</td> --}}
                                 <td>
     <div class="btn-group mb-1" role="group">
         <a href="{{ route('admin.reviews.show', $review->id) }}" class="btn btn-sm btn-info">
@@ -140,13 +143,13 @@
             </button>
         </form> --}}
         {{-- ✅ Nút Ẩn/Hiện --}}
-    <form action="{{ route('admin.reviews.toggleVisibility', $review->id) }}" method="POST">
+    {{-- <form action="{{ route('admin.reviews.toggleVisibility', $review->id) }}" method="POST">
         @csrf
         @method('PATCH')
         <button type="submit" class="btn btn-sm {{ $review->is_visible ? 'btn-warning' : 'btn-success' }}">
             {{ $review->is_visible ? 'Ẩn' : 'Hiện' }}
         </button>
-    </form>
+    </form> --}}
     </div>
 
     
