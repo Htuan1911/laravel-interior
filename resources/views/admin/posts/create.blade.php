@@ -3,8 +3,7 @@
 @section('content')
 <div class="container">
     <h2>Thêm bài viết mới</h2>
-<<<<<<< HEAD
-=======
+
     @if ($errors->any())
   <div class="alert alert-danger">
     <ul>
@@ -14,7 +13,6 @@
     </ul>
   </div>
 @endif
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
 
     <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

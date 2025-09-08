@@ -346,14 +346,12 @@ Route::prefix('client')->name('client.')->group(function () {
 
 
 });
-// Gợi ý sản phẩm (Gemini + DB)
+// Chat gửi tin nhắn thường
 Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 
 // Chat AI (OpenAI)
-Route::post('/chatbot/ai', [ChatbotController::class, 'chatAI'])->name('chatbot.ai');
-Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
-
-// FAQ
+Route::post('/chatbot/openai', [ChatbotController::class, 'chatOpenAI'])->name('chatbot.ai');
+// Chat hỏi nhanh (FAQ)
 Route::get('/chatbot/predefined', [ChatbotController::class, 'predefined'])->name('chatbot.predefined');
 Route::post('/chatbot/quick', [ChatbotController::class, 'quick'])->name('chatbot.quick');
 
@@ -364,5 +362,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
-require __DIR__ . '/auth.php';

@@ -105,11 +105,7 @@
                                                class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-<<<<<<< HEAD
-                                            <form action="{{ route('admin.users.destroy', $user) }}"
-=======
-                                            {{-- <form action="{{ route('admin.users.destroy', $user) }}"
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
+                                            <!-- {{-- <form action="{{ route('admin.users.destroy', $user) }}"
                                                   method="POST" class="d-inline-block"
                                                   onsubmit="return confirm('Bạn chắc chắn muốn xóa?')">
                                                 @csrf
@@ -117,11 +113,7 @@
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
-<<<<<<< HEAD
-                                            </form>
-=======
-                                            </form> --}}
->>>>>>> e7d7fb77dac056b19220de991d5e9c7691aec008
+                                            </form> --}} -->
                                         </div>
                                     </td>
                                 </tr>

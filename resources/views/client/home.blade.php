@@ -3201,6 +3201,9 @@
     cursor: move;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
+#chat-box.show {
+    display: flex;
+}
 
 /* Hiệu ứng fade */
 @keyframes fadeIn {
@@ -3313,7 +3316,7 @@
 
 /* Menu chế độ chat */
 #chat-modes {
-    display: flex;
+    display: block;
     flex-direction: column;
     gap: 10px;
     padding: 12px;
@@ -3354,15 +3357,13 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 10px;
     padding: 10px;
     background: #f9f9fb;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin-top: auto;
-    clear: both;
-    float: none;
-    width: 100%;
+    border-top: 1px solid #ddd;
+    border-radius: 0;
+    max-height: 150px;   /* không quá cao */
+    overflow-y: auto;    /* scroll nếu nhiều */
+}
 }
 
 #quick-questions .quick-btn {
@@ -3393,10 +3394,45 @@
 .d-none {
     display: none !important;
 }
+.back-btn {
+  display: inline-block;
+  margin: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 14px;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #333;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background-color: #e9ecef;
+  border-color: #bbb;
+}
+
+/* Menu chế độ đẹp hơn (căn giữa) */
+#chat-modes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #f5f7fb;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.mode-btn {
+  flex: 1 1 45%;
+  text-align: center;
+}
 
 
     </style>
-
 <!-- Icon chat -->
 <div id="chat-icon">💬</div>
 
@@ -3406,26 +3442,31 @@
         💬 Chatbot Style House
         <button id="close-chat">&times;</button>
     </div>
-    <div id="chat-messages">
-        <!-- Menu chọn chế độ -->
-        <div id="chat-modes">
-            <button class="mode-btn" data-mode="recommend">🛒 Gợi ý sản phẩm</button>
-            <button class="mode-btn" data-mode="ai">🤖 Chat AI</button>
-            <button class="mode-btn" data-mode="faq">❓ Câu hỏi nhanh</button>
-        </div>
-        <div id="back-to-modes" class="d-none">
-            <button class="back-btn">⬅ Quay lại</button>
-        </div>
-        <!-- Các câu hỏi nhanh -->
-        <div id="quick-questions" class="d-none">
-            <button class="quick-btn" data-question="Vận chuyển">🚚 Vận chuyển</button>
-            <button class="quick-btn" data-question="Đổi trả">🔄 Đổi trả</button>
-            <button class="quick-btn" data-question="Thanh toán">💳 Thanh toán</button>
-            <button class="quick-btn" data-question="Khuyến mãi">🎁 Khuyến mãi</button>
-            <button class="quick-btn" data-question="Kích thước sản phẩm">📐 Kích thước sản phẩm</button>
-        </div>
+
+    <!-- Menu chọn chế độ -->
+    <div id="chat-modes">
+        <button class="mode-btn" data-mode="recommend">🛒 Gợi ý sản phẩm</button>
+        <button class="mode-btn" data-mode="ai">🤖 Chat AI</button>
+        <button class="mode-btn" data-mode="faq">❓ Câu hỏi nhanh</button>
     </div>
 
+    <!-- Thanh quay lại -->
+    <div id="back-to-modes" class="d-none">
+        <button id="back-btn" class="back-btn">⬅ Quay lại</button>
+    </div>
+    <div id="quick-questions" class="d-none">
+        <button class="quick-btn" data-question="Vận chuyển">🚚 Vận chuyển</button>
+        <button class="quick-btn" data-question="Đổi trả">🔄 Đổi trả</button>
+        <button class="quick-btn" data-question="Thanh toán">💳 Thanh toán</button>
+        <button class="quick-btn" data-question="Khuyến mãi">🎁 Khuyến mãi</button>
+        <button class="quick-btn" data-question="Kích thước sản phẩm">📐 Kích thước sản phẩm</button>
+    </div>
+    <!-- Khu vực tin nhắn -->
+    <div id="chat-messages">
+
+    </div>
+
+    <!-- Input chat -->
     <div id="chat-input">
         <input type="text" id="message" placeholder="Nhập tin nhắn...">
         <button id="send-btn">Gửi</button>
@@ -3442,46 +3483,42 @@ document.addEventListener("DOMContentLoaded", function () {
     const chatMessages = document.getElementById('chat-messages');
     const chatHeader = document.getElementById("chat-header");
     const quickQuestions = document.getElementById('quick-questions');
+    const chatModes = document.getElementById("chat-modes");
 
     let currentMode = null;
     let isDragging = false;
     let offsetX, offsetY;
 
-    chatModes.classList.add("d-none");
-    backToModes.classList.remove("d-none");
-
+    // ===== Kéo thả chatbox =====
     chatHeader.addEventListener("mousedown", (e) => {
         isDragging = true;
         offsetX = e.clientX - chatBox.getBoundingClientRect().left;
         offsetY = e.clientY - chatBox.getBoundingClientRect().top;
-        chatBox.style.transition = "none"; // tránh giật khi kéo
+        chatBox.style.transition = "none";
     });
     document.addEventListener("mousemove", (e) => {
         if (isDragging) {
             chatBox.style.left = `${e.clientX - offsetX}px`;
             chatBox.style.top = `${e.clientY - offsetY}px`;
+            chatBox.style.right = "auto"; // bỏ cố định right để kéo tự do
+            chatBox.style.bottom = "auto";
         }
     });
     document.addEventListener("mouseup", () => {
         isDragging = false;
-        chatBox.style.transition = ""; // reset lại transition
+        chatBox.style.transition = "";
     });
-
 
     // ===== Bật / Tắt Chatbox =====
     chatIcon.addEventListener("click", () => {
-        if (chatBox.style.display === "none" || chatBox.style.display === "") {
-            chatBox.style.display = "flex";   // mở
-        } else {
-            chatBox.style.display = "none";   // đóng
-        }
+        chatBox.classList.toggle("show");
     });
 
-    closeChat.addEventListener('click', () => {
-        chatBox.style.display = 'none';
+    closeChat.addEventListener("click", () => {
+        chatBox.classList.remove("show");
     });
 
-    // ===== Hàm thêm tin nhắn =====
+    // ===== Hàm thêm & cập nhật tin nhắn =====
     function appendMessage(sender, text) {
         let id = 'msg-' + Date.now();
         chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
@@ -3510,36 +3547,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ===== Xử lý chọn chế độ =====
     document.querySelectorAll(".mode-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
 
-        currentMode = btn.dataset.mode;
+            currentMode = btn.dataset.mode;
+            chatMessages.innerHTML = "";
 
-        // Xóa tin nhắn cũ
-        chatMessages.innerHTML = "";
+            if (currentMode === "faq") {
+                appendMessage('bot', '❓ Chọn một câu hỏi thường gặp bên dưới để xem câu trả lời.');
+                quickQuestions.classList.remove('d-none');
+            } else {
+                quickQuestions.classList.add('d-none');
+                appendMessage('bot', `✅ Bạn đã chọn chế độ: <b>${btn.innerText}</b>.`);
+            }
 
-        if (currentMode === "faq") {
-            // FAQ: hiển thị gợi ý + danh sách câu hỏi nhanh
-            appendMessage('bot', '❓ Chọn một câu hỏi thường gặp bên dưới để xem câu trả lời.');
-            quickQuestions.classList.remove('d-none');
-            chatMessages.appendChild(quickQuestions);
-        } else {
-            // Các mode khác (Chat AI, Liên hệ…): ẩn quick questions
-            quickQuestions.classList.add('d-none');
-            appendMessage('bot', `✅ Bạn đã chọn chế độ: <b>${btn.innerText}</b>.`);
-        }
+            chatModes.classList.add("d-none");
+            backToModes.classList.remove("d-none");
+        });
     });
-});
 
-document.querySelector(".back-btn").addEventListener("click", () => {
-    // Reset lại view
-    chatModes.classList.remove("d-none");
-    backToModes.classList.add("d-none");
-    quickQuestions.classList.add("d-none");
-    messagesContent.innerHTML = "";
-    currentMode = null;
-});
+    document.getElementById("back-btn").addEventListener("click", () => {
+        chatModes.classList.remove("d-none");
+        backToModes.classList.add("d-none");
+        quickQuestions.classList.add("d-none");
+        chatMessages.innerHTML = "";
+        currentMode = null;
+    });
 
     // ===== Khi click vào câu hỏi nhanh =====
     document.addEventListener('click', function (e) {
@@ -3549,29 +3583,17 @@ document.querySelector(".back-btn").addEventListener("click", () => {
 
             let loadingId = appendMessage('bot', '<i>Đang tìm câu trả lời...</i>');
 
-            // Trả lời mặc định (cứng trong JS)
+            // Trả lời mặc định
             let defaultAnswer = "";
             switch (question) {
-                case "Vận chuyển":
-                    defaultAnswer = "🚚 Chúng tôi giao hàng toàn quốc, 2-5 ngày tùy khu vực.";
-                    break;
-                case "Đổi trả":
-                    defaultAnswer = "🔄 Đổi trả sản phẩm trong 7 ngày nếu lỗi từ nhà sản xuất.";
-                    break;
-                case "Thanh toán":
-                    defaultAnswer = "💳 Hỗ trợ COD và chuyển khoản ngân hàng.";
-                    break;
-                case "Khuyến mãi":
-                    defaultAnswer = "🎁 Giảm 10% cho đơn hàng đầu tiên trên 2 triệu.";
-                    break;
-                case "Kích thước sản phẩm":
-                    defaultAnswer = "📐 Kích thước chi tiết có trong mô tả sản phẩm.";
-                    break;
-                default:
-                    defaultAnswer = "❓ Xin lỗi, chưa có câu trả lời cho câu hỏi này.";
+                case "Vận chuyển": defaultAnswer = "🚚 Giao hàng toàn quốc, 2-5 ngày tùy khu vực."; break;
+                case "Đổi trả": defaultAnswer = "🔄 Đổi trả sản phẩm trong 7 ngày nếu lỗi từ nhà sản xuất."; break;
+                case "Thanh toán": defaultAnswer = "💳 Hỗ trợ COD và chuyển khoản ngân hàng."; break;
+                case "Khuyến mãi": defaultAnswer = "🎁 Giảm 10% cho đơn hàng đầu tiên trên 2 triệu."; break;
+                case "Kích thước sản phẩm": defaultAnswer = "📐 Kích thước chi tiết có trong mô tả sản phẩm."; break;
+                default: defaultAnswer = "❓ Xin lỗi, chưa có câu trả lời cho câu hỏi này.";
             }
 
-            // Thử gọi API, nếu lỗi thì fallback về defaultAnswer
             fetch("{{ route('chatbot.quick') }}", {
                 method: 'POST',
                 headers: {
@@ -3584,19 +3606,14 @@ document.querySelector(".back-btn").addEventListener("click", () => {
             .then(data => {
                 let answer = data.answer || defaultAnswer;
                 updateMessage(loadingId, answer, 'bot');
+                if (currentMode === "faq") quickQuestions.classList.remove("d-none");
             })
             .catch(() => {
                 updateMessage(loadingId, defaultAnswer, 'bot');
+                if (currentMode === "faq") quickQuestions.classList.remove("d-none");
             });
         }
     });
-
-    function appendMessage(sender, text) {
-    let id = 'msg-' + Date.now();
-    chatMessages.innerHTML += `<div id="${id}" class="message ${sender}">${text}</div>`;
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    return id;
-    }
 
     // ===== Gửi tin nhắn thủ công =====
     document.getElementById('send-btn').addEventListener('click', sendMessage);
