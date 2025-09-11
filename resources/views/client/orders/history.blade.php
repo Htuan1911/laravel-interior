@@ -116,8 +116,9 @@
                                 @default
                                     <span class="text-danger">Không xác định</span>
                             @endswitch
+                    
                         </div>
-
+                       
                         @if ($order->status === 'pending')
                             <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
                                 onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
@@ -134,6 +135,17 @@
                                 <i class="bi bi-cart-plus"></i> Mua lại
                             </a>
                         @endif
+
+                        @if ($order->status === 'shipping')
+                            <form action="{{ route('client.orders.confirm', $order->id) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc chắn đã nhận được hàng và muốn hoàn tất đơn?')">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check-circle-fill"></i> Xác nhận đơn  hàng
+                                </button>
+                            </form>
+                        @endif
+
                     </div>
 
                     <div class="order-body">

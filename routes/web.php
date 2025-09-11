@@ -104,7 +104,6 @@ Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
         Route::get('/{id}/show', [ProductController::class, 'show'])->name('show');
         Route::get('/category/{id}/options', [ProductController::class, 'getAttributeNamesByCategory']);
         Route::get('/product-options/{id}/values', [ProductController::class, 'getOptionValuesByAttribute']);
-
     });
 
 
@@ -268,12 +267,11 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
- });
+    });
 
     Route::prefix('blog')->name('blog.')->group(function () {
         Route::get('/', [PostControllerUser::class, 'index'])->name('index');
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('show');
-
     });
 
     Route::prefix('compare')->name('compare.')->group(function () {
@@ -317,10 +315,12 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
         // Mua lại đơn hàng
         Route::get('/orders/{order}/reorder', [ClientOrderController::class, 'reorder'])->name('orders.reorder');
-
+     
         Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
         Route::get('/check-coupon', [ClientCouponController::class, 'check']);
         Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
+        Route::post('/orders/{order}/confirm', [ClientOrderController::class, 'confirm'])->name('orders.confirm');
+
         // Tài khoản người dùng
         Route::prefix('account')->name('account.')->group(function () {
             Route::get('/info', [AccountController::class, 'info'])->name('info');
@@ -342,9 +342,8 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
         });
 
+        
     });
-
-
 });
 // Chat gửi tin nhắn thường
 Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');

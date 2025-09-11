@@ -495,4 +495,41 @@ class OrderController extends Controller
 
         return view('client.orders.history', compact('orders', 'cart'));
     }
+
+    public function confirm(Order $order)
+    {
+        // 1. Kiểm tra quyền
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Bạn không có quyền xác nhận đơn hàng này.');
+        }
+
+        // 2. Chỉ cho xác nhận khi đơn đang ở trạng thái shipping
+        if ($order->status !== 'shipping') {
+            return back()->with('error', 'Chỉ có thể xác nhận khi đơn hàng đang giao.');
+        }
+
+        $oldStatus = $order->status;
+
+        // 3. Cập nhật đơn hàng thành completed
+        $order->status = 'completed';
+        $order->save();
+
+        // 4. Nếu có payment -> ép thành "paid"
+        if ($order->payment) {
+            $order->payment->status = 'paid';   // hoặc 'success' tùy DB của bạn
+            $order->payment->save();
+        }
+
+        // 5. Ghi log trạng thái (nếu có bảng logs)
+        if (method_exists($order, 'statusLogs')) {
+            $order->statusLogs()->create([
+                'old_status' => $oldStatus,
+                'new_status' => 'completed',
+                'changed_by' => auth()->id(),
+                'changed_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Bạn đã xác nhận hoàn tất đơn hàng. Thanh toán cũng được ghi nhận là đã thanh toán.');
+    }
 }

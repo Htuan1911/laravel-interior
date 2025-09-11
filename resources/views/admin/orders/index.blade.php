@@ -118,12 +118,14 @@
                                                         $paymentMethod !== 'cod'
                                                     )
                                                 );
-                                    $disableDelete = $isLocked ||
-                                                    (
-                                                        $latestStatus === 'cancelled' &&
-                                                        in_array($paymentStatus, ['paid', 'success']) &&
-                                                        $paymentMethod !== 'cod'
-                                                    );
+                                    $disableDelete = $isLocked
+                                                    || (
+                                                        $latestStatus === 'cancelled'
+                                                        && in_array($paymentStatus, ['paid', 'success'])
+                                                        && $paymentMethod !== 'cod'
+                                                    )
+                                                    || in_array($paymentStatus, ['failed', 'unpaid']);
+
                                 @endphp
 
                                 <tr>
@@ -157,11 +159,17 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
 
-                                                @unless($isLocked)
+                                               {{-- Chỉ hiện nút sửa khi đơn chưa bị khóa + đã thanh toán --}}
+                                               @if (
+                                                    !$isLocked &&
+                                                    (
+                                                        ($paymentMethod === 'cod') || in_array($paymentStatus, ['paid', 'success'])
+                                                    )
+                                                )
                                                     <a href="{{ route('admin.orders.editStatus', $order->id) }}" class="btn btn-sm btn-warning" title="Cập nhật trạng thái">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </a>
-                                                @endunless
+                                                @endif
 
                                                 {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Xóa đơn hàng này?')" class="d-inline-block">
                                                     @csrf

@@ -110,28 +110,35 @@ class OrderController extends Controller
     {
         $order->load('payment');
 
-        $finalStatuses = ['completed'];
-        $paymentStatuses = ['unpaid', 'paid']; // hoặc lấy từ config
-
-        // Nếu đơn hàng đã hoàn tất & thanh toán xong thì chặn
-        if (in_array($order->status, $finalStatuses) && optional($order->payment)->status === 'đã thanh toán') {
-            return redirect()->route('admin.orders.index')
-                ->with('error', 'Đơn hàng đã được thanh toán và đang ở trạng thái cuối, không thể chỉnh sửa.');
-        }
-
-        // Xác định trạng thái khóa sửa thanh toán (dùng logic giống bên payments.edit)
         $latestStatus   = strtolower($order->status ?? 'pending');
         $paymentStatus  = strtolower(optional($order->payment)->status ?? 'unpaid');
+
+        // Nếu đơn hàng đã hoàn tất hoặc hủy → chặn
+        if (in_array($latestStatus, ['completed', 'cancelled'])) {
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'Đơn hàng đã kết thúc (hoàn tất hoặc hủy), không thể chỉnh sửa.');
+        }
+
+        // Nếu thanh toán thất bại hoặc chưa thanh toán → chặn
+        if (in_array($paymentStatus, ['failed', 'unpaid'])) {
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'Chỉ có thể cập nhật trạng thái khi đơn hàng đã được thanh toán thành công.');
+        }
+
+        // Các trạng thái thanh toán được phép (hiện tại chỉ cho sửa khi đã thanh toán)
+        $paymentStatuses = ['paid', 'success'];
+
+        // Xác định có khóa sửa thanh toán không (bổ sung cho view nếu cần)
         $isPaymentLocked = (
             (
-                in_array($latestStatus, ['paid', 'shipped', 'completed']) &&
+                in_array($latestStatus, ['shipping', 'completed']) &&
                 in_array($paymentStatus, ['paid', 'success'])
             )
-            || $latestStatus === 'cancelled'
         );
 
         return view('admin.orders.edit_status', compact('order', 'paymentStatuses', 'isPaymentLocked'));
     }
+
 
     public function updateStatus(Request $request, Order $order)
     {
@@ -142,6 +149,12 @@ class OrderController extends Controller
         $paymentStatus  = strtolower(optional($order->payment)->status ?? 'unpaid');
         $paymentMethod  = strtolower(optional($order->payment)->method ?? '');
 
+        // 🚫 Chặn luôn nếu thanh toán chưa thành công (failed hoặc unpaid)
+        if (in_array($paymentStatus, ['failed', 'unpaid'])) {
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'Không thể cập nhật vì đơn hàng chưa được thanh toán thành công.');
+        }
+
         // 1. Chặn update nếu đơn ở trạng thái cuối & đã thanh toán
         if (in_array($latestStatus, $finalStatuses) && in_array($paymentStatus, ['paid', 'success'])) {
             return redirect()->route('admin.orders.index')
@@ -150,11 +163,17 @@ class OrderController extends Controller
 
         // 2. Validate dữ liệu gửi lên
         $request->validate([
-            'status'         => 'required|in:pending,confirmed,shipping,completed,cancelled',
+            'status'         => 'required|in:pending,confirmed,shipping,cancelled',
             'payment_status' => 'nullable|in:unpaid,paid'
         ]);
 
         $newStatus = $request->status;
+
+        // 🚫 2.1. Chặn TH Admin chọn "cancelled" và đồng thời "payment_status = paid"
+        if ($newStatus === 'cancelled' && $request->payment_status === 'paid') {
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'Không thể vừa hủy đơn vừa để trạng thái thanh toán là Đã thanh toán.');
+        }
 
         // 3. Không thay đổi nếu status và payment_status đều không đổi
         if ($latestStatus === $newStatus && !$request->filled('payment_status')) {
@@ -166,7 +185,6 @@ class OrderController extends Controller
             'pending'   => 1,
             'confirmed' => 2,
             'shipping'  => 3,
-            'completed' => 4,
             'cancelled' => 99
         ];
         if (
@@ -188,10 +206,10 @@ class OrderController extends Controller
                 ->with('error', 'Bạn phải chuyển trạng thái lần lượt, không được bỏ qua bước.');
         }
 
-        // 6. Ép completed phải có thanh toán thành công
-        if ($newStatus === 'completed' && !in_array($paymentStatus, ['paid', 'success'])) {
+        // 6. Chặn Admin set trực tiếp completed
+        if ($newStatus === 'completed') {
             return redirect()->route('admin.orders.index')
-                ->with('error', 'Không thể hoàn tất đơn hàng khi chưa thanh toán.');
+                ->with('error', 'Hoàn tất đơn hàng chỉ có thể do khách hàng xác nhận khi đang giao.');
         }
 
         // 7. Xử lý hủy đơn
@@ -229,11 +247,6 @@ class OrderController extends Controller
             // Map từ form -> DB
             $order->payment->status = $requested === 'paid' ? 'success' : 'pending';
             $order->payment->save();
-
-            // Nếu COD vừa thanh toán xong & đơn đang giao → completed
-            if (in_array($order->payment->status, ['success', 'paid']) && $latestStatus === 'shipping') {
-                $newStatus = 'completed';
-            }
         }
 
         // 9. Ghi log trạng thái
@@ -252,9 +265,6 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
     }
-
-
-
 
 
     public function destroy(Order $order)
