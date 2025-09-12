@@ -39,11 +39,11 @@
         </div>
     </form>
 
-    @if (session('success'))
+    {{-- @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @elseif (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
+    @endif --}}
 
     <div class="card shadow-sm">
         <div class="card-body">

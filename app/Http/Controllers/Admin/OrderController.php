@@ -266,7 +266,6 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Cập nhật trạng thái thành công.');
     }
 
-
     public function destroy(Order $order)
     {
         $order->load('payment');
