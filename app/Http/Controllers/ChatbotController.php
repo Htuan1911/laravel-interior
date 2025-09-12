@@ -22,6 +22,7 @@ class ChatbotController extends Controller
         'shop', 'cửa hàng', 'bên', 'ở', 'nơi', 'này', 'đó', 'kia', 'đâu', 'vậy', 'ạ', 'nhé', 'nhỉ', 'ha', 'hả'
     ];
 
+
     // Hàm lọc từ khóa
     private function extractKeyword($message)
     {
@@ -37,6 +38,40 @@ class ChatbotController extends Controller
         return trim(implode(' ', $keywords));
     }
 
+    public function chatOpenAI(Request $request)
+    {
+        $message = $request->input('message');
+
+        try {
+            $client = new Client();
+
+            $response = $client->post('https://api.openai.com/v1/chat/completions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-4o-mini', // bạn có thể đổi sang 'gpt-4o' nếu muốn
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Bạn là trợ lý bán hàng của website Nội Thất Style House.'],
+                        ['role' => 'user', 'content' => $message],
+                    ],
+                ],
+                'timeout' => 20, // tránh treo request
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+
+            return response()->json([
+                'reply' => $data['choices'][0]['message']['content'] ?? 'Xin lỗi, hiện tại tôi chưa thể trả lời.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Lỗi khi gọi OpenAI API: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function sendMessage(Request $request)
     {
         $languageCode = 'vi';
@@ -188,5 +223,8 @@ if (empty($reply)) {
 
     return response()->json(['reply' => $fallbackReply], 200);
 }
+
+
+
 
 }}

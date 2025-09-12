@@ -53,12 +53,12 @@ class ProductOptionController extends Controller
             // Tạo chuỗi hiển thị
             $displayArr = [];
            foreach ($values as $val) {
-    if (!empty($val->color_code)) {
-        $displayArr[] = "<span class='color-circle' style='background: {$val->color_code}'></span> " . e($val->value);
-    } else {
-        $displayArr[] = e($val->value);
-    }
-}
+                if (!empty($val->color_code)) {
+                    $displayArr[] = "<span class='color-circle' style='background: {$val->color_code}'></span> " . e($val->value);
+                } else {
+                    $displayArr[] = e($val->value);
+                }
+            }
             $option->values_display = implode(', ', $displayArr);
         }
 
@@ -120,7 +120,6 @@ class ProductOptionController extends Controller
         $attributes = $request->input('attributes', []);
         $hasAnyAttribute = false;
         $errors = [];
-
          // BẮT BUỘC CẢ 3 PHẢI CÓ ÍT NHẤT 1 GIÁ TRỊ
     $missingTypes = [];
     foreach (['color', 'size', 'material'] as $type) {
@@ -138,7 +137,6 @@ class ProductOptionController extends Controller
         return back()->withErrors($errors)->withInput();
     }
 
-
         DB::beginTransaction();
         try {
             // Bước 1: Tạo hoặc lấy product_option duy nhất theo name + category_id
@@ -150,8 +148,6 @@ class ProductOptionController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            
-
             // Bước 2: Xử lý từng loại thuộc tính color, size, material
             foreach (['color', 'size', 'material'] as $type) {
                 $values = $attributes[$type]['values'] ?? null;
@@ -307,7 +303,6 @@ class ProductOptionController extends Controller
         $attributes = $request->input('attributes', []);
         $hasAnyAttribute = false;
         $errors = [];
-
          // BẮT BUỘC CẢ 3 PHẢI CÓ ÍT NHẤT 1 GIÁ TRỊ
     $missingTypes = [];
     foreach (['color', 'size', 'material'] as $type) {
@@ -324,7 +319,6 @@ class ProductOptionController extends Controller
         }
         return back()->withErrors($errors)->withInput();
     }
-
 
         DB::beginTransaction();
         try {

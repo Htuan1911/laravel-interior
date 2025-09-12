@@ -6,7 +6,13 @@
     <div class="card">
         <div class="card-body">
             <p><strong>Người dùng:</strong> {{ $reviews->user->name }}</p>
-            <p><strong>Sản phẩm:</strong> {{ $reviews->orderItem->variant_name ?? 'N/A' }}</p>
+            <p><strong>Tên sản phẩm:</strong>
+    {{ optional($reviews->orderItem->variant->product->translations
+        ->where('language_code', app()->getLocale())
+        ->first())->name ?? 'Không rõ' }}
+</p>
+
+            <p><strong> biến thể :</strong> {{ $reviews->orderItem->variant_name ?? 'N/A' }}</p>
             <p><strong>Đánh giá:</strong> {{ $reviews->rating }}/5</p>
             <p><strong>Bình luận:</strong></p>
             <p>{{ $reviews->comment }}</p>

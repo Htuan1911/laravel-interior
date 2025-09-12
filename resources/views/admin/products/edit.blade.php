@@ -14,7 +14,6 @@
     </div>
     @endif
     <div id="variant-error" class="alert alert-danger d-none"></div>
-
     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data"
         id="product-form">
         @csrf

@@ -13,7 +13,6 @@
             {{ session('error') }}
         </div>
     @endif
-
     {{-- Thêm Bootstrap Icons nếu chưa có --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -119,6 +118,7 @@
                                 @default
                                     <span class="text-danger">Không xác định</span>
                             @endswitch
+                    
                         </div>
 
                         @if (in_array(optional($order->payment)->method, ['momo', 'vnpay']) &&
@@ -145,6 +145,17 @@
                                 <i class="bi bi-cart-plus"></i> Mua lại
                             </a>
                         @endif
+
+                        @if ($order->status === 'shipping')
+                            <form action="{{ route('client.orders.confirm', $order->id) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc chắn đã nhận được hàng và muốn hoàn tất đơn?')">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check-circle-fill"></i> Xác nhận đơn  hàng
+                                </button>
+                            </form>
+                        @endif
+
                     </div>
 
                     <div class="order-body">

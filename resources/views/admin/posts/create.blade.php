@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     <h2>Thêm bài viết mới</h2>
+
     @if ($errors->any())
   <div class="alert alert-danger">
     <ul>

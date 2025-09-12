@@ -104,7 +104,6 @@ Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
         Route::get('/{id}/show', [ProductController::class, 'show'])->name('show');
         Route::get('/category/{id}/options', [ProductController::class, 'getAttributeNamesByCategory']);
         Route::get('/product-options/{id}/values', [ProductController::class, 'getOptionValuesByAttribute']);
-
     });
 
 
@@ -209,7 +208,7 @@ Route::middleware(['auth'])->prefix('auth')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminCartController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [AdminCartController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AdminCartController::class, 'forceDelete'])->name('forceDelete');
-    });
+            });
 });
 
 
@@ -268,12 +267,11 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/wishlist', [AccountController::class, 'wishlist'])->name('wishlist');
         Route::post('/wishlist', [AccountController::class, 'addToWishlist'])->name('wishlist.add');
         Route::delete('/wishlist/{id}', [AccountController::class, 'removeFromWishlist'])->name('wishlist.delete');
- });
+    });
 
     Route::prefix('blog')->name('blog.')->group(function () {
         Route::get('/', [PostControllerUser::class, 'index'])->name('index');
         Route::get('/{slug}', [PostControllerUser::class, 'show'])->name('show');
-
     });
 
     Route::prefix('compare')->name('compare.')->group(function () {
@@ -323,6 +321,8 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
         Route::get('/check-coupon', [ClientCouponController::class, 'check']);
         Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
+        Route::post('/orders/{order}/confirm', [ClientOrderController::class, 'confirm'])->name('orders.confirm');
+
         // Tài khoản người dùng
         Route::prefix('account')->name('account.')->group(function () {
             Route::get('/info', [AccountController::class, 'info'])->name('info');
@@ -344,9 +344,22 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/wishlist/toggle/{product}', [WishlistControllers::class, 'toggle'])->name('wishlist.toggle');
         });
 
+        
     });
-
-
 });
+// Chat gửi tin nhắn thường
 Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
+
+// Chat AI (OpenAI)
+Route::post('/chatbot/openai', [ChatbotController::class, 'chatOpenAI'])->name('chatbot.ai');
+// Chat hỏi nhanh (FAQ)
+Route::get('/chatbot/predefined', [ChatbotController::class, 'predefined'])->name('chatbot.predefined');
+Route::post('/chatbot/quick', [ChatbotController::class, 'quick'])->name('chatbot.quick');
+
 require __DIR__ . '/auth.php';
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+

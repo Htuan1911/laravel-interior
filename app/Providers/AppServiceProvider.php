@@ -6,6 +6,7 @@ use App\Models\Cart;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,9 +24,9 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $cart = null;
 
-            if (auth()->check()) {
+            if (Auth::check()) {
                 $cart = Cart::with('items.variant.product')
-                    ->where('user_id', auth()->id())
+                    ->where('user_id', Auth::id())
                     ->first() ?? (object)['items' => collect()];
             } else {
                 $cart = (object)['items' => collect()];
@@ -33,5 +34,6 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('cart', $cart);
         });
+
     }
 }

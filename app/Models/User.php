@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     use HasFactory, SoftDeletes;
-
     protected $fillable = [
         'name',
         'email',
@@ -24,12 +23,10 @@ class User extends Authenticatable
         'district',      // Quận/Huyện
         'avatar',        // Ảnh đại diện
     ];
-
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
     protected $casts = [
         'email_verified_at' => 'datetime',
         'otp_expires_at' => 'datetime',
