@@ -557,6 +557,6 @@ class OrderController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Bạn đã xác nhận hoàn tất đơn hàng. Thanh toán cũng được ghi nhận là đã thanh toán.');
+        return back()->with('success','Cảm ơn bạn đã nhận hàng!');
     }
 }

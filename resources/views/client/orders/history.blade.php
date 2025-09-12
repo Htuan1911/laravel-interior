@@ -148,10 +148,10 @@
 
                         @if ($order->status === 'shipping')
                             <form action="{{ route('client.orders.confirm', $order->id) }}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc chắn đã nhận được hàng và muốn hoàn tất đơn?')">
+                                onsubmit="return confirm('Bạn đã nhận được hàng ?  ')">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-success">
-                                    <i class="bi bi-check-circle-fill"></i> Xác nhận đơn  hàng
+                                    <i class="bi bi-check-circle-fill"></i> Đã nhận được hàng
                                 </button>
                             </form>
                         @endif
@@ -292,4 +292,7 @@
             @endforeach
         @endif
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 @endsection

@@ -50,7 +50,7 @@
             </div>
 
             {{-- Trạng thái thanh toán --}}
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <label class="form-label">Trạng thái thanh toán</label>
 
                 @if ($isLockedPayment)
@@ -76,7 +76,7 @@
                         </div>
                     @endif
                 @endif
-            </div>
+            </div> --}}
 
             {{-- Lý do huỷ --}}
             <div class="mb-3" id="cancelReasonWrapper" 
