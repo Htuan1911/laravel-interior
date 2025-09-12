@@ -43,11 +43,11 @@
                             <button class="btn btn-sm btn-info" onclick="return confirm('Khôi phục sản phẩm này?')">Khôi phục</button>
                         </form>
 
-                        <form action="{{ route('admin.products.force-delete', $product->id) }}" method="POST" style="display:inline-block;">
+                        {{-- <form action="{{ route('admin.products.force-delete', $product->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Xoá vĩnh viễn sản phẩm này?')">Xoá cứng</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @endforeach

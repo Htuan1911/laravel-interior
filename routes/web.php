@@ -315,7 +315,9 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/orders/history', [ClientOrderController::class, 'history'])->name('orders.history');
         // Mua lại đơn hàng
         Route::get('/orders/{order}/reorder', [ClientOrderController::class, 'reorder'])->name('orders.reorder');
-     
+        Route::get('/orders/{order}/retry-payment', [ClientOrderController::class, 'retryPayment'])->name('orders.retryPayment');
+
+
         Route::post('/checkout/shipping', [OrderController::class, 'shippingForm'])->name('client.orders.shipping_form');
         Route::get('/check-coupon', [ClientCouponController::class, 'check']);
         Route::put('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('orders.cancel');
