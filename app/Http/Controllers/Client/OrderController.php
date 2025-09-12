@@ -483,6 +483,33 @@ class OrderController extends Controller
     }
 
 
+    public function retryPayment(Order $order)
+    {
+        // ✅ Kiểm tra quyền của user
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Bạn không có quyền thực hiện hành động này.');
+        }
+
+        // ✅ Chỉ cho phép retry khi đơn chưa thanh toán thành công
+        if (!in_array(optional($order->payment)->status, ['pending', 'failed'])) {
+            return redirect()->route('client.orders.history')
+                ->with('error', 'Đơn hàng này không thể thanh toán lại.');
+        }
+
+        // ✅ Kiểm tra phương thức thanh toán và gọi lại hàm tương ứng
+        switch ($order->payment->method) {
+            case 'momo':
+                return $this->momo_payment(request(), $order);
+
+            case 'vnpay':
+                return $this->vnpay_payment(request(), $order);
+
+            default:
+                return redirect()->route('client.orders.history')
+                    ->with('error', 'Phương thức thanh toán không hợp lệ.');
+        }
+    }
+
 
     public function history()
     {

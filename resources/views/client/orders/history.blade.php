@@ -96,6 +96,8 @@
                                 <span class="text-danger">Chưa thanh toán</span>
                             @elseif(optional($order->payment)->status === 'failed')
                                 <span class="text-danger">Thanh toán thất bại</span>
+                            @elseif(optional($order->payment)->status === 'success')
+                                <span class="text-success">Đã thanh toán</span>
                             @else
                                 <span class="text-muted">Không xác định</span>
                             @endif
@@ -118,6 +120,14 @@
                                     <span class="text-danger">Không xác định</span>
                             @endswitch
                         </div>
+
+                        @if (in_array(optional($order->payment)->method, ['momo', 'vnpay']) &&
+                                in_array(optional($order->payment)->status, ['failed', 'pending']))
+                            <a href="{{ route('client.orders.retryPayment', $order->id) }}" class="btn btn-sm btn-success">
+                                <i class="bi bi-arrow-repeat"></i> Tiếp tục thanh toán
+                            </a>
+                        @endif
+
 
                         @if ($order->status === 'pending')
                             <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
