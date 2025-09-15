@@ -1,10 +1,16 @@
 @extends('layouts.cart')
 
 @section('cart-content')
+
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
         </div>
     @endif
     {{-- Thêm Bootstrap Icons nếu chưa có --}}
@@ -33,6 +39,11 @@
             padding: 10px 15px;
             border-bottom: 1px solid #ddd;
         }
+
+        .order-header .btn {
+            margin-left: 6px;
+        }
+
 
         .order-body {
             padding: 15px;
@@ -81,9 +92,9 @@
                         <div>
                             <strong>Mã đơn:</strong> {{ $order->id }} |
                             <strong>Tổng:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} đ |
-                            <strong>Trạng thái đơn hàng:</strong> {{ $order->status_label }} |
-                            <strong>Trạng thái thanh toán:</strong>
-                            @if (optional($order->payment)->status === 'paid')
+                            <strong>Đơn hàng:</strong> {{ $order->status_label }} |
+                            <strong>Thanh toán:</strong>
+                            @if (optional($order->payment)->status === 'paid' || optional($order->payment)->status === 'success')
                                 <span class="text-success">Đã thanh toán</span>
                             @elseif(optional($order->payment)->status === 'pending')
                                 <span class="text-danger">Chưa thanh toán</span>
@@ -112,23 +123,45 @@
                             @endswitch
                         </div>
 
-                        @if ($order->status === 'pending')
-                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-x-circle-fill"></i> Hủy đơn
-                                </button>
-                            </form>
-                        @endif
+                        {{-- Các nút hành động --}}
+                        <div class="d-flex justify-content-end gap-2">
+                            @if (in_array(optional($order->payment)->method, ['momo', 'vnpay']) &&
+                                    in_array(optional($order->payment)->status, ['failed', 'pending']))
+                                <a href="{{ route('client.orders.retryPayment', $order->id) }}"
+                                    class="btn btn-sm btn-success">
+                                    <i class="bi bi-arrow-repeat"></i> Tiếp tục thanh toán
+                                </a>
+                            @endif
 
-                        @if (in_array($order->status, ['completed', 'cancelled']))
-                            <a href="{{ route('client.orders.reorder', $order->id) }}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-cart-plus"></i> Mua lại
-                            </a>
-                        @endif
+                            @if ($order->status === 'pending')
+                                <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-x-circle-fill"></i> Hủy đơn
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if (in_array($order->status, ['completed', 'cancelled']))
+                                <a href="{{ route('client.orders.reorder', $order->id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-cart-plus"></i> Mua lại
+                                </a>
+                            @endif
+
+                            @if ($order->status === 'shipping')
+                                <form action="{{ route('client.orders.confirm', $order->id) }}" method="POST"
+                                    onsubmit="return confirm('Bạn đã nhận được hàng ?  ')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle-fill"></i> Đã nhận được hàng
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
+
 
                     <div class="order-body">
                         <p><strong>Người nhận:</strong> {{ $order->shipping_name }} - {{ $order->shipping_phone }}</p>
@@ -258,12 +291,13 @@
                                     </div>
                                 </li>
                             @endforeach
-
-
                         </ul>
                     </div>
                 </div>
             @endforeach
         @endif
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 @endsection
