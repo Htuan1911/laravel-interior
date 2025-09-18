@@ -101,6 +101,8 @@
         <button type="button" class="btn btn-primary w-100" onclick="addManualVariant()">Tạo biến thể</button>
       </div>
     </div>
+    <!-- Thêm thông tin chi tiết trước khi tạo biến thể -->
+
 
     <!-- Tự động -->
     <div class="mb-3">
@@ -121,7 +123,7 @@
 <script>
   let variantCount = 0;
 let currentValues = { color: [], size: [], material: [] };
-let generatedCombinations = new Set(); // ✅ Lưu các tổ hợp đã tạo
+let generatedCombinations = new Set();
 
 const categorySel = document.getElementById('category-select');
 const attrSel = document.getElementById('attribute-name-select');
@@ -130,12 +132,19 @@ const sizeSel = document.getElementById('size');
 const materialSel = document.getElementById('material');
 const genBtn = document.getElementById('generate-variants-btn');
 
+document.getElementById('product-form').addEventListener('submit', function () {
+  document.querySelectorAll('input[name^="variants"][name$="[price]"]').forEach(input => {
+    // Bỏ dấu chấm để server nhận số nguyên
+    input.value = input.value.replace(/\./g, '');
+  });
+  });
+
 // 1. Khi chọn DANH MỤC → load TÊN thuộc tính
 categorySel.addEventListener('change', () => {
   const catId = categorySel.value;
   genBtn.disabled = true;
   attrSel.innerHTML = '<option value="">-- Chọn tên thuộc tính --</option>';
-  generatedCombinations.clear(); // ✅ reset
+  generatedCombinations.clear();
   variantCount = 0;
   document.getElementById('variants-container').innerHTML = '';
 
@@ -158,30 +167,25 @@ attrSel.addEventListener('change', () => {
   sizeSel.innerHTML = '<option value="">-- Kích thước --</option>';
   materialSel.innerHTML = '<option value="">-- Chất liệu --</option>';
   currentValues = { color: [], size: [], material: [] };
-  generatedCombinations.clear(); // ✅ reset
+  generatedCombinations.clear();
   variantCount = 0;
   document.getElementById('variants-container').innerHTML = '';
-
-  const optText = attrSel.options[attrSel.selectedIndex].text.toLowerCase();
 
   fetch(`/auth/products/product-options/${optId}/values`)
     .then(res => res.json())
     .then(data => {
-      // Thêm giá trị màu sắc
       if (data.color) {
         data.color.forEach(v => {
           colorSel.innerHTML += `<option value="${v}">${v}</option>`;
           currentValues.color.push(v);
         });
       }
-      // Thêm giá trị kích thước
       if (data.size) {
         data.size.forEach(v => {
           sizeSel.innerHTML += `<option value="${v}">${v}</option>`;
           currentValues.size.push(v);
         });
       }
-      // Thêm giá trị chất liệu
       if (data.material) {
         data.material.forEach(v => {
           materialSel.innerHTML += `<option value="${v}">${v}</option>`;
@@ -199,38 +203,109 @@ genBtn.addEventListener('click', () => {
   const mats = currentValues.material.length ? currentValues.material : [''];
   const sizes = currentValues.size.length ? currentValues.size : [''];
 
-  cols.forEach(c => mats.forEach(m => sizes.forEach(s => addVariant(c, m, s))));
+let price = null;
+
+while (true) {
+  price = prompt("Nhập giá bán cho biến thể:");
+
+  if (price === null) return; // User bấm "Hủy"
+  if (price.trim() === '' || isNaN(price)) {
+    alert("Giá bán không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break; // Hợp lệ → thoát khỏi vòng lặp
+  }
+}
+  let stock = null;
+while (true) {
+  stock = prompt("Nhập tồn kho:");
+  if (stock === null) return;
+  if (stock.trim() === '' || isNaN(stock)) {
+    alert("Tồn kho không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break;
+  }
+}
+
+let weight = null;
+while (true) {
+  weight = prompt("Nhập khối lượng (kg):");
+  if (weight === null) return;
+  if (weight.trim() === '' || isNaN(weight)) {
+    alert("Khối lượng không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break;
+  }
+}
+
+  cols.forEach(c =>
+    mats.forEach(m =>
+      sizes.forEach(s => addVariant(c, m, s, price || '', stock || 0, weight || 0))
+    )
+  );
 });
 
 function showError(msg) {
   const el = document.getElementById('variant-error');
   el.textContent = msg;
   el.classList.remove('d-none');
-  setTimeout(() => el.classList.add('d-none'), 3000); // 3s tự ẩn
+  setTimeout(() => el.classList.add('d-none'), 3000);
 }
 
 // 4. Tạo BIẾN THỂ thủ công
 function addManualVariant() {
   const c = colorSel.value, m = materialSel.value, s = sizeSel.value;
+
+let price = null;
+
+while (true) {
+  price = prompt("Nhập giá bán cho biến thể:");
+
+  if (price === null) return; // User bấm "Hủy"
+  if (price.trim() === '' || isNaN(price)) {
+    alert("Giá bán không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break; // Hợp lệ → thoát khỏi vòng lặp
+  }
+}
+  let stock = null;
+while (true) {
+  stock = prompt("Nhập tồn kho:");
+  if (stock === null) return;
+  if (stock.trim() === '' || isNaN(stock)) {
+    alert("Tồn kho không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break;
+  }
+}
+
+let weight = null;
+while (true) {
+  weight = prompt("Nhập khối lượng (kg):");
+  if (weight === null) return;
+  if (weight.trim() === '' || isNaN(weight)) {
+    alert("Khối lượng không hợp lệ. Vui lòng nhập một số!");
+  } else {
+    break;
+  }
+}
+
   if (!c && !m && !s) return alert("Phải chọn ít nhất một thuộc tính!");
-  addVariant(c, m, s);
+
+  addVariant(c, m, s, price || '', stock || 0, weight || 0);
 }
 
 // 5. Hiển thị BIẾN THỂ
-function addVariant(c, m, s) {
+function addVariant(c, m, s, price = '', stock = 0, weight = 0) {
   const key = [c, m, s].map(x => x.toLowerCase().trim()).join('|');
-  // ✅ Không thêm nếu tổ hợp đã tồn tại
   if (generatedCombinations.has(key)) {
     showError('Biến thể này đã tồn tại, vui lòng chọn biến thể khác!');
     return;
   }
   generatedCombinations.add(key);
 
-  
-  
-
   const name = [c, m, s].filter(x => x).join(' - ') || `Variant ${variantCount + 1}`;
   const idx = variantCount++;
+  const sku = `SKU-${Date.now()}-${idx}`;
 
   const html = `
     <div class="card p-3 mb-3 variant-card" data-combo="${key}">
@@ -240,26 +315,62 @@ function addVariant(c, m, s) {
       <input type="hidden" name="variants[${idx}][material]" value="${m}">
       <input type="hidden" name="variants[${idx}][size]" value="${s}">
       <div class="row">
-        <div class="col-md-3"><input name="variants[${idx}][sku]" class="form-control" placeholder="SKU"></div>
-        <div class="col-md-3"><input name="variants[${idx}][price]" class="form-control" placeholder="Giá bán" type="number"></div>
-        <div class="col-md-3"><input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number"></div>
-        <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
+        <div class="col-md-3">
+          <input name="variants[${idx}][sku]" class="form-control" placeholder="SKU" value="${sku}">
+        </div>
+        <div class="col-md-3">
+            <input name="variants[${idx}][price]" 
+         class="form-control text-end" 
+         placeholder="Giá bán" 
+         type="text" 
+         oninput="formatCurrency(this)" 
+         value="${formatNumber(price)}">
+        </div>
+        <div class="col-md-3">
+       <input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number" min="0" step="1" value="${stock}">
+        </div>
+        <div class="col-md-3">
+          <input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number" min="0" step="0.01" value="${weight}">
+        </div>
       </div>
       <label class="mt-2">Ảnh biến thể:</label>
-      <input type="file" name="variants[${idx}][image]" class="form-control mb-2" required> >
+      <input type="file" name="variants[${idx}][image]" class="form-control mb-2">
       <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this, '${key}')">Xóa</button>
-    </div>`;
+    </div>
+  `;
   document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
 }
 
 // 6. Xóa biến thể
 function removeVariant(btn, key) {
   if (confirm("Bạn có chắc muốn xóa biến thể này?")) {
-    generatedCombinations.delete(key); // ✅ Xóa khỏi danh sách tổ hợp đã tạo
+    generatedCombinations.delete(key);
     btn.closest('.variant-card').remove();
   }
 }
+
+// 7. Format tiền tệ khi nhập
+// Hàm format giá khi người dùng nhập
+function formatCurrency(el) {
+  // Bỏ hết ký tự không phải số
+  let val = el.value.replace(/[^\d]/g, '');
+
+  if (val === '') {
+    el.value = '';
+    return;
+  }
+
+  // Chuyển thành dạng có dấu chấm phân cách
+  el.value = parseInt(val, 10).toLocaleString('vi-VN');
+}
+
+// 8. Hàm format số từ server/mặc định
+function formatNumber(num) {
+  if (!num) return '';
+  return parseInt(num, 10).toLocaleString('vi-VN');
+}
 </script>
+
 
 
 

@@ -133,13 +133,13 @@ class ProductController extends Controller
             'variants' => 'required|array|min:1',
             'variants.*.name' => 'required|string',
             'variants.*.sku' => 'required|string',  // Bắt buộc nhập
-            'variants.*.price' => 'required|numeric',  // Bắt buộc nhập
+            'variants.*.price' => 'required|numeric|max:2000000000',  // Bắt buộc nhập
             'variants.*.stock_quantity' => 'required|integer',  // Bắt buộc nhập
             'variants.*.weight' => 'nullable|numeric',
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
-            'variants.*.image' => 'required|image|max:2048',
+            'variants.*.image' => 'nullable|image|max:2048',
         ]);
 
 
@@ -408,17 +408,17 @@ class ProductController extends Controller
             'material' => 'required|string',
             'dimensions' => 'required|string',
             'style' => 'required|string',
-            'image' => 'required|image|max:2048',
+            'image' => 'nullable|image|max:2048',
             'variants' => 'required|array|min:1',
             'variants.*.name' => 'required|string',
             'variants.*.sku' => 'required|string',  // Bắt buộc nhập
-            'variants.*.price' => 'required|numeric',  // Bắt buộc nhập
+            'variants.*.price' => 'required|numeric|max:2000000000',  // Bắt buộc nhập
             'variants.*.stock_quantity' => 'required|integer',  // Bắt buộc nhập
             'variants.*.weight' => 'required|numeric',
             'variants.*.color' => 'nullable|string',
             'variants.*.material' => 'nullable|string',
             'variants.*.size' => 'nullable|string',
-           'variants.*.image' => 'required|image|max:2048',
+           'variants.*.image' => 'nullable|image|max:2048',
         ]);
 
         // Cập nhật ảnh sản phẩm
