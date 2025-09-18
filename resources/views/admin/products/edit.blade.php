@@ -143,8 +143,9 @@
                 <div class="row">
                     <div class="col-md-3"><input name="variants[{{ $index }}][sku]" value="{{ $variant->sku }}"
                             class="form-control" placeholder="SKU"></div>
-                    <div class="col-md-3"><input name="variants[{{ $index }}][price]" value="{{ $variant->price }}"
-                            class="form-control" placeholder="Giá bán" type="number"></div>
+                    <div class="col-md-3"><input name="variants[{{ $index }}][price]"
+                            value="{{ number_format($variant->price, 0, ',', '.') }}"
+                            class="form-control price-input text-end" placeholder="Giá bán" type="text"></div>
                     <div class="col-md-3"><input name="variants[{{ $index }}][stock_quantity]"
                             value="{{ $variant->stock_quantity }}" class="form-control" placeholder="Tồn kho"
                             type="number"></div>
@@ -178,11 +179,26 @@
     let variantCount = {{ count($variants) }};
     let currentValues = { color: [], material: [], size: [] };
     let generatedCombinations = new Set();
-    let existingVariants = new Set(); // Lưu biến thể có sẵn (biến thể gốc)
+    let existingVariants = new Set(); // Biến thể có sẵn (biến thể gốc)
+    
+    // Format giá nhập vào (tự động thêm dấu chấm)
+document.querySelectorAll('.price-input').forEach(input => {
+    input.addEventListener('input', function () {
+        let value = this.value.replace(/\D/g, ""); // bỏ ký tự không phải số
+        if (value) {
+            this.value = new Intl.NumberFormat('vi-VN').format(value);
+        }
+    });
+});
 
-    // Hàm tạo option cho select
+// Trước khi submit form: bỏ dấu chấm để server nhận đúng số
+document.getElementById('product-form').addEventListener('submit', function () {
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.value = input.value.replace(/\./g, ""); 
+    });
+});
     function addOptions(selectElem, values, defaultText) {
-        selectElem.innerHTML = ''; // Xoá hết option cũ
+        selectElem.innerHTML = '';
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = defaultText;
@@ -196,30 +212,21 @@
         });
     }
 
-    // Load tên thuộc tính khi chọn danh mục
     document.getElementById('category-select').addEventListener('change', () => {
         const catId = document.getElementById('category-select').value;
-        console.log('Chọn danh mục:', catId);
         fetch(`/auth/products/category/${catId}/options`)
             .then(res => res.json())
             .then(data => {
-                console.log('Tên thuộc tính nhận được:', data);
                 const attrSelect = document.getElementById('attribute-name-select');
+                attrSelect.innerHTML = '<option value="">-- Chọn tên thuộc tính --</option>';
                 if (Array.isArray(data)) {
-                    addOptions(attrSelect, data.map(opt => ({id: opt.id, name: opt.name})), '-- Chọn tên thuộc tính --');
-                    // Vì data là array object, nên cần xử lý riêng
-                    attrSelect.innerHTML = '<option value="">-- Chọn tên thuộc tính --</option>';
                     data.forEach(opt => {
                         const option = document.createElement('option');
                         option.value = opt.id;
                         option.textContent = opt.name;
                         attrSelect.appendChild(option);
                     });
-                } else {
-                    // Nếu data không đúng định dạng, reset select
-                    attrSelect.innerHTML = '<option value="">-- Chọn tên thuộc tính --</option>';
                 }
-                // Reset biến thể và disable nút tạo biến thể
                 resetVariantSelects();
                 document.getElementById('generate-variants-btn').disabled = true;
             })
@@ -228,10 +235,8 @@
             });
     });
 
-    // Load giá trị thuộc tính khi chọn tên thuộc tính
     document.getElementById('attribute-name-select').addEventListener('change', () => {
         const optId = document.getElementById('attribute-name-select').value;
-        console.log('Chọn tên thuộc tính:', optId);
 
         if (!optId) {
             resetVariantSelects();
@@ -242,36 +247,33 @@
         fetch(`/auth/products/product-options/${optId}/values`)
             .then(res => res.json())
             .then(data => {
-                console.log('Giá trị thuộc tính nhận được:', data);
-
                 const colorSel = document.getElementById('color');
                 const materialSel = document.getElementById('variant_material');
                 const sizeSel = document.getElementById('size');
 
                 currentValues = { color: [], material: [], size: [] };
 
-                if (data.color && Array.isArray(data.color) && data.color.length > 0) {
+                if (data.color?.length) {
                     addOptions(colorSel, data.color, '-- Màu sắc --');
                     currentValues.color = data.color;
                 } else {
                     addOptions(colorSel, [], '-- Màu sắc --');
                 }
 
-                if (data.material && Array.isArray(data.material) && data.material.length > 0) {
+                if (data.material?.length) {
                     addOptions(materialSel, data.material, '-- Chất liệu --');
                     currentValues.material = data.material;
                 } else {
                     addOptions(materialSel, [], '-- Chất liệu --');
                 }
 
-                if (data.size && Array.isArray(data.size) && data.size.length > 0) {
+                if (data.size?.length) {
                     addOptions(sizeSel, data.size, '-- Kích thước --');
                     currentValues.size = data.size;
                 } else {
                     addOptions(sizeSel, [], '-- Kích thước --');
                 }
 
-                // Bật nút tạo biến thể nếu có ít nhất một thuộc tính
                 const hasValues = currentValues.color.length > 0 || currentValues.material.length > 0 || currentValues.size.length > 0;
                 document.getElementById('generate-variants-btn').disabled = !hasValues;
             })
@@ -280,14 +282,45 @@
             });
     });
 
-    // Hàm reset select biến thể
     function resetVariantSelects() {
         addOptions(document.getElementById('color'), [], '-- Màu sắc --');
         addOptions(document.getElementById('variant_material'), [], '-- Chất liệu --');
         addOptions(document.getElementById('size'), [], '-- Kích thước --');
     }
 
-    // Thêm biến thể thủ công
+    // Hàm nhập prompt giá, tồn kho, khối lượng, trả về object hoặc null nếu user cancel
+    function promptVariantInfo() {
+        let price = null;
+        while (true) {
+            price = prompt("Nhập giá bán:");
+            if (price === null) return null;
+            if (price.trim() === '' || isNaN(price)) {
+                alert("Giá bán không hợp lệ. Vui lòng nhập số!");
+            } else break;
+        }
+
+        let stock = null;
+        while (true) {
+            stock = prompt("Nhập tồn kho:");
+            if (stock === null) return null;
+            if (stock.trim() === '' || isNaN(stock)) {
+                alert("Tồn kho không hợp lệ. Vui lòng nhập số!");
+            } else break;
+        }
+
+        let weight = null;
+        while (true) {
+            weight = prompt("Nhập khối lượng (kg):");
+            if (weight === null) return null;
+            if (weight.trim() === '' || isNaN(weight)) {
+                alert("Khối lượng không hợp lệ. Vui lòng nhập số!");
+            } else break;
+        }
+
+        return { price, stock, weight };
+    }
+
+    // Thêm biến thể thủ công có prompt nhập giá, tồn kho, khối lượng
     function addManualVariant() {
         const c = document.getElementById('color').value;
         const m = document.getElementById('variant_material').value;
@@ -298,67 +331,86 @@
             return;
         }
 
-        addVariant(c, m, s);
+        const info = promptVariantInfo();
+        if (info === null) return;
+
+        addVariant(c, m, s, info.price, info.stock, info.weight);
     }
 
-    // Tạo biến thể tự động
+    // Thêm biến thể mới với giá, tồn kho, khối lượng
+    function addVariant(c, m, s, price = '', stock = '', weight = '') {
+    const key = [c, m, s].map(x => x.toLowerCase().trim()).join('|');
+
+    if (existingVariants.has(key) || generatedCombinations.has(key)) {
+        alert("Biến thể này đã tồn tại!");
+        return;
+    }
+
+    generatedCombinations.add(key);
+
+    const name = [c, m, s].filter(x => x).join(' - ') || `Variant ${variantCount + 1}`;
+    const idx = variantCount++;
+    const sku = `SKU-${Date.now()}-${idx}`;  // Tạo SKU tự động
+
+    const html = `
+        <div class="card p-3 mb-3 variant-card" data-key="${key}">
+            <h6>Biến thể ${idx + 1}: ${name}</h6>
+            <input type="hidden" name="variants[${idx}][id]" value="">
+            <input type="hidden" name="variants[${idx}][name]" value="${name}">
+            <input type="hidden" name="variants[${idx}][color]" value="${c}">
+            <input type="hidden" name="variants[${idx}][material]" value="${m}">
+            <input type="hidden" name="variants[${idx}][size]" value="${s}">
+            <div class="row">
+                <div class="col-md-3"><input name="variants[${idx}][sku]" class="form-control" placeholder="SKU" value="${sku}"></div>
+                <div class="col-md-3"> <input name="variants[${idx}][price]"
+         class="form-control price-input text-end"
+         placeholder="Giá bán"
+         type="text"
+         value="${price ? new Intl.NumberFormat('vi-VN').format(price) : ''}"></div>
+                <div class="col-md-3"><input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number" value="${stock}"></div>
+                <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number" value="${weight}"></div>
+            </div>
+            <label class="mt-2">Ảnh biến thể:</label>
+            <input type="file" name="variants[${idx}][image]" class="form-control mb-2 required">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Xóa</button>
+        </div>`;
+    document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
+    bindPriceInputs();
+}
+
+    // Nút generate tự động prompt nhập info từng biến thể
     document.getElementById('generate-variants-btn').addEventListener('click', () => {
         const colors = currentValues.color.length ? currentValues.color : [''];
         const materials = currentValues.material.length ? currentValues.material : [''];
         const sizes = currentValues.size.length ? currentValues.size : [''];
 
-        colors.forEach(c => materials.forEach(m => sizes.forEach(s => addVariant(c, m, s))));
+        // Duyệt từng tổ hợp, prompt nhập info rồi tạo biến thể nếu ko cancel
+        for (const c of colors) {
+            for (const m of materials) {
+                for (const s of sizes) {
+                    const info = promptVariantInfo();
+                    if (info === null) return; // Nếu hủy thì dừng tạo luôn
+                    addVariant(c, m, s, info.price, info.stock, info.weight);
+                }
+            }
+        }
     });
 
-    // Hiển thị biến thể mới
-    function addVariant(c, m, s) {
-        const key = [c, m, s].map(x => x.toLowerCase().trim()).join('|');
-
-        // Kiểm tra nếu đã tồn tại biến thể này rồi (cả biến thể gốc và mới tạo)
-        if (existingVariants.has(key) || generatedCombinations.has(key)) {
-            alert("Biến thể này đã tồn tại!");
-            return;
-        }
-
-        generatedCombinations.add(key);
-
-        const name = [c, m, s].filter(x => x).join(' - ') || `Variant ${variantCount + 1}`;
-        const idx = variantCount++;
-        const html = `
-            <div class="card p-3 mb-3 variant-card" data-key="${key}">
-                <h6>Biến thể ${idx + 1}: ${name}</h6>
-                <input type="hidden" name="variants[${idx}][id]" value="">
-                <input type="hidden" name="variants[${idx}][name]" value="${name}">
-                <input type="hidden" name="variants[${idx}][color]" value="${c}">
-                <input type="hidden" name="variants[${idx}][material]" value="${m}">
-                <input type="hidden" name="variants[${idx}][size]" value="${s}">
-                <div class="row">
-                    <div class="col-md-3"><input name="variants[${idx}][sku]" class="form-control" placeholder="SKU"></div>
-                    <div class="col-md-3"><input name="variants[${idx}][price]" class="form-control" placeholder="Giá bán" type="number"></div>
-                    <div class="col-md-3"><input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number"></div>
-                    <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
-                </div>
-                <label class="mt-2">Ảnh biến thể:</label>
-                <input type="file" name="variants[${idx}][image]" class="form-control mb-2 required">
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Xóa</button>
-            </div>`;
-        document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
-    }
-
-    // Xóa biến thể
+    // Xóa biến thể (cả từ generated và existing)
     function removeVariant(btn) {
-        if (confirm("Bạn có chắc không?")) {
+        if (confirm("Bạn có chắc muốn xóa biến thể này?")) {
             const card = btn.closest('.variant-card');
             const key = card.getAttribute('data-key');
             if (key) {
                 generatedCombinations.delete(key);
+                existingVariants.delete(key);
             }
             card.remove();
         }
     }
 
-    // Khởi tạo generatedCombinations và existingVariants nếu có biến thể cũ khi load trang
     document.addEventListener('DOMContentLoaded', () => {
+        // Thêm các biến thể có sẵn vào existingVariants + generatedCombinations
         const variantCards = document.querySelectorAll('.variant-card');
         variantCards.forEach(card => {
             const key = card.getAttribute('data-key');
@@ -368,42 +420,39 @@
             }
         });
 
+        // Load giá trị thuộc tính khi đã chọn sẵn lúc load trang (nếu có)
         const selectedAttrId = document.getElementById('attribute-name-select').value;
         if (selectedAttrId) {
-            // Giả lập gọi sự kiện change để load giá trị thuộc tính
             fetch(`/auth/products/product-options/${selectedAttrId}/values`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Giá trị thuộc tính nhận được lúc load trang:', data);
-
                     const colorSel = document.getElementById('color');
                     const materialSel = document.getElementById('variant_material');
                     const sizeSel = document.getElementById('size');
 
                     currentValues = { color: [], material: [], size: [] };
 
-                    if (data.color && Array.isArray(data.color) && data.color.length > 0) {
+                    if (data.color?.length) {
                         addOptions(colorSel, data.color, '-- Màu sắc --');
                         currentValues.color = data.color;
                     } else {
                         addOptions(colorSel, [], '-- Màu sắc --');
                     }
 
-                    if (data.material && Array.isArray(data.material) && data.material.length > 0) {
+                    if (data.material?.length) {
                         addOptions(materialSel, data.material, '-- Chất liệu --');
                         currentValues.material = data.material;
                     } else {
                         addOptions(materialSel, [], '-- Chất liệu --');
                     }
 
-                    if (data.size && Array.isArray(data.size) && data.size.length > 0) {
+                    if (data.size?.length) {
                         addOptions(sizeSel, data.size, '-- Kích thước --');
                         currentValues.size = data.size;
                     } else {
                         addOptions(sizeSel, [], '-- Kích thước --');
                     }
 
-                    // Bật nút tạo biến thể nếu có ít nhất một thuộc tính
                     const hasValues = currentValues.color.length > 0 || currentValues.material.length > 0 || currentValues.size.length > 0;
                     document.getElementById('generate-variants-btn').disabled = !hasValues;
                 })
@@ -411,6 +460,34 @@
                     console.error('Lỗi khi lấy giá trị thuộc tính lúc load trang:', err);
                 });
         }
+        // Hàm format tiền tệ khi nhập
+function formatCurrencyInput(input) {
+    let value = input.value.replace(/\D/g, ""); // bỏ ký tự không phải số
+    if (value) {
+        input.value = new Intl.NumberFormat('vi-VN').format(value); // thêm dấu .
+    } else {
+        input.value = "";
+    }
+}
+
+// Gắn sự kiện format cho tất cả input có class price-input
+function bindPriceInputs() {
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.addEventListener('input', function () {
+            formatCurrencyInput(this);
+        });
+    });
+}
+
+// Khi submit form: bỏ dấu chấm để server nhận số đúng
+document.getElementById('product-form').addEventListener('submit', function () {
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.value = input.value.replace(/\./g, "");
+    });
+});
+
+// Khi load xong DOM thì gắn sự kiện
+document.addEventListener('DOMContentLoaded', bindPriceInputs);
     });
 </script>
 
