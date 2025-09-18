@@ -46,12 +46,12 @@
         </li>
 
         {{-- Quản lý SP yêu thích --}}
-        <li class="nav-item mb-2">
+        {{-- <li class="nav-item mb-2">
             <a href="{{ route('admin.wishlists.index') }}"
                class="nav-link text-white {{ request()->routeIs('admin.wishlists.*') ? 'active bg-primary' : '' }}">
                 <i class="fas fa-heart me-2"></i> Sản phẩm yêu thích
             </a>
-        </li>
+        </li> --}}
 
         {{-- Quản lý mã giảm giá --}}
         <li class="nav-item mb-2">
@@ -84,12 +84,12 @@
                 <i class="fas fa-star me-2"></i> Đánh giá
             </a>
         </li>
-     <li class="nav-item mb-2">
+     {{-- <li class="nav-item mb-2">
     <a href="{{ route('admin.carts.index') }}"
         class="nav-link text-white {{ request()->routeIs('admin.carts.*') ? 'active bg-primary' : '' }}">
         <i class="fas fa-shopping-cart me-2"></i> Quản lý giỏ hàng
     </a>
-</li>  
+</li>   --}}
 
     <li class="nav-item mb-2">
             <a href="{{ route('admin.posts.index') }}"
