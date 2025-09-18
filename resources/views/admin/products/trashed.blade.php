@@ -25,13 +25,12 @@
             @foreach($products as $product)
                 <tr>
                     <td>{{ $product->id }}</td>
-                    <td>
-                        @if($product->main_image)
-                            <img src="{{ asset('storage/products/' . $product->main_image) }}" width="60" height="60">
-                        @else
-                            -
-                        @endif
-                    </td>
+                     <td>
+                            @if ($product->main_image && file_exists(public_path('storage/' . $product->main_image)))
+                                <img src="{{ asset('storage/' . $product->main_image) }}" width="60" height="60"
+                                    class="rounded">
+                            @endif
+                        </td>
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->category_name }}</td>
                     <td>{{ $product->prices }}</td>
