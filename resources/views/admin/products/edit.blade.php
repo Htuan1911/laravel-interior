@@ -146,11 +146,20 @@
                     <div class="col-md-3"><input name="variants[{{ $index }}][price]"
                             value="{{ number_format($variant->price, 0, ',', '.') }}"
                             class="form-control price-input text-end" placeholder="Giá bán" type="text"></div>
-                    <div class="col-md-3"><input name="variants[{{ $index }}][stock_quantity]"
+                  <div class="col-md-3"><input name="variants[{{ $index }}][stock_quantity]"
                             value="{{ $variant->stock_quantity }}" class="form-control" placeholder="Tồn kho"
                             type="number"></div>
-                    <div class="col-md-3"><input name="variants[{{ $index }}][weight]" value="{{ $variant->weight }}"
-                            class="form-control" placeholder="Khối lượng (kg)" type="number"></div>
+                    <div class="col-md-3">
+    <input
+        name="variants[{{ $index }}][weight]"
+        value="{{ (int)$variant->weight }}"
+        class="form-control"
+        placeholder="Khối lượng (kg)"
+        type="number"
+        step="1"
+        min="0"
+    >
+</div>
                 </div>
 
                 <div class="mt-2">
@@ -367,8 +376,43 @@ document.getElementById('product-form').addEventListener('submit', function () {
          placeholder="Giá bán"
          type="text"
          value="${price ? new Intl.NumberFormat('vi-VN').format(price) : ''}"></div>
-                <div class="col-md-3"><input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number" value="${stock}"></div>
-                <div class="col-md-3"><input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number" value="${weight}"></div>
+               <div class="col-md-3 mb-3">
+    <label for="variant_stock_${idx}" class="form-label fw-semibold">Tồn kho</label>
+    <div class="input-group">
+        <input 
+            id="variant_stock_${idx}" 
+            name="variants[${idx}][stock_quantity]" 
+            class="form-control text-end" 
+            type="number" 
+            min="0" 
+            step="1" 
+            value="${stock}" 
+            placeholder="Nhập số lượng">
+        <span class="input-group-text">sp</span>
+    </div>
+</div>
+
+<div class="col-md-3 mb-3">
+    <label for="variant_weight_${idx}" class="form-label fw-semibold">Khối lượng</label>
+    <div class="input-group">
+        <input 
+            id="variant_weight_${idx}" 
+            name="variants[${idx}][weight]" 
+            class="form-control text-end weight-input" 
+            type="number" 
+            min="0" 
+            step="0.01" 
+         value="${
+  (() => {
+    const w = parseFloat(weight);
+    if (isNaN(w)) return '';
+    return Number.isInteger(w) ? w : w.toFixed(2);
+  })()
+}"
+            placeholder="Ví dụ: 0.5">
+        <span class="input-group-text">kg</span>
+    </div>
+</div>
             </div>
             <label class="mt-2">Ảnh biến thể:</label>
             <input type="file" name="variants[${idx}][image]" class="form-control mb-2 required">
@@ -408,6 +452,18 @@ document.getElementById('product-form').addEventListener('submit', function () {
             card.remove();
         }
     }
+       document.addEventListener('DOMContentLoaded', function () {
+        // Lấy tất cả input có class weight-input
+        document.querySelectorAll('.weight-input').forEach(function(input) {
+            input.addEventListener('blur', function () {
+                const value = parseFloat(this.value);
+                if (!isNaN(value)) {
+                    // Nếu là số nguyên thì hiển thị không phần thập phân, ngược lại giữ 2 số thập phân
+                    this.value = (value % 1 === 0) ? value : value.toFixed(2);
+                }
+            });
+        });
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
         // Thêm các biến thể có sẵn vào existingVariants + generatedCombinations
@@ -469,6 +525,15 @@ function formatCurrencyInput(input) {
         input.value = "";
     }
 }
+function formatWeightValue(weight) {
+  const w = parseFloat(weight);
+  if (isNaN(w)) return '';
+  return Number.isInteger(w) ? w.toString() : w.toFixed(2);
+}
+
+// Ví dụ khi load dữ liệu sửa biến thể
+const weightInput = document.querySelector('#variant_weight_0'); // thay 0 thành index đúng
+weightInput.value = formatWeightValue(weightFromServer);
 
 // Gắn sự kiện format cho tất cả input có class price-input
 function bindPriceInputs() {

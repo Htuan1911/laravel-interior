@@ -326,12 +326,34 @@ function addVariant(c, m, s, price = '', stock = 0, weight = 0) {
          oninput="formatCurrency(this)" 
          value="${formatNumber(price)}">
         </div>
-        <div class="col-md-3">
-       <input name="variants[${idx}][stock_quantity]" class="form-control" placeholder="Tồn kho" type="number" min="0" step="1" value="${stock}">
-        </div>
-        <div class="col-md-3">
-          <input name="variants[${idx}][weight]" class="form-control" placeholder="Khối lượng (kg)" type="number" min="0" step="0.01" value="${weight}">
-        </div>
+       <div class="col-md-3 mb-3">
+   
+    <input 
+        id="stock_quantity_${idx}" 
+        name="variants[${idx}][stock_quantity]" 
+        class="form-control text-end" 
+        placeholder="Nhập số lượng tồn kho" 
+        type="number" 
+        min="0" 
+        step="1" 
+        value="${stock}">
+</div>
+
+<div class="col-md-3 mb-3">
+   
+    <div class="input-group">
+        <input 
+            id="weight_${idx}" 
+            name="variants[${idx}][weight]" 
+            class="form-control text-end" 
+            placeholder="Ví dụ: 0.50" 
+            type="number" 
+            min="0" 
+            step="0.01" 
+            value="${weight}">
+        <span class="input-group-text">kg</span>
+    </div>
+</div>
       </div>
       <label class="mt-2">Ảnh biến thể:</label>
       <input type="file" name="variants[${idx}][image]" class="form-control mb-2">
