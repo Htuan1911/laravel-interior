@@ -204,23 +204,33 @@ genBtn.addEventListener('click', () => {
   const sizes = currentValues.size.length ? currentValues.size : [''];
 
 let price = null;
-
 while (true) {
-  price = prompt("Nhập giá bán cho biến thể:");
+  price = prompt("Nhập giá bán cho biến thể (bỏ trống nếu không muốn nhập):");
 
-  if (price === null) return; // User bấm "Hủy"
-  if (price.trim() === '' || isNaN(price)) {
-    alert("Giá bán không hợp lệ. Vui lòng nhập một số!");
+  if (price === null || price.trim() === '') {
+    // Nếu bấm Hủy hoặc để trống thì thoát vòng lặp luôn
+    price = null;
+    break;
+  }
+
+  if (isNaN(price)) {
+    alert("Giá bán phải là số nếu bạn nhập!");
   } else {
-    break; // Hợp lệ → thoát khỏi vòng lặp
+    break;
   }
 }
-  let stock = null;
+
+let stock = null;
 while (true) {
-  stock = prompt("Nhập tồn kho:");
-  if (stock === null) return;
-  if (stock.trim() === '' || isNaN(stock)) {
-    alert("Tồn kho không hợp lệ. Vui lòng nhập một số!");
+  stock = prompt("Nhập tồn kho (bỏ trống nếu không muốn nhập):");
+
+  if (stock === null || stock.trim() === '') {
+    stock = null;
+    break;
+  }
+
+  if (isNaN(stock)) {
+    alert("Tồn kho phải là số nếu bạn nhập!");
   } else {
     break;
   }
@@ -228,10 +238,15 @@ while (true) {
 
 let weight = null;
 while (true) {
-  weight = prompt("Nhập khối lượng (kg):");
-  if (weight === null) return;
-  if (weight.trim() === '' || isNaN(weight)) {
-    alert("Khối lượng không hợp lệ. Vui lòng nhập một số!");
+  weight = prompt("Nhập khối lượng (kg) (bỏ trống nếu không muốn nhập):");
+
+  if (weight === null || weight.trim() === '') {
+    weight = null;
+    break;
+  }
+
+  if (isNaN(weight)) {
+    alert("Khối lượng phải là số nếu bạn nhập!");
   } else {
     break;
   }
@@ -316,9 +331,11 @@ function addVariant(c, m, s, price = '', stock = 0, weight = 0) {
       <input type="hidden" name="variants[${idx}][size]" value="${s}">
       <div class="row">
         <div class="col-md-3">
+           <label for="sku_${idx}" class="form-label">SKU</label>
           <input name="variants[${idx}][sku]" class="form-control" placeholder="SKU" value="${sku}">
         </div>
         <div class="col-md-3">
+           <label for="price_${idx}" class="form-label">Giá bán</label>
             <input name="variants[${idx}][price]" 
          class="form-control text-end" 
          placeholder="Giá bán" 
@@ -327,7 +344,7 @@ function addVariant(c, m, s, price = '', stock = 0, weight = 0) {
          value="${formatNumber(price)}">
         </div>
        <div class="col-md-3 mb-3">
-   
+       <label for="stock_quantity_${idx}" class="form-label">Tồn kho</label>
     <input 
         id="stock_quantity_${idx}" 
         name="variants[${idx}][stock_quantity]" 
@@ -340,7 +357,7 @@ function addVariant(c, m, s, price = '', stock = 0, weight = 0) {
 </div>
 
 <div class="col-md-3 mb-3">
-   
+    <label for="weight_${idx}" class="form-label">Khối lượng (kg)</label>
     <div class="input-group">
         <input 
             id="weight_${idx}" 
@@ -391,6 +408,8 @@ function formatNumber(num) {
   if (!num) return '';
   return parseInt(num, 10).toLocaleString('vi-VN');
 }
+
+
 </script>
 
 

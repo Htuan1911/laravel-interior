@@ -141,25 +141,23 @@
                 <input type="hidden" name="variants[{{ $index }}][size]" value="{{ $variant->size }}">
 
                 <div class="row">
-                    <div class="col-md-3"><input name="variants[{{ $index }}][sku]" value="{{ $variant->sku }}"
-                            class="form-control" placeholder="SKU"></div>
-                    <div class="col-md-3"><input name="variants[{{ $index }}][price]"
+                    <div class="col-md-3"><label for="variant_sku_{{ $index }}"
+                            class="form-label fw-semibold">SKU</label><input name="variants[{{ $index }}][sku]"
+                            value="{{ $variant->sku }}" class="form-control" placeholder="SKU"></div>
+                    <div class="col-md-3"><label for="variant_price_{{ $index }}" class="form-label fw-semibold">Giá
+                            bán</label><input name="variants[{{ $index }}][price]"
                             value="{{ number_format($variant->price, 0, ',', '.') }}"
                             class="form-control price-input text-end" placeholder="Giá bán" type="text"></div>
-                  <div class="col-md-3"><input name="variants[{{ $index }}][stock_quantity]"
-                            value="{{ $variant->stock_quantity }}" class="form-control" placeholder="Tồn kho"
-                            type="number"></div>
+                    <div class="col-md-3"><label for="variant_stock_quantity_{{ $index }}"
+                            class="form-label fw-semibold">Tồn kho</label>
+                        <input name="variants[{{ $index }}][stock_quantity]" value="{{ $variant->stock_quantity }}"
+                            class="form-control" placeholder="Tồn kho" type="number">
+                    </div>
                     <div class="col-md-3">
-    <input
-        name="variants[{{ $index }}][weight]"
-        value="{{ (int)$variant->weight }}"
-        class="form-control"
-        placeholder="Khối lượng (kg)"
-        type="number"
-        step="1"
-        min="0"
-    >
-</div>
+                        <label for="variant_weight_{{ $index }}" class="form-label fw-semibold">Khối lượng (kg)</label>
+                        <input name="variants[{{ $index }}][weight]" value="{{ (int)$variant->weight }}"
+                            class="form-control" placeholder="Khối lượng (kg)" type="number" step="1" min="0">
+                    </div>
                 </div>
 
                 <div class="mt-2">
@@ -340,7 +338,8 @@ document.getElementById('product-form').addEventListener('submit', function () {
             return;
         }
 
-        const info = promptVariantInfo();
+       
+          const info = promptVariantInfo(true);  // Bắt buộc nhập
         if (info === null) return;
 
         addVariant(c, m, s, info.price, info.stock, info.weight);
@@ -361,25 +360,41 @@ document.getElementById('product-form').addEventListener('submit', function () {
     const idx = variantCount++;
     const sku = `SKU-${Date.now()}-${idx}`;  // Tạo SKU tự động
 
-    const html = `
-        <div class="card p-3 mb-3 variant-card" data-key="${key}">
-            <h6>Biến thể ${idx + 1}: ${name}</h6>
-            <input type="hidden" name="variants[${idx}][id]" value="">
-            <input type="hidden" name="variants[${idx}][name]" value="${name}">
-            <input type="hidden" name="variants[${idx}][color]" value="${c}">
-            <input type="hidden" name="variants[${idx}][material]" value="${m}">
-            <input type="hidden" name="variants[${idx}][size]" value="${s}">
-            <div class="row">
-                <div class="col-md-3"><input name="variants[${idx}][sku]" class="form-control" placeholder="SKU" value="${sku}"></div>
-                <div class="col-md-3"> <input name="variants[${idx}][price]"
-         class="form-control price-input text-end"
-         placeholder="Giá bán"
-         type="text"
-         value="${price ? new Intl.NumberFormat('vi-VN').format(price) : ''}"></div>
-               <div class="col-md-3 mb-3">
-    <label for="variant_stock_${idx}" class="form-label fw-semibold">Tồn kho</label>
-    <div class="input-group">
+   const html = `
+  <div class="card p-3 mb-3 variant-card" data-key="${key}">
+    <h6>Biến thể ${idx + 1}: ${name}</h6>
+    <input type="hidden" name="variants[${idx}][id]" value="">
+    <input type="hidden" name="variants[${idx}][name]" value="${name}">
+    <input type="hidden" name="variants[${idx}][color]" value="${c}">
+    <input type="hidden" name="variants[${idx}][material]" value="${m}">
+    <input type="hidden" name="variants[${idx}][size]" value="${s}">
+    <div class="row">
+
+      <div class="col-md-3 mb-3">
+        <label for="variant_sku_${idx}" class="form-label fw-semibold">SKU</label>
         <input 
+          id="variant_sku_${idx}" 
+          name="variants[${idx}][sku]" 
+          class="form-control" 
+          placeholder="SKU" 
+          value="${sku}">
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <label for="variant_price_${idx}" class="form-label fw-semibold">Giá bán</label>
+        <input 
+          id="variant_price_${idx}" 
+          name="variants[${idx}][price]"
+          class="form-control price-input text-end"
+          placeholder="Giá bán"
+          type="text"
+          value="${price ? new Intl.NumberFormat('vi-VN').format(price) : ''}">
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <label for="variant_stock_${idx}" class="form-label fw-semibold">Tồn kho</label>
+        <div class="input-group">
+          <input 
             id="variant_stock_${idx}" 
             name="variants[${idx}][stock_quantity]" 
             class="form-control text-end" 
@@ -388,40 +403,44 @@ document.getElementById('product-form').addEventListener('submit', function () {
             step="1" 
             value="${stock}" 
             placeholder="Nhập số lượng">
-        <span class="input-group-text">sp</span>
-    </div>
-</div>
+          <span class="input-group-text">sp</span>
+        </div>
+      </div>
 
-<div class="col-md-3 mb-3">
-    <label for="variant_weight_${idx}" class="form-label fw-semibold">Khối lượng</label>
-    <div class="input-group">
-        <input 
+      <div class="col-md-3 mb-3">
+        <label for="variant_weight_${idx}" class="form-label fw-semibold">Khối lượng</label>
+        <div class="input-group">
+          <input 
             id="variant_weight_${idx}" 
             name="variants[${idx}][weight]" 
             class="form-control text-end weight-input" 
             type="number" 
             min="0" 
             step="0.01" 
-         value="${
-  (() => {
-    const w = parseFloat(weight);
-    if (isNaN(w)) return '';
-    return Number.isInteger(w) ? w : w.toFixed(2);
-  })()
-}"
+            value="${
+              (() => {
+                const w = parseFloat(weight);
+                if (isNaN(w)) return '';
+                return Number.isInteger(w) ? w : w.toFixed(2);
+              })()
+            }"
             placeholder="Ví dụ: 0.5">
-        <span class="input-group-text">kg</span>
-    </div>
-</div>
-            </div>
-            <label class="mt-2">Ảnh biến thể:</label>
-            <input type="file" name="variants[${idx}][image]" class="form-control mb-2 required">
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Xóa</button>
-        </div>`;
-    document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
-    bindPriceInputs();
-}
+          <span class="input-group-text">kg</span>
+        </div>
+      </div>
 
+    </div>
+
+    <label class="mt-2">Ảnh biến thể:</label>
+    <input type="file" name="variants[${idx}][image]" class="form-control mb-2 required">
+
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(this)">Xóa</button>
+  </div>`;
+
+document.getElementById('variants-container').insertAdjacentHTML('beforeend', html);
+bindPriceInputs();
+    }
+    
     // Nút generate tự động prompt nhập info từng biến thể
     document.getElementById('generate-variants-btn').addEventListener('click', () => {
         const colors = currentValues.color.length ? currentValues.color : [''];
@@ -432,13 +451,70 @@ document.getElementById('product-form').addEventListener('submit', function () {
         for (const c of colors) {
             for (const m of materials) {
                 for (const s of sizes) {
-                    const info = promptVariantInfo();
+                      const info = promptVariantInfo(false); // Không bắt buộc nhập
                     if (info === null) return; // Nếu hủy thì dừng tạo luôn
                     addVariant(c, m, s, info.price, info.stock, info.weight);
                 }
             }
         }
     });
+    function promptVariantInfo(required = true) {
+    let price = null;
+    while (true) {
+        price = prompt("Nhập giá bán" + (required ? " (bắt buộc):" : " (bỏ trống nếu không nhập):"));
+        if (!required && (price === null || price.trim() === '')) {
+            price = null;
+            break;
+        }
+        if (required && (price === null || price.trim() === '')) {
+            alert("Phải nhập giá bán!");
+            continue;
+        }
+        if (price !== null && price.trim() !== '' && isNaN(price)) {
+            alert("Giá bán không hợp lệ. Vui lòng nhập số!");
+        } else {
+            break;
+        }
+    }
+
+    let stock = null;
+    while (true) {
+        stock = prompt("Nhập tồn kho" + (required ? " (bắt buộc):" : " (bỏ trống nếu không nhập):"));
+        if (!required && (stock === null || stock.trim() === '')) {
+            stock = null;
+            break;
+        }
+        if (required && (stock === null || stock.trim() === '')) {
+            alert("Phải nhập tồn kho!");
+            continue;
+        }
+        if (stock !== null && stock.trim() !== '' && isNaN(stock)) {
+            alert("Tồn kho không hợp lệ. Vui lòng nhập số!");
+        } else {
+            break;
+        }
+    }
+
+    let weight = null;
+    while (true) {
+        weight = prompt("Nhập khối lượng (kg)" + (required ? " (bắt buộc):" : " (bỏ trống nếu không nhập):"));
+        if (!required && (weight === null || weight.trim() === '')) {
+            weight = null;
+            break;
+        }
+        if (required && (weight === null || weight.trim() === '')) {
+            alert("Phải nhập khối lượng!");
+            continue;
+        }
+        if (weight !== null && weight.trim() !== '' && isNaN(weight)) {
+            alert("Khối lượng không hợp lệ. Vui lòng nhập số!");
+        } else {
+            break;
+        }
+    }
+
+    return { price, stock, weight };
+}
 
     // Xóa biến thể (cả từ generated và existing)
     function removeVariant(btn) {
