@@ -27,4 +27,5 @@
             </div>
         </div>
     </body>
+    <x-chatbot />
 </html>

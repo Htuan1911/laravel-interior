@@ -724,7 +724,7 @@
 @stack('scripts')
 
 </body>
-
+<x-chatbot />
 
 <!-- product-detail07:06-->
 </html>

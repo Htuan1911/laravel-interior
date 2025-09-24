@@ -733,7 +733,7 @@
 <script src="{{ asset('js/theme.js') }}"></script>
 
 </body>
-
+<x-chatbot />
 
 <!-- blog-grid-no-sidebar10:38-->
 </html>

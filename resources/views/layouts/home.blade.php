@@ -189,4 +189,5 @@
     });
 </script>
 </body>
+<x-chatbot />
 </html>

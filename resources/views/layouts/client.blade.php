@@ -754,7 +754,7 @@
 </body>
 
 </body>
-
+<x-chatbot />
 
 <!-- product-grid-sidebar-left10:55-->
 

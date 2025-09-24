@@ -755,7 +755,7 @@
     <script src="{{ asset('js/theme.js') }}"></script>
     @stack('scripts')
 </body>
-
+<x-chatbot />
 <!-- product-cart07:12-->
 
 </html>

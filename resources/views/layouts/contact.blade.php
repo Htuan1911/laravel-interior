@@ -753,7 +753,7 @@
     <!-- Template JS -->
     <script src="{{ asset('js/theme.js') }}"></script>
 </body>
-
+<x-chatbot />
 
 <!-- contact11:10-->
 
