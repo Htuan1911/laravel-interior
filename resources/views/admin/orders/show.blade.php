@@ -32,6 +32,7 @@
             </div>
 
             {{-- Trạng thái --}}
+            {{-- Trạng thái --}}
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <h6 class="fw-bold">🛒 Trạng thái đơn hàng:</h6>
@@ -54,6 +55,16 @@
                     <span class="badge bg-{{ $statusColor[$order->status] ?? 'secondary' }} px-3 py-2">
                         {{ $statusSteps[$order->status] ?? ucfirst($order->status) }}
                     </span>
+
+                    {{-- Nếu đã hủy thì hiện lý do --}}
+                    @if($order->status === 'cancelled')
+                        <div class="mt-3">
+                            <h6 class="fw-bold text-danger">❌ Lý do hủy:</h6>
+                            <div class="p-3 border rounded bg-light">
+                                {{ $order->cancel_reason ?? 'Không có lý do' }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -68,6 +79,7 @@
                     @endif
                 </div>
             </div>
+
 
         </div>
     </div>
