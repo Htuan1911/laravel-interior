@@ -18,48 +18,33 @@
                         <div class="col-md-6">
                             <label>Họ Tên</label>
                             <input type="text" name="shipping_name" class="form-control" required
-                                value="{{ auth()->user()->name ?? '' }}">
+                                   value="{{ auth()->user()->name ?? '' }}">
                         </div>
                         <div class="col-md-6">
                             <label>Số điện thoại</label>
                             <input type="text" name="shipping_phone" class="form-control" required
-                                value="{{ auth()->user()->phone ?? '' }}">
+                                   value="{{ auth()->user()->phone ?? '' }}">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label>Email</label>
                         <input type="email" name="shipping_email" class="form-control"
-                            value="{{ auth()->user()->email ?? '' }}">
+                               value="{{ auth()->user()->email ?? '' }}">
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label>Tỉnh / Thành phố</label>
-                            <input type="province" name="shipping_province" class="form-control"
-                                value="{{ auth()->user()->province ?? '' }}">
+                            <input type="text" name="shipping_province" id="shipping_province" class="form-control"
+                                   value="{{ auth()->user()->province ?? '' }}" required>
                         </div>
                         <div class="col-md-6">
                             <label>Quận / Huyện</label>
-                            <input type="district" name="shipping_district" class="form-control"
-                                value="{{ auth()->user()->district ?? '' }}">
+                            <input type="text" name="shipping_district" id="shipping_district" class="form-control"
+                                   value="{{ auth()->user()->district ?? '' }}" required>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label>Khu vực giao hàng</label>
-                        <div>
-                            <label class="me-3">
-                                <input type="radio" name="shipping_area" value="inner" checked>
-                                Nội thành (Miễn phí)
-                            </label>
-                            <label>
-                                <input type="radio" name="shipping_area" value="outer">
-                                Ngoại thành (+30.000đ)
-                            </label>
-                        </div>
-                    </div>
-
 
                     <div class="mb-3">
                         <label>Địa chỉ chi tiết</label>
@@ -90,7 +75,7 @@
 
                             <div class="d-flex align-items-center mb-3">
                                 <img src="{{ asset('storage/' . $item->variant->image) }}" width="50" height="50"
-                                    class="me-2" style="object-fit: cover;">
+                                     class="me-2" style="object-fit: cover;">
                                 <div>
                                     <strong>{{ $item->variant_name }}</strong><br>
                                     Số lượng: {{ $quantity }}<br>
@@ -114,8 +99,9 @@
                         <p><strong>Phí ship:</strong>
                             <span id="shipping-fee">0</span> đ
                         </p>
-                        <p><strong>Tổng cộng:</strong> <span
-                                id="total-amount">{{ number_format($subtotal, 0, ',', '.') }}</span> đ</p>
+                        <p><strong>Tổng cộng:</strong> 
+                            <span id="total-amount">{{ number_format($subtotal, 0, ',', '.') }}</span> đ
+                        </p>
                         <button type="submit" class="btn btn-warning w-100 mt-3">Đặt hàng</button>
                     </div>
                 </div>
@@ -126,28 +112,46 @@
 
 @push('scripts')
     <script>
-        const shippingRadios = document.querySelectorAll('input[name="shipping_area"]');
+        const provinceInput = document.getElementById('shipping_province');
+        const districtInput = document.getElementById('shipping_district');
         const feeDisplay = document.getElementById('shipping-fee');
         const totalDisplay = document.getElementById('total-amount');
         const subtotal = {{ $subtotal ?? 0 }};
 
+        // Danh sách quận nội thành Hà Nội
+        const innerHanoiDistricts = [
+            "Ba Đình", "Hoàn Kiếm", "Đống Đa", "Hai Bà Trưng",
+            "Cầu Giấy", "Thanh Xuân", "Hoàng Mai", "Tây Hồ", "Long Biên", "Nam Từ Liêm", "Bắc Từ Liêm", "Hà Đông"
+        ];
+
+        // Danh sách quận nội thành TP.HCM
+        const innerHcmDistricts = [
+            "Quận 1", "Quận 3", "Quận 4", "Quận 5", "Quận 6", "Quận 7", "Quận 8",
+            "Quận 10", "Quận 11", "Quận Bình Thạnh", "Quận Phú Nhuận", "Quận Gò Vấp", "Quận Tân Bình", "Quận Tân Phú"
+        ];
+
         function updateShippingFee() {
-            const selected = document.querySelector('input[name="shipping_area"]:checked');
-            let fee = 0;
-            if (selected.value === 'outer') {
-                fee = 30000;
+            const province = provinceInput.value.trim();
+            const district = districtInput.value.trim();
+            let fee = 1000000; // mặc định ngoại thành
+
+            if (province === "Hà Nội" && innerHanoiDistricts.includes(district)) {
+                fee = 0;
+            } else if (province === "Hồ Chí Minh" && innerHcmDistricts.includes(district)) {
+                fee = 0;
             }
+
             feeDisplay.textContent = fee.toLocaleString('vi-VN');
             totalDisplay.textContent = (subtotal + fee).toLocaleString('vi-VN');
         }
 
-        shippingRadios.forEach(radio => {
-            radio.addEventListener('change', updateShippingFee);
-        });
+        provinceInput.addEventListener('input', updateShippingFee);
+        districtInput.addEventListener('input', updateShippingFee);
 
-        // Gọi lần đầu để hiển thị đúng
+        // Gọi khi load trang nếu có dữ liệu sẵn
         updateShippingFee();
 
+        // Áp dụng mã giảm giá
         document.getElementById('apply-coupon').addEventListener('click', function() {
             const code = document.getElementById('coupon-code').value.trim();
             const subtotal = {{ $subtotal }};
@@ -159,8 +163,7 @@
                         document.getElementById('coupon-message').style.display = 'block';
                         document.getElementById('coupon-message').innerText = data.message;
 
-                        document.getElementById('shipping-fee').innerText = data.shipping_fee.toLocaleString(
-                            'vi-VN');
+                        document.getElementById('shipping-fee').innerText = data.shipping_fee.toLocaleString('vi-VN');
                         document.getElementById('total-amount').innerText = data.total.toLocaleString('vi-VN');
                     } else {
                         document.getElementById('coupon-message').style.display = 'block';
