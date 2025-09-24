@@ -197,3 +197,14 @@
 </div>
 
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const statusSelect = document.getElementById('status');
+
+    statusSelect.addEventListener('change', function () {
+        if (this.value === 'completed') {
+            alert('Đơn hàng hoàn tất → trạng thái thanh toán sẽ tự động thành "Đã thanh toán"');
+        }
+    });
+});
+</script>
