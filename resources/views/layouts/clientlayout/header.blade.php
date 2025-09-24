@@ -201,12 +201,12 @@
                                         <span>Lịch sử đơn hàng</span>
                                     </a>
                                 </div>
-                                <div>
+                                {{-- <div>
                                     <a href="{{ route('client.account.vouchers') }}" title=" vouchers">
                                         <i class="fa fa-ticket"></i>
                                         <span>Vouchers</span>
                                     </a>
-                                </div>
+                                </div> --}}
                                 <div>
                                     <a href="{{ route('client.account.wishlist') }}" title="My Wishlists">
                                         <i class="fa fa-heart"></i>
