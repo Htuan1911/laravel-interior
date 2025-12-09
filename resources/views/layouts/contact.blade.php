@@ -54,13 +54,6 @@
     <!-- footer -->
    @include('layouts.clientlayout.footer')
 
-    <!-- back top top -->
-    <div class="back-to-top">
-        <a href="#">
-            <i class="fa fa-long-arrow-up"></i>
-        </a>
-    </div>
-
     <!-- menu mobie left -->
     <div class="mobile-top-menu d-md-none">
         <button type="button" class="close" aria-label="Close">
